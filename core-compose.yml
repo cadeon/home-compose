@@ -1,4 +1,4 @@
-# Core services like proxy, homepage, status, and search.
+# Core services like proxy, watchtower, status.
 version: "3.7"
 
 services:
@@ -30,31 +30,6 @@ services:
     command: --interval 86400 --cleanup
     restart: unless-stopped
 
-  homepage:
-    image: ghcr.io/gethomepage/homepage:latest
-    container_name: homepage
-    ports:
-      - 2000:2000
-    volumes:
-      - /volume1/arrs/homepage/config:/app/config 
-      - /var/run/docker.sock:/var/run/docker.sock 
-    environment:
-      - PORT=2000
-      - TZ=America/New_York
-    networks:
-      - traefik-public
-    depends_on:
-      - traefik
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.homepage.entryPoints=websecure"
-      - "traefik.http.routers.homepage.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.homepage.rule=Host(`not-really.me`,`www.not-really.me`)" # Edit here to change the domain name
-      - "traefik.http.services.homepage.loadbalancer.server.port=2000"
-      - "traefik.docker.network=traefik-public"
-      - "traefik.port=2000"
-    restart: unless-stopped
-
   uptime-kuma:
     image: louislam/uptime-kuma
     container_name: uptime-kuma
@@ -75,45 +50,6 @@ services:
       - "traefik.http.services.uptime_kuma.loadbalancer.server.port=3001"
       - "traefik.docker.network=traefik-public"
       - "traefik.port=3001"
-    restart: unless-stopped
-
-  searxng:
-    image: docker.io/searxng/searxng:latest
-    container_name: searxng
-    ports:
-      - 1234:1234
-    volumes:
-      - /volume1/arrs/searxng:/etc/searxng:rw
-    environment:
-      - PUID=1024
-      - PGID=100
-      - TZ=America/New_York
-      - SEARXNG_BASE_URL=https://search.not-really.me/
-      - SEARXNG_PORT=1234
-      - BIND_ADDRESS=0.0.0.0:1234
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - SETGID
-      - SETUID
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "1m"
-        max-file: "1"
-    depends_on:
-      - traefik
-    networks:
-      - traefik-public
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.search.entryPoints=websecure"
-      - "traefik.http.routers.search.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.search.rule=Host(`search.not-really.me`)" # Edit here to change the domain name
-      - "traefik.http.services.search.loadbalancer.server.port=1234"
-      - "traefik.docker.network=traefik-public"
-      - "traefik.port=1234"
     restart: unless-stopped
 
 ###### ----- Docker control ----- ######
