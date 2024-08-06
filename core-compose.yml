@@ -18,8 +18,8 @@ services:
     networks:
       - traefik-public
     volumes:
-      - /volume1/arrs/traefik/:/etc/traefik/
-      - /volume1/arrs/traefik/logs:/var/log
+      - /volume2/docker-configs/traefik/:/etc/traefik/
+      - /volume2/docker-configs/traefik/logs:/var/log
       - /var/run/docker.sock:/var/run/docker.sock
     restart: always
 
@@ -37,7 +37,7 @@ services:
     image: louislam/uptime-kuma
     container_name: uptime-kuma
     volumes:
-      - /volume1/arrs/uptime-kuma:/app/data
+      - /volume2/docker-configs/uptime-kuma:/app/data
       - /var/run/docker.sock:/var/run/docker.sock 
     ports:
       - 3001:3001
