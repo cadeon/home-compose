@@ -14,7 +14,7 @@ services:
       - VERSION=docker
       - UMASK=002
     volumes:
-      - /volume1/arrs/plex-confg:/config
+      - /volume2/docker-configs/plex-confg:/config
       - /volume1/plex-media:/plex-media
     devices:
       - /dev/dri:/dev/dri
@@ -29,7 +29,7 @@ services:
       - TZ=America/New_York
       - UMASK=002
     volumes:
-      - /volume1/arrs/tautulli/config:/config
+      - /volume2/docker-configs/tautulli/config:/config
     ports:
       - 8181:8181
     networks:
