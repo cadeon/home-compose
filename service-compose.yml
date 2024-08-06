@@ -20,7 +20,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.homepage.entryPoints=websecure"
       - "traefik.http.routers.homepage.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.homepage.rule=Host(`not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.routers.homepage.rule=Host(`not-really.me`,`www.not-really.me`)" # Edit here to change the domain name
       - "traefik.http.services.homepage.loadbalancer.server.port=2000"
       - "traefik.docker.network=traefik-public"
       - "traefik.port=2000"
