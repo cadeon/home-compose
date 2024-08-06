@@ -40,8 +40,6 @@ services:
       - "traefik.http.routers.tau.tls.certResolver=letsEncrypt"
       - "traefik.http.routers.tau.rule=Host(`tau.not-really.me`)" # Edit here to change the domain name
       - "traefik.http.services.tau.loadbalancer.server.port=8181"
-    depends_on:
-      - traefik
     restart: unless-stopped
 ###### ----- Docker control ----- ######
 networks:
