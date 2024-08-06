@@ -1,0 +1,412 @@
+version: "3.7"
+
+services:
+  ###### ----- Networking ----- ######
+  traefik:
+    image: traefik:v2.5.1
+    container_name: traefik
+    ports:
+      - 80:80/tcp
+      - 443:443/tcp
+    #  - 172.31.250.200:8080:8080/tcp # edit IP address to match your network
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      - traefik.constraint-label=traefik-public
+      - "--entrypoints.websecure.http.tls.domains[0].main=not-really.me"
+      - "--entrypoints.websecure.http.tls.domains[0].sans=*.not-really.me"
+    networks:
+      - traefik-public
+    volumes:
+      - /volume1/arrs/traefik/:/etc/traefik/
+      - /volume1/arrs/traefik/logs:/var/log
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
+
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    ports:
+      - 2000:2000
+    volumes:
+      - /volume1/arrs/homepage/config:/app/config # Make sure your local config directory exists
+      - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations
+    environment:
+      - PORT=2000
+      - TZ=America/New_York
+    networks:
+      - traefik-public
+    depends_on:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.homepage.entryPoints=websecure"
+      - "traefik.http.routers.homepage.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.homepage.rule=Host(`not-really.me`,`www.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.homepage.loadbalancer.server.port=2000"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.port=2000"
+    restart: unless-stopped
+
+  uptime-kuma:
+    image: louislam/uptime-kuma
+    container_name: uptime-kuma
+    volumes:
+      - /volume1/arrs/uptime-kuma:/app/data
+    ports:
+      - 3001:3001
+    depends_on:
+      - traefik
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.uptime_kuma.entryPoints=websecure"
+      - "traefik.http.routers.uptime_kuma.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.uptime_kuma.rule=Host(`status.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.uptime_kuma.loadbalancer.server.port=3001"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.port=3001"
+    restart: unless-stopped
+
+  searxng:
+    image: docker.io/searxng/searxng:latest
+    container_name: searxng
+    ports:
+      - 1234:1234
+    volumes:
+      - /volume1/arrs/searxng:/etc/searxng:rw
+    environment:
+      - PUID=1024
+      - PGID=100
+      - TZ=America/New_York
+      - SEARXNG_BASE_URL=https://search.not-really.me/
+      - SEARXNG_PORT=1234
+      - BIND_ADDRESS=0.0.0.0:1234
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "1"
+    depends_on:
+      - traefik
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.search.entryPoints=websecure"
+      - "traefik.http.routers.search.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.search.rule=Host(`search.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.search.loadbalancer.server.port=1234"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.port=1234"
+    restart: unless-stopped
+
+  ###### ----- Media related ----- ######
+  overseerr:
+    image: lscr.io/linuxserver/overseerr:latest
+    container_name: overseerr
+    environment:
+      - LOG_LEVEL=info
+      - TZ=America/New_York
+      - UMASK=002
+    ports:
+      - 5055:5055
+    volumes:
+      - /volume1/arrs/overseerr/app/config:/config
+    depends_on:
+      - traefik
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.overseerr.entryPoints=websecure"
+      - "traefik.http.routers.overseerr.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.overseerr.rule=Host(`requests.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.overseerr.loadbalancer.server.port=5055"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.port=5055"
+      - homepage.group=Media
+      - homepage.name=Requests
+      - homepage.href=https://requests.not-really.me
+      - homepage.description=Where it begins
+      - homepage.icon=https://overseerr.dev/os_logo_filled.svg
+      - homepage.widget.type=overseerr
+      - homepage.widget.url=https://requests.not-really.me
+      - homepage.widget.key=MTcyMjEwODg5MzE4NDRlNzM4YmQ2LTg0ZGItNGE4NS1iZTIwLTFiYzZlNjU5ZjU1NA==
+      - homepage.widget.fields=["pending", "approved", "available", "processing"]
+    restart: unless-stopped
+
+  sonarr:
+    image: ghcr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=1024
+      - PGID=100
+      - TZ=America/New_York
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:sonarr
+      - TP_THEME=organizr
+      - UMASK=002
+    volumes:
+      - /volume1/arrs/sonarr/data:/config
+      - /volume1/plex-media:/plex-media
+      - /volume1/arrs/downloads:/downloads
+    ports:
+      - 7878:7878
+      - 8989:8989
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonarr.entryPoints=websecure"
+      - "traefik.http.routers.sonarr.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.sonarr.rule=Host(`sonarr.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.port=8989"
+    depends_on:
+      - traefik
+    restart: unless-stopped
+
+  lidarr:
+    image: lscr.io/linuxserver/lidarr
+    container_name: lidarr
+    environment:
+      - PUID=1024
+      - PGID=100
+      - TZ=America/New_York
+      - UMASK=002
+    volumes:
+      - /volume1/arrs/lidarr/data:/config
+      - /volume1/plex-media:/plex-media
+      - /volume1/arrs/downloads:/downloads
+    ports:
+      - 8686:8686
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.lidarr.entryPoints=websecure"
+      - "traefik.http.routers.lidarr.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.lidarr.rule=Host(`lidarr.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.lidarr.loadbalancer.server.port=8686"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.port=8686"
+    depends_on:
+      - traefik
+    restart: unless-stopped
+
+  radarr:
+    image: linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1024
+      - PGID=100
+      - TZ=America/New_York
+      - UMASK=002
+    volumes:
+      - /volume1/arrs/radarr/data:/config
+      - /volume1/plex-media:/plex-media
+      - /volume1/arrs/downloads:/downloads
+    ports:
+      - 7676:7878
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.radarr.entryPoints=websecure"
+      - "traefik.http.routers.radarr.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.radarr.rule=Host(`radarr.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.radarr.loadbalancer.server.port=7878"
+    depends_on:
+      - traefik
+    restart: unless-stopped
+
+  prowlarr:
+    image: ghcr.io/linuxserver/prowlarr:develop
+    container_name: prowlarr
+    environment:
+      - PUID=1024
+      - PGID=100
+      - TZ=America/New_York
+      - UMASK=002
+    volumes:
+      - /volume1/arrs/prowlarr/data:/config
+    ports:
+      - 9696:9696
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prowlarr.entryPoints=websecure"
+      - "traefik.http.routers.prowlarr.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
+    depends_on:
+      - traefik
+    restart: unless-stopped
+
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd:latest
+    container_name: sabnzbd
+    environment:
+      - PUID=1024
+      - PGID=100
+      - TZ=America/New_York
+      - UMASK=002
+    volumes:
+      - /volume1/arrs/sabnzbd/config:/config
+      - /volume1/arrs/downloads:/downloads # optional
+    ports:
+      - 9000:9000
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sabnzbd.entryPoints=websecure"
+      - "traefik.http.routers.sabnzbd.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.sabnzbd.rule=Host(`sab.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.sabnzbd.loadbalancer.server.port=9000"
+    depends_on:
+      - traefik
+    restart: unless-stopped
+
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    network_mode: host
+    environment:
+      - PUID=1024
+      - PGID=100
+      - TZ=America/New_York
+      - VERSION=docker
+      - UMASK=002
+    volumes:
+      - /volume1/arrs/plex-confg:/config
+      - /volume1/plex-media:/plex-media
+    devices:
+      - /dev/dri:/dev/dri
+    restart: unless-stopped
+
+  tautulli:
+    image: lscr.io/linuxserver/tautulli:latest
+    container_name: tautulli
+    environment:
+      - PUID=1024
+      - PGID=100
+      - TZ=America/New_York
+      - UMASK=002
+    volumes:
+      - /volume1/arrs/tautulli/config:/config
+    ports:
+      - 8181:8181
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tau.entryPoints=websecure"
+      - "traefik.http.routers.tau.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.tau.rule=Host(`tau.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.tau.loadbalancer.server.port=8181"
+    depends_on:
+      - traefik
+    restart: unless-stopped
+
+  invidious:
+    image: quay.io/invidious/invidious:latest
+    # image: quay.io/invidious/invidious:latest-arm64 # ARM64/AArch64 devices
+    container_name: invidious
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    networks:
+      - traefik-public
+    environment:
+      # Please read the following file for a comprehensive list of all available
+      # configuration options and their associated syntax:
+      # https://github.com/iv-org/invidious/blob/master/config/config.example.yml
+      INVIDIOUS_CONFIG: |
+        db:
+          dbname: invidious
+          user: kemal
+          password: kemal
+          host: invidious-db
+          port: 5432
+          check_tables: true
+        # external_port:
+        domain: https://yt.not-really.me
+        https_only: true
+        statistics_enabled: true
+        hmac_key: "Strange Planet"
+    healthcheck:
+      test: wget -nv --tries=1 --spider http://127.0.0.1:3000/api/v1/trending || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 2
+    logging:
+      options:
+        max-size: "1G"
+        max-file: "4"
+    depends_on:
+      - traefik
+      - invidious-db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.yt.entryPoints=websecure"
+      - "traefik.http.routers.yt.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.yt.rule=Host(`yt.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.yt.loadbalancer.server.port=3000"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.port=3000"
+
+  invidious-db:
+    image: docker.io/library/postgres:14
+    container_name: invidious-db
+    restart: unless-stopped
+    volumes:
+      - postgresdata:/var/lib/postgresql/data
+      - /volume1/arrs/invidious-db/config/sql:/config/sql
+      - /volume1/arrs/invidious-db/docker/init-invidious-db.sh:/docker-entrypoint-initdb.d/init-invidious-db.sh
+    environment:
+      POSTGRES_DB: invidious
+      POSTGRES_USER: kemal
+      POSTGRES_PASSWORD: kemal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+    networks:
+      - traefik-public
+
+  rickroll:
+    image: modem7/docker-rickroll
+    container_name: Rickroll
+    ports:
+      - 8080:8080
+    environment:
+      - TITLE="not-really-roll" # Changes the title of the webpage
+      - PORT=8080
+    depends_on:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rr.entryPoints=websecure"
+      - "traefik.http.routers.rr.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.rr.rule=Host(`rr.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.rr.loadbalancer.server.port=8080"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.port=8080"
+    restart: unless-stopped
+
+###### ----- Docker control ----- ######
+networks:
+  traefik-public:
+    external: true
+    driver: bridge
+
+volumes:
+  postgresdata:
