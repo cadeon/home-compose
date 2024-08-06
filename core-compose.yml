@@ -33,30 +33,6 @@ services:
     command: --interval 28800 --cleanup
     restart: unless-stopped
 
-  dash:
-    image: mauricenino/dashdot:latest
-    restart: unless-stopped
-    privileged: true
-    ports:
-      - '3002:3002'
-    volumes:
-      - /volume1/:/mnt/host:ro
-    environment:
-      DASHDOT_PORT: '3002'
-      DASHDOT_PAGE_TITLE: 'not-really-dash'
-      DASHDOT_DISABLE_INTEGRATIONS: 'true'
-      DASHDOT_USE_IMPERIAL: 'true'
-      DASHDOT_ALWAYS_SHOW_PERCENTAGES: 'true'
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.dash.entryPoints=websecure"
-      - "traefik.http.routers.dash.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.dash.rule=Host(`dash.not-really.me`)" # Edit here to change the domain name
-      - "traefik.http.services.dash.loadbalancer.server.port=3002"
-      - "traefik.docker.network=traefik-public"
-      - "traefik.port=3002"
-    
-
   uptime-kuma:
     image: louislam/uptime-kuma
     container_name: uptime-kuma
