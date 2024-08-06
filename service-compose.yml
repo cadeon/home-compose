@@ -9,7 +9,7 @@ services:
     ports:
       - 2000:2000
     volumes:
-      - /volume1/arrs/homepage/config:/app/config # Make sure your local config directory exists
+      - /volume2/docker-configs/homepage/config:/app/config # Make sure your local config directory exists
       - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations
     environment:
       - PORT=2000
@@ -32,7 +32,7 @@ services:
     ports:
       - 1234:1234
     volumes:
-      - /volume1/arrs/searxng:/etc/searxng:rw
+      - /volume2/docker-configs/searxng:/etc/searxng:rw
     environment:
       - PUID=1024
       - PGID=100
@@ -115,8 +115,8 @@ services:
     restart: unless-stopped
     volumes:
       - postgresdata:/var/lib/postgresql/data
-      - /volume1/arrs/invidious-db/config/sql:/config/sql
-      - /volume1/arrs/invidious-db/docker/init-invidious-db.sh:/docker-entrypoint-initdb.d/init-invidious-db.sh
+      - /volume2/docker-configs/invidious-db/config/sql:/config/sql
+      - /volume2/docker-configs/invidious-db/docker/init-invidious-db.sh:/docker-entrypoint-initdb.d/init-invidious-db.sh
     environment:
       POSTGRES_DB: invidious
       POSTGRES_USER: kemal
