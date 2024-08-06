@@ -40,7 +40,7 @@ services:
     ports:
       - '3002:3002'
     volumes:
-      - /:/mnt/host:ro
+      - /volume1/:/mnt/host:ro
     environment:
       DASHDOT_PORT: '3002'
       DASHDOT_PAGE_TITLE: 'not-really-dash'
