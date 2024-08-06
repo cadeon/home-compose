@@ -134,8 +134,6 @@ services:
     environment:
       - TITLE="not-really-roll" # Changes the title of the webpage
       - PORT=8080
-    depends_on:
-      - traefik
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.rr.entryPoints=websecure"
