@@ -12,7 +12,7 @@ services:
     ports:
       - 5055:5055
     volumes:
-      - /volume1/arrs/overseerr/app/config:/config
+      - /volume2/docker-configs/overseerr/app/config:/config
     networks:
       - traefik-public
     labels:
@@ -45,9 +45,9 @@ services:
       - TP_THEME=organizr
       - UMASK=002
     volumes:
-      - /volume1/arrs/sonarr/data:/config
+      - /volume2/docker-configs/sonarr/data:/config
       - /volume1/plex-media:/plex-media
-      - /volume1/arrs/downloads:/downloads
+      - /volume2/docker-configs/downloads:/downloads
     ports:
       - 7878:7878
       - 8989:8989
@@ -72,9 +72,9 @@ services:
       - TZ=America/New_York
       - UMASK=002
     volumes:
-      - /volume1/arrs/lidarr/data:/config
+      - /volume2/docker-configs/lidarr/data:/config
       - /volume1/plex-media:/plex-media
-      - /volume1/arrs/downloads:/downloads
+      - /volume2/docker-configs/downloads:/downloads
     ports:
       - 8686:8686
     networks:
@@ -98,9 +98,9 @@ services:
       - TZ=America/New_York
       - UMASK=002
     volumes:
-      - /volume1/arrs/radarr/data:/config
+      - /volume2/docker-configs/radarr/data:/config
       - /volume1/plex-media:/plex-media
-      - /volume1/arrs/downloads:/downloads
+      - /volume2/docker-configs/downloads:/downloads
     ports:
       - 7676:7878
     networks:
@@ -122,7 +122,7 @@ services:
       - TZ=America/New_York
       - UMASK=002
     volumes:
-      - /volume1/arrs/prowlarr/data:/config
+      - /volume2/docker-configs/prowlarr/data:/config
     ports:
       - 9696:9696
     networks:
@@ -144,8 +144,8 @@ services:
       - TZ=America/New_York
       - UMASK=002
     volumes:
-      - /volume1/arrs/sabnzbd/config:/config
-      - /volume1/arrs/downloads:/downloads # optional
+      - /volume2/docker-configs/sabnzbd/config:/config
+      - /volume2/docker-configs/downloads:/downloads # optional
     ports:
       - 9000:9000
     networks:
