@@ -1,0 +1,156 @@
+# All the other services
+version: "3.7"
+
+services:
+  
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    ports:
+      - 2000:2000
+    volumes:
+      - /volume1/arrs/homepage/config:/app/config # Make sure your local config directory exists
+      - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations
+    environment:
+      - PORT=2000
+      - TZ=America/New_York
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.homepage.entryPoints=websecure"
+      - "traefik.http.routers.homepage.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.homepage.rule=Host(`not-really.me`,`www.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.homepage.loadbalancer.server.port=2000"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.port=2000"
+    restart: unless-stopped
+
+  searxng:
+    image: docker.io/searxng/searxng:latest
+    container_name: searxng
+    ports:
+      - 1234:1234
+    volumes:
+      - /volume1/arrs/searxng:/etc/searxng:rw
+    environment:
+      - PUID=1024
+      - PGID=100
+      - TZ=America/New_York
+      - SEARXNG_BASE_URL=https://search.not-really.me/
+      - SEARXNG_PORT=1234
+      - BIND_ADDRESS=0.0.0.0:1234
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "1"
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.search.entryPoints=websecure"
+      - "traefik.http.routers.search.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.search.rule=Host(`search.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.search.loadbalancer.server.port=1234"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.port=1234"
+    restart: unless-stopped
+
+  invidious:
+    image: quay.io/invidious/invidious:latest
+    # image: quay.io/invidious/invidious:latest-arm64 # ARM64/AArch64 devices
+    container_name: invidious
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    networks:
+      - traefik-public
+    environment:
+      # Please read the following file for a comprehensive list of all available
+      # configuration options and their associated syntax:
+      # https://github.com/iv-org/invidious/blob/master/config/config.example.yml
+      INVIDIOUS_CONFIG: |
+        db:
+          dbname: invidious
+          user: kemal
+          password: kemal
+          host: invidious-db
+          port: 5432
+          check_tables: true
+        # external_port:
+        domain: https://yt.not-really.me
+        https_only: true
+        statistics_enabled: true
+        hmac_key: "Strange Planet"
+    healthcheck:
+      test: wget -nv --tries=1 --spider http://127.0.0.1:3000/api/v1/trending || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 2
+    logging:
+      options:
+        max-size: "1G"
+        max-file: "4"
+    depends_on:
+      - invidious-db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.yt.entryPoints=websecure"
+      - "traefik.http.routers.yt.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.yt.rule=Host(`yt.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.yt.loadbalancer.server.port=3000"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.port=3000"
+
+  invidious-db:
+    image: docker.io/library/postgres:14
+    container_name: invidious-db
+    restart: unless-stopped
+    volumes:
+      - postgresdata:/var/lib/postgresql/data
+      - /volume1/arrs/invidious-db/config/sql:/config/sql
+      - /volume1/arrs/invidious-db/docker/init-invidious-db.sh:/docker-entrypoint-initdb.d/init-invidious-db.sh
+    environment:
+      POSTGRES_DB: invidious
+      POSTGRES_USER: kemal
+      POSTGRES_PASSWORD: kemal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+    networks:
+      - traefik-public
+
+  rickroll:
+    image: modem7/docker-rickroll
+    container_name: rr
+    ports:
+      - 8080:8080
+    environment:
+      - TITLE="not-really-roll" # Changes the title of the webpage
+      - PORT=8080
+    depends_on:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rr.entryPoints=websecure"
+      - "traefik.http.routers.rr.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.rr.rule=Host(`rr.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.rr.loadbalancer.server.port=8080"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.port=8080"
+    restart: unless-stopped
+
+###### ----- Docker control ----- ######
+networks:
+  traefik-public:
+    external: true
+    driver: bridge
+
+volumes:
+  postgresdata:
