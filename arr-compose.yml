@@ -1,0 +1,166 @@
+version: "3.7"
+
+services:
+  ###### ----- Media related ----- ######
+  overseerr:
+    image: lscr.io/linuxserver/overseerr:latest
+    container_name: overseerr
+    environment:
+      - LOG_LEVEL=info
+      - TZ=America/New_York
+      - UMASK=002
+    ports:
+      - 5055:5055
+    volumes:
+      - /volume1/arrs/overseerr/app/config:/config
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.overseerr.entryPoints=websecure"
+      - "traefik.http.routers.overseerr.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.overseerr.rule=Host(`requests.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.overseerr.loadbalancer.server.port=5055"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.port=5055"
+      - homepage.group=Media
+      - homepage.name=Requests
+      - homepage.href=https://requests.not-really.me
+      - homepage.description=Where it begins
+      - homepage.icon=https://overseerr.dev/os_logo_filled.svg
+      - homepage.widget.type=overseerr
+      - homepage.widget.url=https://requests.not-really.me
+      - homepage.widget.key=MTcyMjEwODg5MzE4NDRlNzM4YmQ2LTg0ZGItNGE4NS1iZTIwLTFiYzZlNjU5ZjU1NA==
+      - homepage.widget.fields=["pending", "approved", "available", "processing"]
+    restart: unless-stopped
+
+  sonarr:
+    image: ghcr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=1024
+      - PGID=100
+      - TZ=America/New_York
+      - DOCKER_MODS=ghcr.io/gilbn/theme.park:sonarr
+      - TP_THEME=organizr
+      - UMASK=002
+    volumes:
+      - /volume1/arrs/sonarr/data:/config
+      - /volume1/plex-media:/plex-media
+      - /volume1/arrs/downloads:/downloads
+    ports:
+      - 7878:7878
+      - 8989:8989
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonarr.entryPoints=websecure"
+      - "traefik.http.routers.sonarr.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.sonarr.rule=Host(`sonarr.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.port=8989"
+    restart: unless-stopped
+
+  lidarr:
+    image: lscr.io/linuxserver/lidarr
+    container_name: lidarr
+    environment:
+      - PUID=1024
+      - PGID=100
+      - TZ=America/New_York
+      - UMASK=002
+    volumes:
+      - /volume1/arrs/lidarr/data:/config
+      - /volume1/plex-media:/plex-media
+      - /volume1/arrs/downloads:/downloads
+    ports:
+      - 8686:8686
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.lidarr.entryPoints=websecure"
+      - "traefik.http.routers.lidarr.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.lidarr.rule=Host(`lidarr.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.lidarr.loadbalancer.server.port=8686"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.port=8686"
+    restart: unless-stopped
+
+  radarr:
+    image: linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1024
+      - PGID=100
+      - TZ=America/New_York
+      - UMASK=002
+    volumes:
+      - /volume1/arrs/radarr/data:/config
+      - /volume1/plex-media:/plex-media
+      - /volume1/arrs/downloads:/downloads
+    ports:
+      - 7676:7878
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.radarr.entryPoints=websecure"
+      - "traefik.http.routers.radarr.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.radarr.rule=Host(`radarr.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.radarr.loadbalancer.server.port=7878"
+    restart: unless-stopped
+
+  prowlarr:
+    image: ghcr.io/linuxserver/prowlarr:develop
+    container_name: prowlarr
+    environment:
+      - PUID=1024
+      - PGID=100
+      - TZ=America/New_York
+      - UMASK=002
+    volumes:
+      - /volume1/arrs/prowlarr/data:/config
+    ports:
+      - 9696:9696
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prowlarr.entryPoints=websecure"
+      - "traefik.http.routers.prowlarr.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
+    restart: unless-stopped
+
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd:latest
+    container_name: sabnzbd
+    environment:
+      - PUID=1024
+      - PGID=100
+      - TZ=America/New_York
+      - UMASK=002
+    volumes:
+      - /volume1/arrs/sabnzbd/config:/config
+      - /volume1/arrs/downloads:/downloads # optional
+    ports:
+      - 9000:9000
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sabnzbd.entryPoints=websecure"
+      - "traefik.http.routers.sabnzbd.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.sabnzbd.rule=Host(`sab.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.sabnzbd.loadbalancer.server.port=9000"
+    restart: unless-stopped
+
+
+###### ----- Docker control ----- ######
+networks:
+  traefik-public:
+    external: true
+    driver: bridge
