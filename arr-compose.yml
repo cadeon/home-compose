@@ -150,6 +150,10 @@ services:
       - 9000:9000
     networks:
       - traefik-public
+    deploy:
+      resources:
+        limits:
+          cpus: '1' #Single-core sab. This will be slow but easier on the celeron. 
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.sabnzbd.entryPoints=websecure"
