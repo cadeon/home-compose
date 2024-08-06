@@ -25,6 +25,9 @@ services:
 
   watchtower:
     image: containrrr/watchtower
+    container_name: watchtower
+    networks:
+      - traefik-public
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     command: --interval 86400 --cleanup
