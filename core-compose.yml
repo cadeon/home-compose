@@ -33,7 +33,8 @@ services:
     command: --interval 28800 --cleanup
     restart: unless-stopped
 
-  monitoring:
+  glances:
+    container-name: glances
     image: nicolargo/glances:latest
     restart: unless-stopped
     pid: host
