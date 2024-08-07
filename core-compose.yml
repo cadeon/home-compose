@@ -40,6 +40,7 @@ services:
     pid: host
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - /volume2/docker-configs/glances:/root/.config/glances
       # Uncomment the below line if you want glances to display host OS detail instead of container's
       # - /etc/os-release:/etc/os-release:ro
     environment:
