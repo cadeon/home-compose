@@ -83,7 +83,7 @@ services:
           password: kemal
           host: invidious-db
           port: 5432
-          check_tables: true
+        check_tables: true
         external_port: 443 
         domain: https://yt.not-really.me
         https_only: true
