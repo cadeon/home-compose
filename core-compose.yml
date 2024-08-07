@@ -37,6 +37,8 @@ services:
     container_name: glances
     image: nicolargo/glances:latest
     restart: unless-stopped
+    networks:
+      - traefik-public
     pid: host
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
