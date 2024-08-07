@@ -34,7 +34,7 @@ services:
     restart: unless-stopped
 
   glances:
-    container-name: glances
+    container_name: glances
     image: nicolargo/glances:latest
     restart: unless-stopped
     pid: host
