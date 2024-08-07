@@ -33,28 +33,6 @@ services:
     command: --interval 28800 --cleanup
     restart: unless-stopped
 
-  glances:
-    container_name: glances
-    image: nicolargo/glances:latest
-    restart: unless-stopped
-    networks:
-      - traefik-public
-    pid: host
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /volume2/docker-configs/glances:/root/.config/glances
-      # Uncomment the below line if you want glances to display host OS detail instead of container's
-      # - /etc/os-release:/etc/os-release:ro
-    environment:
-      - "GLANCES_OPT=-w"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.glances.entryPoints=websecure"
-      - "traefik.http.routers.glances.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.glances.rule=Host(`glances.not-really.me`)" # Edit here to change the domain name
-      - "traefik.http.services.glances.loadbalancer.server.port=61208"
-      - "traefik.docker.network=traefik-public"
-      - "traefik.port=61208"
 
   uptime-kuma:
     image: louislam/uptime-kuma
