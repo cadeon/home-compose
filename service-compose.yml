@@ -144,6 +144,14 @@ services:
       - "traefik.port=8080"
     restart: unless-stopped
 
+quake3:
+    image: inanimate/quake3
+    restart: always
+    ports:
+        - "27960:27960/udp"
+    volumes:
+        /volume2/docker-configs/quake3/:/usr/share/games/quake3/:rw
+
 ###### ----- Docker control ----- ######
 networks:
   traefik-public:
