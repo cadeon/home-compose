@@ -144,7 +144,7 @@ services:
       - "traefik.port=8080"
     restart: unless-stopped
 
-quake3:
+  quake3:
     image: inanimate/quake3
     restart: always
     ports:
