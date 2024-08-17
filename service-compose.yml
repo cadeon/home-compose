@@ -144,13 +144,16 @@ services:
       - "traefik.port=8080"
     restart: unless-stopped
 
-  quake3:
-    image: inanimate/quake3
+  quakejs:
+    image: 'treyyoder/quakejs:latest'
     restart: always
+    environment:
+      - HTTP_PORT=9999
     ports:
-        - "27960:27960/udp"
+      - "9999:80"
+      - "27960:27960/udp"
     volumes:
-        - /volume2/docker-configs/quake3/:/usr/share/games/quake3/:rw
+      - /volume2/docker-configs/quakejs/:/quakejs/:rw
 
 ###### ----- Docker control ----- ######
 networks:
