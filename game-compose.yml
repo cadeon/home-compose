@@ -17,6 +17,7 @@ services:
       GID: "100"
       UMASK: "000"
       DATA_PERM: "770"
+      LEGACY_PROTOCOL: "true"
     volumes:
       - /volume2/docker-configs/ioquake3:/ioquake3
     restart: unless-stopped
