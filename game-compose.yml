@@ -4,7 +4,7 @@ services:
     volumes:
       - /volume2/docker-configs/quake3/server.cfg:/quakejs/base/baseq3/server.cfg
     environment:
-      SERVER: 172.31.250.200
+      SERVER: 0.0.0.0
     ports:
       - "8080:80"
       - "27960:27960"
