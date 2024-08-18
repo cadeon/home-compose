@@ -149,9 +149,9 @@ services:
     container_name: syncthing
     hostname: sync.not-really.me
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Etc/UTC
+      - PUID=1024
+      - PGID=100
+      - TZ=America/New_York
     volumes:
       - /volume2/docker-configs/syncthing/config:/config
       - /volume1:/volume1
