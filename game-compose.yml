@@ -1,11 +1,22 @@
+version: '3.8'
+
 services:
-  quake3-server:
-    image: heyvaldemar/quake3-server:latest
-    volumes:
-      - /volume2/docker-configs/quake3/server.cfg:/quakejs/base/baseq3/server.cfg
-    environment:
-      SERVER: 0.0.0.0
+  ioquake3:
+    image: ich777/ioquake3
+    container_name: ioquake3
     ports:
-      - "8080:80"
-      - "27960:27960"
+      - "27960:27960/udp"
+      - "9029:8080"
+    environment:
+      GAME_PARAMS: "+set dedicated 1 +set sv_allowDownload 1 +set com_hunkmegs 64"
+      IOQ3_PORT: "27960"
+      Q3_MAP: "q3dm17"
+      DL_URL_PR: "https://files.ioquake3.org/Linux.zip"
+      DL_URL_PATCH: "https://files.ioquake3.org/quake3-latest-pk3s.zip"
+      UID: "1024"
+      GID: "100"
+      UMASK: "000"
+      DATA_PERM: "770"
+    volumes:
+      - /volume2/docker-configs/ioquake3:/ioquake3
     restart: unless-stopped
