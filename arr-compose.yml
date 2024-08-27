@@ -3,7 +3,7 @@ version: "3.7"
 services:
   ###### ----- Media related ----- ######
   overseerr:
-    image: lscr.io/linuxserver/overseerr:latest
+    image: lscr.io/linuxserver/overseerr:develop
     container_name: overseerr
     environment:
       - LOG_LEVEL=info
