@@ -85,7 +85,7 @@ services:
           port: 5432
         check_tables: true
         external_port: 443 
-        domain: https://yt.not-really.me
+        domain: yt.not-really.me
         https_only: true
         statistics_enabled: true
         hmac_key: 42065647409e2fe430c1e5f66a3cbcffaa793692
