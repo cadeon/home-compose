@@ -55,6 +55,13 @@ services:
       - "traefik.docker.network=traefik-public"
       - "traefik.port=3001"
     restart: unless-stopped
+  
+  iperf3:
+    container_name: iperf3-server
+    ports:
+      - '5201:5201'
+    image: 'networkstatic/iperf3:latest'
+    command: '-s'
 
 ###### ----- Docker control ----- ######
 networks:
