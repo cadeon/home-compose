@@ -8,7 +8,7 @@ services:
     ports:
       - 80:80/tcp
       - 443:443/tcp
-    #  - 172.31.250.200:8080:8080/tcp # disabled due to rr bug
+      - 172.31.250.200:8080:8080/tcp 
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik-public
