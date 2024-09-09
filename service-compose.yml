@@ -23,12 +23,6 @@ services:
       - "traefik.http.routers.homepage.rule=Host(`not-really.me`)" 
       - "traefik.http.services.homepage.loadbalancer.server.port=2000"
       - "traefik.docker.network=traefik-public"
-      # Attempting to add the planes tracker here, it's external
-      - "traefik.http.routers.planes.entryPoints=websecure"
-      - "traefik.http.routers.planes.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.planes.rule=Host(`planes.not-really.me`)" 
-      - "traefik.http.services.planes.loadbalancer.server.port=80"
-      - "traefik.http.services.planes.loadbalancer.servers.url=http://adsbexchange.local/tar1090"
       - "traefik.port=2000"
     restart: unless-stopped
 
