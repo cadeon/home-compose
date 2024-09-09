@@ -29,7 +29,7 @@ services:
       - "traefik.http.routers.planes.rule=Host(`planes.not-really.me`)" 
       - "traefik.http.services.planes.loadbalancer.server.port=80"
       - "traefik.http.services.planes.loadbalancer.servers.url=http://adsbexchange.local/tar1090"
-      
+      - "traefik.port=2000"
     restart: unless-stopped
 
   searxng:
