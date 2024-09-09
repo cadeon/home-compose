@@ -15,12 +15,6 @@ services:
       - traefik.constraint-label=traefik-public
       - "--entrypoints.websecure.http.tls.domains[0].main=not-really.me"
       - "--entrypoints.websecure.http.tls.domains[0].sans=*.not-really.me"
-      # Planes!
-      - "traefik.http.routers.planes.rule=Host(`planes.not-really.me`)"
-      - "traefik.http.routers.planes.entrypoints=websecure"
-      - "traefik.http.routers.planes.tls=true"
-      - "traefik.http.services.planes.loadbalancer.server.port=80"
-      - "traefik.http.services.planes.loadbalancer.servers.url=http://172.31.250.103/tar1090"
     networks:
       - traefik-public
     volumes:
