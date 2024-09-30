@@ -135,6 +135,23 @@ services:
       - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
     restart: unless-stopped
 
+  lazylibrarian:
+    image: lscr.io/linuxserver/lazylibrarian:latest
+    container_name: lazylibrarian
+    environment:
+      - PUID=1024
+      - PGID=100
+      - TZ=America/New_York
+      - DOCKER_MODS=linuxserver/mods:universal-calibre|linuxserver/mods:lazylibrarian-ffmpeg #optional
+    volumes:
+      - /volume2/docker-configs/lazylibrarian/config/:/config
+      - /volume2/docker-configs/downloads/:/downloads
+      - /volume1/files/books/:/books #optional
+    ports:
+      - 5299:5299
+    restart: unless-stopped
+
+
   sabnzbd:
     image: lscr.io/linuxserver/sabnzbd:latest
     container_name: sabnzbd
