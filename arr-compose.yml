@@ -149,6 +149,12 @@ services:
       - /volume1/files/books/:/books #optional
     ports:
       - 5299:5299
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.lazy.entryPoints=websecure"
+      - "traefik.http.routers.lazy.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.lazy.rule=Host(`lazy.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.lazy.loadbalancer.server.port=5299"
     restart: unless-stopped
 
 
