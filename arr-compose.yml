@@ -149,6 +149,8 @@ services:
       - /volume1/files/books/:/books #optional
     ports:
       - 5299:5299
+    networks:
+      - traefik-public
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.lazy.entryPoints=websecure"

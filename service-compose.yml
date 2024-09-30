@@ -133,6 +133,8 @@ services:
     container_name: rr
     ports:
       - 9080:9080
+    networks:
+      - traefik-public
     environment:
       - TITLE="not-really-roll" # Changes the title of the webpage
       - PORT=9080
@@ -162,6 +164,8 @@ services:
       - 22000:22000/tcp
       - 22000:22000/udp
       - 21027:21027/udp
+    networks:
+      - traefik-public
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.sync.entryPoints=websecure"
@@ -184,6 +188,8 @@ services:
     volumes:
       - /volume2/docker-configs/calibre-web/config:/config
       - /volume1/files/books/:/books
+    networks:
+      - traefik-public
     ports:
       - 8083:8083
     labels:
