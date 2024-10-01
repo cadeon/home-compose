@@ -139,7 +139,6 @@ services:
   openbooks:
     ports:
       - '8787:80'
-    restart: unless-stopped
     container_name: OpenBooks
     command: --name not-really-books 
     environment:
