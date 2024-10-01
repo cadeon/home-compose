@@ -135,28 +135,27 @@ services:
       - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
     restart: unless-stopped
 
-  lazylibrarian:
-    image: lscr.io/linuxserver/lazylibrarian:latest
-    container_name: lazylibrarian
+  readarr:
+    image: lscr.io/linuxserver/readarr:develop
+    container_name: readarr
     environment:
       - PUID=1024
       - PGID=100
       - TZ=America/New_York
-      - DOCKER_MODS=linuxserver/mods:universal-calibre|linuxserver/mods:lazylibrarian-ffmpeg #optional
     volumes:
       - /volume2/docker-configs/lazylibrarian/config/:/config
       - /volume2/docker-configs/downloads/:/downloads
       - /volume1/files/books/:/books #optional
     ports:
-      - 5299:5299
+      - 8787:8787
     networks:
       - traefik-public
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.lazy.entryPoints=websecure"
-      - "traefik.http.routers.lazy.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.lazy.rule=Host(`lazy.not-really.me`)" # Edit here to change the domain name
-      - "traefik.http.services.lazy.loadbalancer.server.port=5299"
+      - "traefik.http.routers.read.entryPoints=websecure"
+      - "traefik.http.routers.read.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.read.rule=Host(`read.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.read.loadbalancer.server.port=8787"
     restart: unless-stopped
 
 
