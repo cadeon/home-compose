@@ -150,10 +150,10 @@ services:
       - traefik-public
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.read.entryPoints=websecure"
-      - "traefik.http.routers.read.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.read.rule=Host(`read.not-really.me`)" # Edit here to change the domain name
-      - "traefik.http.services.read.loadbalancer.server.port=8787"
+      - "traefik.http.routers.openbooks.entryPoints=websecure"
+      - "traefik.http.routers.openbooks.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.openbooks.rule=Host(`openbooks.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.openbooks.loadbalancer.server.port=8787"
     restart: unless-stopped
 
 
