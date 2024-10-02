@@ -128,25 +128,7 @@ services:
     networks:
       - traefik-public
 
-  rickroll:
-    image: modem7/docker-rickroll
-    container_name: rr
-    ports:
-      - 9080:9080
-    networks:
-      - traefik-public
-    environment:
-      - TITLE="not-really-roll" # Changes the title of the webpage
-      - PORT=9080
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.rr.entryPoints=websecure"
-      - "traefik.http.routers.rr.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.rr.rule=Host(`rr.not-really.me`)" # Edit here to change the domain name
-      - "traefik.http.services.rr.loadbalancer.server.port=9080"
-      - "traefik.docker.network=traefik-public"
-      - "traefik.port=9080"
-    restart: unless-stopped
+
 
   syncthing:
     image: lscr.io/linuxserver/syncthing:latest
