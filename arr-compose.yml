@@ -145,6 +145,7 @@ services:
       - PUID=1024
       - PGID=100
       - TZ=America/New_York
+      - BASE_PATH=/open/
     image: evanbuss/openbooks:latest
     networks:
       - traefik-public
