@@ -148,12 +148,6 @@ services:
     image: evanbuss/openbooks:latest
     networks:
       - traefik-public
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.openbooks.entryPoints=websecure"
-      - "traefik.http.routers.openbooks.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.openbooks.rule=Host(`openbooks.not-really.me`)" # Edit here to change the domain name
-      - "traefik.http.services.openbooks.loadbalancer.server.port=8787"
     restart: unless-stopped
 
 
