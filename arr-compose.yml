@@ -138,14 +138,13 @@ services:
 
   openbooks:
     ports:
-      - '8787:80'
+      - 8787:80
     container_name: OpenBooks
     command: --name not-really-books 
     environment:
       - PUID=1024
       - PGID=100
       - TZ=America/New_York
-      - BASE_PATH=/open/
     image: evanbuss/openbooks:latest
     networks:
       - traefik-public
