@@ -2,25 +2,6 @@
 version: "3.7"
 
 services:
-  pihole:
-    container_name: pihole
-    image: pihole/pihole:latest
-    # For DHCP it is recommended to remove these ports and instead add: network_mode: "host"
-    ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "2080:80/tcp"
-    environment:
-      TZ: 'America/New_York'
-      # WEBPASSWORD: 'set a secure password here or it will be random'
-    # Volumes store your data between container upgrades
-    volumes:
-      - '/volume2/docker-configs/pihole/etc/pihole:/etc/pihole'
-      - '/volume2/docker-configs/pihole/etc/dnsmasq.d:/etc/dnsmasq.d'
-    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
-    cap_add:
-      - NET_ADMIN # Required if you are using Pi-hole as your DHCP server, else not needed
-    restart: unless-stopped
 
   traefik:
     image: traefik:latest
@@ -53,35 +34,6 @@ services:
     command: --interval 28800 --cleanup
     restart: unless-stopped
 
-
-  uptime-kuma:
-    image: louislam/uptime-kuma
-    container_name: uptime-kuma
-    volumes:
-      - /volume2/docker-configs/uptime-kuma:/app/data
-      - /var/run/docker.sock:/var/run/docker.sock 
-    ports:
-      - 3001:3001
-    depends_on:
-      - traefik
-    networks:
-      - traefik-public
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.uptime_kuma.entryPoints=websecure"
-      - "traefik.http.routers.uptime_kuma.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.uptime_kuma.rule=Host(`status.not-really.me`)" # Edit here to change the domain name
-      - "traefik.http.services.uptime_kuma.loadbalancer.server.port=3001"
-      - "traefik.docker.network=traefik-public"
-      - "traefik.port=3001"
-    restart: unless-stopped
-  
-  iperf3:
-    container_name: iperf3-server
-    ports:
-      - '5201:5201'
-    image: 'networkstatic/iperf3:latest'
-    command: '-s'
 
 ###### ----- Docker control ----- ######
 networks:
