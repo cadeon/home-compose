@@ -117,7 +117,26 @@ services:
       - "traefik.port=8083"
     restart: unless-stopped
 
-
+  wikmd:
+    image: linbreux/wikmd:latest
+    container_name: wikmd
+    environment:
+      - PUID=1024
+      - PGID=100
+      - TZ=America/New_York
+    volumes:
+      - /volume2/docker-configs/wikimd:/wiki
+    ports:
+      - 5000:5000
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wikimd.entryPoints=websecure"
+      - "traefik.http.routers.wikimd.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.wikimd.rule=Host(`notes.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.wikimd.loadbalancer.server.port=5000"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.port=5000"
+    restart: unless-stopped
 
 
 ###### ----- Docker control ----- ######
