@@ -121,7 +121,7 @@ services:
     image: ghcr.io/open-webui/open-webui:main
     container_name: open-webui
     volumes:
-      - /volume2/docker-configs/openwebui:/app
+      - /volume2/docker-configs/openwebui:/app/backend/data
     ports:
       - 3000:3000
     labels:
