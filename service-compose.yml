@@ -124,6 +124,8 @@ services:
       - /volume2/docker-configs/openwebui:/app/backend/data
     ports:
       - 3000:8080
+    networks:
+      - traefik-public
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.ai.entryPoints=websecure"
