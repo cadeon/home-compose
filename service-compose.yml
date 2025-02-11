@@ -117,23 +117,19 @@ services:
       - "traefik.port=8083"
     restart: unless-stopped
 
-  wikmd:
-    image: linbreux/wikmd:latest
-    container_name: wikmd
-    environment:
-      - PUID=1024
-      - PGID=100
-      - TZ=America/New_York
+  openwebui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
     volumes:
-      - /volume2/docker-configs/wikimd:/wiki
+      - /volume2/docker-configs/openwebui:/app
     ports:
-      - 5000:5000
+      - 3000:5000
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.wikimd.entryPoints=websecure"
-      - "traefik.http.routers.wikimd.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.wikimd.rule=Host(`notes.not-really.me`)" # Edit here to change the domain name
-      - "traefik.http.services.wikimd.loadbalancer.server.port=5000"
+      - "traefik.http.routers.ai.entryPoints=websecure"
+      - "traefik.http.routers.ai.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.ai.rule=Host(`ai.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.ai.loadbalancer.server.port=5000"
       - "traefik.docker.network=traefik-public"
       - "traefik.port=5000"
     restart: unless-stopped
