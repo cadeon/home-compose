@@ -123,7 +123,7 @@ services:
     volumes:
       - /volume2/docker-configs/openwebui:/app
     ports:
-      - 3000:5000
+      - 3000:3000
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.ai.entryPoints=websecure"
@@ -131,7 +131,7 @@ services:
       - "traefik.http.routers.ai.rule=Host(`ai.not-really.me`)" # Edit here to change the domain name
       - "traefik.http.services.ai.loadbalancer.server.port=5000"
       - "traefik.docker.network=traefik-public"
-      - "traefik.port=5000"
+      - "traefik.port=3000"
     restart: unless-stopped
 
 
