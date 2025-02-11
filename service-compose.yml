@@ -120,10 +120,13 @@ services:
   openwebui:
     image: ghcr.io/open-webui/open-webui:main
     container_name: open-webui
+    hostname: ai.not-really.me
+    environment:
+      - PORT=11080
     volumes:
       - /volume2/docker-configs/openwebui:/app/backend/data
     ports:
-      - 3000:8080
+      - 3000:11080
     networks:
       - traefik-public
     labels:
@@ -131,9 +134,9 @@ services:
       - "traefik.http.routers.ai.entryPoints=websecure"
       - "traefik.http.routers.ai.tls.certResolver=letsEncrypt"
       - "traefik.http.routers.ai.rule=Host(`ai.not-really.me`)" # Edit here to change the domain name
-      - "traefik.http.services.ai.loadbalancer.server.port=3000"
+      - "traefik.http.services.ai.loadbalancer.server.port=11080"
       - "traefik.docker.network=traefik-public"
-      - "traefik.port=3000"
+      - "traefik.port=11080"
     restart: unless-stopped
 
 
