@@ -126,7 +126,7 @@ services:
     volumes:
       - /volume2/docker-configs/openwebui:/app/backend/data
     ports:
-      - 3000:11080
+      - 11080:11080
     networks:
       - traefik-public
     labels:
