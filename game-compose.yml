@@ -2,8 +2,8 @@ version: '3.8'
 
 services:
   ioquake3:
-    image: ich777/ioquake3
-    container_name: ioquake3
+    image: quakejs-https
+    container_name: quakejs-https
     ports:
       - "27960:27960/udp"
       - "9029:8080"
@@ -18,6 +18,14 @@ services:
       UMASK: "000"
       DATA_PERM: "770"
       LEGACY_PROTOCOL: "true"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.search.entryPoints=websecure"
+      - "traefik.http.routers.search.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.search.rule=Host(`quake.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.search.loadbalancer.server.port=80"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.port=80"
     volumes:
       - /volume2/docker-configs/ioquake3:/ioquake3
     restart: unless-stopped
