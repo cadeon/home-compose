@@ -6,7 +6,7 @@ services:
     container_name: quakejs-https
     ports:
       - "27960:27960/udp"
-      - "9029:8080"
+      - "80:80"
     environment:
       GAME_PARAMS: "+set dedicated 1 +set sv_allowDownload 1 +set com_hunkmegs 64"
       SERVER: "127.0.0.1"
