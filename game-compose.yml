@@ -1,14 +1,14 @@
 version: '3.8'
 
 services:
-    quakejs:
-      container_name: quakejs
-      environment:
-        - HTTP_PORT=10080
-      ports:
-        - '10080:80'
-        - '27960:27960'
-      image: 'treyyoder/quakejs:latest'
+  quakejs:
+    container_name: quakejs
+    environment:
+      - HTTP_PORT=10080
+    ports:
+      - '10080:80'
+      - '27960:27960'
+    image: 'treyyoder/quakejs:latest'
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.search.entryPoints=web"
