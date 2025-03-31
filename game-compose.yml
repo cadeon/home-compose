@@ -28,6 +28,4 @@ services:
       - "traefik.http.services.search.loadbalancer.server.port=10080"
       - "traefik.docker.network=traefik-public"
       - "traefik.port=10080"
-    volumes:
-      - /volume2/docker-configs/ioquake3:/ioquake3
     restart: unless-stopped
