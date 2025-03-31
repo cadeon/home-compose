@@ -25,9 +25,9 @@ services:
       - "traefik.http.routers.search.entryPoints=websecure"
       - "traefik.http.routers.search.tls.certResolver=letsEncrypt"
       - "traefik.http.routers.search.rule=Host(`quake.not-really.me`)" # Edit here to change the domain name
-      - "traefik.http.services.search.loadbalancer.server.port=80"
+      - "traefik.http.services.search.loadbalancer.server.port=10080"
       - "traefik.docker.network=traefik-public"
-      - "traefik.port=80"
+      - "traefik.port=10080"
     volumes:
       - /volume2/docker-configs/ioquake3:/ioquake3
     restart: unless-stopped
