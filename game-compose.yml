@@ -1,20 +1,17 @@
 version: '3.8'
 
 services:
-  ioquake3:
-    image: ghcr.io/neonwatty/quakejs-https:latest
-    container_name: quakejs-https
-    ports:
-      - "27960:27960/udp"
-      - "10080:10080"
-    environment:
-      GAME_PARAMS: "+set dedicated 1 +set sv_allowDownload 1 +set com_hunkmegs 64"
-      SERVER: "127.0.0.1"
-      HTTP_PORT: "10080"
+    quakejs:
+      container_name: quakejs
+      environment:
+        - HTTP_PORT=10080
+      ports:
+        - '10080:80'
+        - '27960:27960'
+      image: 'treyyoder/quakejs:latest'
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.search.entryPoints=websecure"
-      - "traefik.http.routers.search.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.search.entryPoints=web"
       - "traefik.http.routers.search.rule=Host(`quake.not-really.me`)" # Edit here to change the domain name
       - "traefik.http.services.search.loadbalancer.server.port=10080"
       - "traefik.docker.network=traefik-public"
