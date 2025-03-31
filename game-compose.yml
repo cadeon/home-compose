@@ -9,6 +9,7 @@ services:
       - "9029:8080"
     environment:
       GAME_PARAMS: "+set dedicated 1 +set sv_allowDownload 1 +set com_hunkmegs 64"
+      SERVER: "127.0.0.1"
       IOQ3_PORT: "27960"
       Q3_MAP: "q3dm17"
       DL_URL_PR: "https://files.ioquake3.org/Linux.zip"
