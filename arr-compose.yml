@@ -136,21 +136,6 @@ services:
     restart: unless-stopped
 
 
-  openbooks:
-    ports:
-      - 8787:80
-    container_name: OpenBooks
-    command: --name not-really-books 
-    environment:
-      - PUID=1024
-      - PGID=100
-      - TZ=America/New_York
-    image: evanbuss/openbooks:latest
-    networks:
-      - traefik-public
-    restart: unless-stopped
-
-
   sabnzbd:
     image: lscr.io/linuxserver/sabnzbd:latest
     container_name: sabnzbd
