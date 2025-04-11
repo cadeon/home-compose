@@ -14,6 +14,7 @@ services:
       - traefik.enable=true
       - traefik.docker.network=traefik-public
       - traefik.constraint-label=traefik-public
+      - "--providers.docker.allowEmptyServices=true" # Enable allowEmptyServices
       - "--entryPoints.web.address=:80"
       - "--entrypoints.websecure.http.tls.domains[0].main=not-really.me"
       - "--entrypoints.websecure.http.tls.domains[0].sans=*.not-really.me"
