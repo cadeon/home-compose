@@ -48,7 +48,6 @@ services:
       - CHOWN
       - SETGID
       - SETUID
-      - DAC_OVERRIDE
     logging:
       driver: "json-file"
       options:
