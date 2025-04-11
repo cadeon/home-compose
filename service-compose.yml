@@ -16,8 +16,6 @@ services:
       - TZ=America/New_York
     networks:
       - traefik-public
-    healthcheck:
-      test: ["NONE"]
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.homepage.entryPoints=websecure"
