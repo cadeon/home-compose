@@ -51,6 +51,8 @@ services:
       options:
         max-size: "1m"
         max-file: "1"
+    healthcheck:
+      test: ["NONE"]
     networks:
       - traefik-public
     labels:
