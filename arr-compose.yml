@@ -147,10 +147,10 @@ services:
     volumes:
       - /volume2/docker-configs/sabnzbd/config:/config
       - /volume2/docker-configs/downloads:/downloads
+      - /volume2/docker-configs/incomplete-downloads:/incomplete-downloads
     ports:
-      - 9000:9000
-    networks:
-      - traefik-public
+      - 9000:8080 # Map host port 9000 to container port 8080 (SABnzbd default)
+    network_mode: host # Use host network
     dns:
       - 8.8.8.8
       - 1.1.1.1
@@ -170,7 +170,7 @@ services:
       - "traefik.http.routers.sabnzbd.entryPoints=websecure"
       - "traefik.http.routers.sabnzbd.tls.certResolver=letsEncrypt"
       - "traefik.http.routers.sabnzbd.rule=Host(`sab.not-really.me`)"
-      - "traefik.http.services.sabnzbd.loadbalancer.server.port=9000"
+      - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080" # Point to SABnzbd's internal port
     restart: unless-stopped
 
 
