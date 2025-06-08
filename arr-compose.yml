@@ -146,8 +146,7 @@ services:
       - UMASK=002
     volumes:
       - /volume2/docker-configs/sabnzbd/config:/config
-      - /path/to/ssd/downloads:/downloads # Adjust to your SSD path
-      - /path/to/ssd/incomplete-downloads:/incomplete-downloads
+      - /volume2/docker-configs/downloads:/downloads
     ports:
       - 9000:9000
     networks:
