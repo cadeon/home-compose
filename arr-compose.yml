@@ -154,7 +154,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1' #Single-core sab. This will be slow but easier on the celeron. 
+          cpus: '2'
+          memory: '4g' 
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.sabnzbd.entryPoints=websecure"
