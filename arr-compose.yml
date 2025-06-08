@@ -146,7 +146,8 @@ services:
       - UMASK=002
     volumes:
       - /volume2/docker-configs/sabnzbd/config:/config
-      - /volume2/docker-configs/downloads:/downloads # optional
+      - /volume2/docker-configs/downloads:/downloads
+      - /volume2/docker-configs/incomplete-downloads:/incomplete-downloads # Add a separate incomplete downloads directory
     ports:
       - 9000:9000
     networks:
