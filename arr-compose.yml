@@ -151,6 +151,9 @@ services:
       - 9000:9000
     networks:
       - traefik-public
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     ulimits:
       nofile:
         soft: 65535
@@ -158,8 +161,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '3' # Use 3 of 4 cores
-          memory: '4g' # Support large article cache
+          cpus: '3'
+          memory: '4g'
+        reservations:
+          cpus: '2'
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.sabnzbd.entryPoints=websecure"
