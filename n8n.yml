@@ -2,7 +2,9 @@ version: '3.8'
 
 volumes:
   n8n_storage:
-
+environment:
+  - N8N_HOST=https://n8n.not-really.me
+  - N8N_PROTOCOL=https
 services:
   n8n:
     image: docker.n8n.io/n8nio/n8n
