@@ -21,8 +21,10 @@ services:
     volumes:
       - n8n_storage:/home/node/.n8n
     environment:
-      - N8N_HOST=https://n8n.not-really.me
+      - N8N_HOST=n8n.not-really.me
       - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://n8n.not-really.me/
+      - GENERIC_TIMEZONE=America/New_York
 networks:
   traefik-public:
     external: true
