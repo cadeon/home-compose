@@ -3,8 +3,6 @@ version: '3.8'
 services:
   quakejs:
     container_name: quakejs
-    environment:
-
     ports:
       - '10080:80'
       - '27960:27960'
