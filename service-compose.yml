@@ -40,12 +40,6 @@ services:
       - SEARXNG_BASE_URL=https://search.not-really.me/
       - BIND_ADDRESS=0.0.0.0:1234
       - SEARXNG_PORT=1234
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - SETGID
-      - SETUID
     logging:
       driver: "json-file"
       options:
