@@ -4,9 +4,9 @@ services:
   quakejs:
     container_name: quakejs
     environment:
-      - HTTP_PORT=10080
+
     ports:
-      - '10080:10080'
+      - '10080:80'
       - '27960:27960'
     image: 'treyyoder/quakejs:latest'
     labels:
