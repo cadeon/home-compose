@@ -11,9 +11,9 @@ services:
     image: 'treyyoder/quakejs:latest'
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.search.entryPoints=web"
-      - "traefik.http.routers.search.rule=Host(`quake.not-really.me`)" # Edit here to change the domain name
-      - "traefik.http.services.search.loadbalancer.server.port=10080"
+      - "traefik.http.routers.quakejs.entryPoints=web"
+      - "traefik.http.routers.quakejs.rule=Host(`quake.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.quakejs.loadbalancer.server.port=10080"
       - "traefik.docker.network=traefik-public"
       - "traefik.port=10080"
     restart: unless-stopped
