@@ -126,7 +126,7 @@ services:
       - "traefik.http.routers.utfodem.entryPoints=websecure"
       - "traefik.http.routers.utfodem.tls.certResolver=letsEncrypt"
       - "traefik.http.routers.utfodem.rule=Host(`cypher.not-really.me`)" # Edit here to change the domain name
-      - "traefik.http.services.utfodem.loadbalancer.server.port=12345"
+      - "traefik.http.services.utfodem.loadbalancer.server.port=8000"
       - "traefik.docker.network=traefik-public"
     restart: unless-stopped
 
