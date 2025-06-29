@@ -114,6 +114,22 @@ services:
     restart: unless-stopped
 
 
+  utfodem:
+    image: cadeon924/utfodem:latest
+    container_name: utfodem
+    networks:
+      - traefik-public
+    ports:
+      - 8000:12345
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.utfodem.entryPoints=websecure"
+      - "traefik.http.routers.utfodem.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.utfodem.rule=Host(`cypher.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.utfodem.loadbalancer.server.port=12345"
+      - "traefik.docker.network=traefik-public"
+    restart: unless-stopped
+
 ###### ----- Docker control ----- ######
 networks:
   traefik-public:
