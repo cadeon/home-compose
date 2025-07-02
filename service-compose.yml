@@ -130,6 +130,22 @@ services:
       - "traefik.docker.network=traefik-public"
     restart: unless-stopped
 
+  duckiesays:
+    image: cadeon924/duckiesays:latest
+    container_name: duckiesays
+    networks:
+      - traefik-public
+    ports:
+      - 7007:7007
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.duckiesays.entryPoints=websecure"
+      - "traefik.http.routers.duckiesays.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.duckiesays.rule=Host(`duckiesays.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.duckiesays.loadbalancer.server.port=7007"
+      - "traefik.docker.network=traefik-public"
+    restart: unless-stopped
+
 ###### ----- Docker control ----- ######
 networks:
   traefik-public:
