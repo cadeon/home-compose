@@ -135,13 +135,13 @@ services:
    container_name: duckiesays
    networks:
      - traefik-public
-   ports:
-     - 7007:7007
    labels:
      - "traefik.enable=true"
      - "traefik.http.routers.duckiesays.entrypoints=websecure"
      - "traefik.http.routers.duckiesays.tls.certresolver=letsencrypt"
-     - "traefik.http.routers.duckiesays.rule=Host(`duckiesays.not-really.me`,`duckiesays.com`,`www.duckiesays.com`)"
+     - "traefik.http.routers.duckiesays.tls.domains[0].main=duckiesays.com"
+     - "traefik.http.routers.duckiesays.tls.domains[0].sans=*.duckiesays.com,duckiesays.not-really.me"
+     - "traefik.http.routers.duckiesays.rule=Host(`duckiesays.com`,`duckiesays.not-really.me`) || HostRegexp(`{subdomain:[a-zA-Z0-9-]+}.duckiesays.com`)"
      - "traefik.http.services.duckiesays.loadbalancer.server.port=7007"
      - "traefik.docker.network=traefik-public"
    restart: unless-stopped
