@@ -141,7 +141,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.duckiesays.entryPoints=websecure"
       - "traefik.http.routers.duckiesays.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.duckiesays.rule=Host(`duckiesays.not-really.me`, `duckiesays.com`, `www.duckiesays.com`)" # Edit here to change the domain name
+      - "traefik.http.routers.duckiesays.rule=Host(`duckiesays.not-really.me`,`duckiesays.com`,`www.duckiesays.com`)" # Edit here to change the domain name
       - "traefik.http.services.duckiesays.loadbalancer.server.port=7007"
       - "traefik.docker.network=traefik-public"
     restart: unless-stopped
