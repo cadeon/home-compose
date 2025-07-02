@@ -18,6 +18,8 @@ services:
       - "--entryPoints.web.address=:80"
       - "--entrypoints.websecure.http.tls.domains[0].main=not-really.me"
       - "--entrypoints.websecure.http.tls.domains[0].sans=*.not-really.me"
+      - "--entrypoints.websecure.http.tls.domains[1].main=duckiesays.com"
+      - "--entrypoints.websecure.http.tls.domains[1].sans=*.duckiesays.com"
     networks:
       - traefik-public
     volumes:
