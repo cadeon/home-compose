@@ -140,8 +140,8 @@ services:
       - "traefik.http.routers.duckiesays.entrypoints=websecure"
       - "traefik.http.routers.duckiesays.tls.certresolver=letsencrypt"
       - "traefik.http.routers.duckiesays.tls.domains[0].main=duckiesays.com"
-      - "traefik.http.routers.duckiesays.tls.domains[0].sans=*.duckiesays.com,duckiesays.not-really.me"
-      - "traefik.http.routers.duckiesays.rule=HostRegexp(`duckiesays.com|duckiesays.not-really.me`)"
+      - "traefik.http.routers.duckiesays.tls.domains[0].sans=*.duckiesays.com"
+      - "traefik.http.routers.duckiesays.rule=HostRegexp(`legacy.duckiesays.com`)"
       - "traefik.http.services.duckiesays.loadbalancer.server.port=7007"
       - "traefik.docker.network=traefik-public"
     restart: unless-stopped
