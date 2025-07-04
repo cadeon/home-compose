@@ -9,7 +9,7 @@ services:
       - ./log:/usr/src/app/log # Persist logs
     environment:
       NODE_ENV: development # Set Node.js environment to development
-      OLLAMA_API_URL: http://ollama:11434/api/generate # Ollama API URL
+      OLLAMA_API_URL: http://172.31.250.200:11434/api/generate # Ollama API URL
       OLLAMA_MODEL: qwen2.5:0.5b # Ollama model
     networks:
       - traefik-public
@@ -27,6 +27,8 @@ services:
 
   ollama:
     image: ollama/ollama:latest # Use the latest Ollama image
+    environment:
+      - OLLAMA_KEEP_ALIVE=-1
     ports:
       - "11434:11434" # Expose Ollama port
     networks:
