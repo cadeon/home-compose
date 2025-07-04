@@ -32,5 +32,9 @@ services:
     volumes:
       - ollama_data:/root/.ollama # Persist Ollama data
 
+networks:
+  traefik-public:
+    external: true
+    driver: bridge
 volumes:
   ollama_data: # Define a volume for Ollama data
