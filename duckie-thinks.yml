@@ -29,6 +29,8 @@ services:
     image: ollama/ollama:latest # Use the latest Ollama image
     ports:
       - "11434:11434" # Expose Ollama port
+    networks:
+      - traefik-public
     volumes:
       - ollama_data:/root/.ollama # Persist Ollama data
 
