@@ -75,7 +75,7 @@ services:
       - /volume1/plex-media:/plex-media
       - /volume2/docker-configs/downloads:/downloads
     ports:
-      - 8181:8181
+      - 18181:8181
     networks:
       - traefik-public
     labels:
