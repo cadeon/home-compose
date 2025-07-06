@@ -63,32 +63,6 @@ services:
       - "traefik.port=8989"
     restart: unless-stopped
 
-  headphones:
-    image: cadeon924/headphones:latest
-    container_name: headphones
-    environment:
-      - PUID=1024
-      - PGID=100
-      - TZ=America/New_York
-      - BEETSDIR=/config
-    volumes:
-      - /volume2/docker-configs/headphones/data:/config
-      - /volume1/plex-media:/plex-media
-      - /volume2/docker-configs/downloads:/downloads
-    ports:
-      - 18181:8181
-    networks:
-      - traefik-public
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.headphones.entryPoints=websecure"
-      - "traefik.http.routers.headphones.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.headphones.rule=Host(`headphones.not-really.me`)" 
-      - "traefik.http.services.headphones.loadbalancer.server.port=8181"
-      - "traefik.docker.network=traefik-public"
-      - "traefik.port=8181"
-    restart: unless-stopped
-
   radarr:
     image: linuxserver/radarr:latest
     container_name: radarr
@@ -167,31 +141,6 @@ services:
       - "traefik.http.routers.sabnzbd.rule=Host(`sab.not-really.me`)"
       - "traefik.http.services.sabnzbd.loadbalancer.server.port=9000"
     restart: unless-stopped
-
-  soulseek:
-    image: realies/soulseek
-    container_name: soulseek
-    restart: unless-stopped
-    volumes:
-      - /volume2/docker-configs/soulseek:/data/.SoulseekQt
-      - /volume2/docker-configs/soulseek/downloads:/data/Soulseek Downloads
-      - /volume2/docker-configs/soulseek/chatlogs:/data/Soulseek Chat Logs
-      - /volume2/docker-configs/soulseek/shared:/data/Soulseek Shared Folder
-    environment:
-      - PGID=1024
-      - PUID=100
-    ports:
-      - 6080:6080
-      - 61122:61122 # example listening port, check Options -> Login
-      - 61123:61123 # example obfuscated port, check Options -> Login
-    networks:
-      - traefik-public
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.soulseek.entryPoints=websecure"
-      - "traefik.http.routers.soulseek.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.soulseek.rule=Host(`soulseek.not-really.me`)" # Edit here to change the domain name
-      - "traefik.http.services.soulseek.loadbalancer.server.port=6080"
 
 ###### ----- Docker control ----- ######
 networks:
