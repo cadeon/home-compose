@@ -70,6 +70,7 @@ services:
       - PUID=1024
       - PGID=100
       - TZ=America/New_York
+      - BEETSDIR=/config
     volumes:
       - /volume2/docker-configs/headphones/data:/config
       - /volume1/plex-media:/plex-media
