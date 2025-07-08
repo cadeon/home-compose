@@ -26,6 +26,24 @@ services:
       - "traefik.port=2000"
     restart: unless-stopped
 
+  rickroll:
+    image: modem7/docker-rickroll
+    container_name: Rickroll
+    ports:
+      - 1987:8080
+    environment:
+      - TITLE="not-really-roll" # Changes the title of the webpage
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rr.entryPoints=websecure"
+      - "traefik.http.routers.rr.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.rr.rule=Host(`rr.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.rr.loadbalancer.server.port=8080"
+      - "traefik.docker.network=traefik-public"
+    restart: unless-stopped
+
   searxng:
     image: docker.io/searxng/searxng:latest
     container_name: searxng
