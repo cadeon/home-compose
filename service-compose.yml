@@ -33,7 +33,7 @@ services:
       - 1987:1987
     environment:
       - TITLE="not-really-roll" # Changes the title of the webpage
-      - PORT=1987
+      - PORT="1987"
     networks:
       - traefik-public
     labels:
