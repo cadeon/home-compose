@@ -52,9 +52,8 @@ services:
       - "traefik.http.routers.search.entryPoints=websecure"
       - "traefik.http.routers.search.tls.certResolver=letsEncrypt"
       - "traefik.http.routers.search.rule=Host(`search.not-really.me`)" # Edit here to change the domain name
-      - "traefik.http.services.search.loadbalancer.server.port=1234"
+      - "traefik.http.services.search.loadbalancer.server.port=8080"
       - "traefik.docker.network=traefik-public"
-      - "traefik.port=1234"
     restart: unless-stopped
 
   syncthing:
