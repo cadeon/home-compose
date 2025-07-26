@@ -109,6 +109,74 @@ services:
       - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
     restart: unless-stopped
 
+  lidarr:
+    image: ghcr.io/hotio/lidarr:latest
+    container_name: lidarr
+    hostname: lidarr
+    environment:
+      - PUID=1024
+      - PGID=100
+      - TZ=America/New_York
+      - UMASK=002
+    volumes:
+      - /volume2/docker-configs/lidarr/config:/config
+      - /volume1/plex-media/Music:/data
+    ports:
+      - 8686:8686
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.lidarr.entryPoints=websecure"
+      - "traefik.http.routers.lidarr.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.lidarr.rule=Host(`lidarr.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.lidarr.loadbalancer.server.port=8686"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.port=8686"
+    restart: unless-stopped
+
+  slskd:
+    image: slskd/slskd
+    container_name: slskd
+    hostname: slskd
+    user: 1024:100
+    environment:
+      - PUID=1024
+      - PGID=100
+      - TZ=America/New_York
+      - UMASK=002
+      - SLSKD_REMOTE_CONFIGURATION=true
+    ports:
+      - 5030:5030
+      - 5031:5031
+      - 50300:50300
+    volumes:
+      - /volume2/docker-confgs/slskd/app:/app
+      - /volume1/plex-media/Music:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.slskd.entryPoints=websecure"
+      - "traefik.http.routers.slskd.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.slskd.rule=Host(`slskd.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.slskd.loadbalancer.server.port=5030"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.port=5030"
+    restart: unless-stopped
+
+  soularr:
+    image: mrusse08/soularr:latest
+    container_name: soularr
+    hostname: soularr
+    user: 1024:100
+    environment:
+      - PUID=1024
+      - PGID=100
+      - TZ=America/New_York
+      - UMASK=002
+      - SCRIPT_INTERVAL=300
+    volumes:
+      - /volume1/plex-media/Music/slskd_downloads:/downloads
+      - /volume2/docker-configs/soularr/data:/data
+    restart: unless-stopped
+
 
   sabnzbd:
     image: lscr.io/linuxserver/sabnzbd:latest
