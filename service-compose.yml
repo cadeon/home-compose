@@ -52,7 +52,7 @@ services:
     volumes:
       - /volume2/docker-configs/searxng:/etc/searxng:rw
     environment:
-      - PUID=1024
+      - PUID=1000
       - PGID=100
       - TZ=America/New_York
       - SEARXNG_BASE_URL=https://search.not-really.me/
@@ -79,7 +79,7 @@ services:
     container_name: syncthing
     hostname: sync.not-really.me
     environment:
-      - PUID=1024
+      - PUID=1000
       - PGID=100
       - TZ=America/New_York
     volumes:
@@ -106,7 +106,7 @@ services:
     image: lscr.io/linuxserver/calibre-web:latest
     container_name: calibre-web
     environment:
-      - PUID=1024
+      - PUID=1000
       - PGID=100
       - TZ=America/New_York
       - DOCKER_MODS=linuxserver/mods:universal-calibre #optional

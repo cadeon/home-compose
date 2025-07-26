@@ -38,7 +38,7 @@ services:
     image: ghcr.io/linuxserver/sonarr:latest
     container_name: sonarr
     environment:
-      - PUID=1024
+      - PUID=1000
       - PGID=100
       - TZ=America/New_York
       - DOCKER_MODS=ghcr.io/gilbn/theme.park:sonarr
@@ -67,7 +67,7 @@ services:
     image: linuxserver/radarr:latest
     container_name: radarr
     environment:
-      - PUID=1024
+      - PUID=1000
       - PGID=100
       - TZ=America/New_York
       - UMASK=002
@@ -91,7 +91,7 @@ services:
     image: ghcr.io/linuxserver/prowlarr:develop
     container_name: prowlarr
     environment:
-      - PUID=1024
+      - PUID=1000
       - PGID=100
       - TZ=America/New_York
       - UMASK=002
@@ -114,7 +114,7 @@ services:
     container_name: lidarr
     hostname: lidarr
     environment:
-      - PUID=1024
+      - PUID=1000
       - PGID=100
       - TZ=America/New_York
       - UMASK=002
@@ -137,9 +137,9 @@ services:
     image: slskd/slskd
     container_name: slskd
     hostname: slskd
-    user: 1024:100
+    user: 1000:100
     environment:
-      - PUID=1024
+      - PUID=1000
       - PGID=100
       - TZ=America/New_York
       - UMASK=002
@@ -165,9 +165,9 @@ services:
     image: mrusse08/soularr:latest
     container_name: soularr
     hostname: soularr
-    user: 1024:100
+    user: 1000:100
     environment:
-      - PUID=1024
+      - PUID=1000
       - PGID=100
       - TZ=America/New_York
       - UMASK=002
@@ -182,7 +182,7 @@ services:
     image: lscr.io/linuxserver/sabnzbd:latest
     container_name: sabnzbd
     environment:
-      - PUID=1024
+      - PUID=1000
       - PGID=100
       - TZ=America/New_York
       - UMASK=002
