@@ -149,7 +149,7 @@ services:
       - 5031:5031
       - 50300:50300
     volumes:
-      - /volume2/docker-confgs/slskd/app:/app
+      - /volume2/docker-configs/slskd/app:/app
       - /volume1/plex-media/Music:/data
     labels:
       - "traefik.enable=true"
