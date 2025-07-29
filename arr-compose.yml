@@ -110,12 +110,19 @@ services:
     restart: unless-stopped
     
   deemix:
-    image: registry.gitlab.com/bockiii/deemix-docker # Replace with your actual Deemix image
     container_name: Deemix
-    ports:
-      - "172.31.250.200:6595:6595" # Bind to local network IP
+    image: ghcr.io/bambanah/deemix:latest
     environment:
-      - SERVER_NAME=deemix.not-really.me # Optional
+      - PUID=1000
+      - PGID=100
+      - TZ=America/New_York
+      - UMASK=002
+      - DEEMIX_SINGLE_USER=false
+    volumes:
+      - /volume1/plex-media/Music:/downloads
+      - /volume2/docker-configs/deemix/config:/config
+    ports:
+      - "6595:6595"
     networks:
       - traefik-public
     labels:
