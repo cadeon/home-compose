@@ -126,12 +126,7 @@ services:
     networks:
       - traefik-public
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.deemix.entryPoints=web" # HTTP only (port 80)
-      - "traefik.http.routers.deemix.rule=Host(`deemix.not-really.me`)" # Pretty URL
-      - "traefik.http.routers.deemix.middlewares=local-only,no-https" # Restrict to local IPs, keep HTTP
-      - "traefik.http.services.deemix.loadbalancer.server.port=6595" # Container port
-      - "traefik.docker.network=traefik-public"
+      - "traefik.enable=false"
     restart: unless-stopped
     
   sabnzbd:
