@@ -110,23 +110,21 @@ services:
     restart: unless-stopped
     
   deemix:
+    image: registry.gitlab.com/bockiii/deemix-docker # Replace with your actual Deemix image
     container_name: Deemix
-    image: ghcr.io/bambanah/deemix:latest
-    environment:
-      - PUID=1000
-      - PGID=100
-      - TZ=America/New_York
-      - UMASK=002
-      - DEEMIX_SINGLE_USER=false
-    volumes:
-      - /volume1/plex-media/Music:/downloads
-      - /volume2/docker-configs/deemix/config:/config
     ports:
-      - "6595:6595"
+      - "172.31.250.200:6595:6595" # Bind to local network IP
+    environment:
+      - SERVER_NAME=deemix.not-really.me # Optional
     networks:
       - traefik-public
     labels:
-      - "traefik.enable=false"
+      - "traefik.enable=true"
+      - "traefik.http.routers.deemix.entryPoints=web" # HTTP only (port 80)
+      - "traefik.http.routers.deemix.rule=Host(`deemix.not-really.me`)" # Pretty URL
+      - "traefik.http.routers.deemix.middlewares=local-only,no-https" # Restrict to local IPs, keep HTTP
+      - "traefik.http.services.deemix.loadbalancer.server.port=6595" # Container port
+      - "traefik.docker.network=traefik-public"
     restart: unless-stopped
     
   sabnzbd:
