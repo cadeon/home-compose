@@ -108,10 +108,25 @@ services:
       - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.not-really.me`)" # Edit here to change the domain name
       - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
     restart: unless-stopped
-
-
-
-
+    
+  deemix:
+    container_name: Deemix
+    image: ghcr.io/bambanah/deemix:latest
+    volumes:
+      - /volume1/plex-media/Music:/downloads
+      - /volume2/docker-configs/deemix/config:/config
+    ports:
+      - "6595:6595"
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.deemix.entryPoints=websecure"
+      - "traefik.http.routers.deemix.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.deemix.rule=Host(`deemix.not-really.me`)"
+      - "traefik.http.services.deemix.loadbalancer.server.port=6595"
+    restart: unless-stopped
+    
   sabnzbd:
     image: lscr.io/linuxserver/sabnzbd:latest
     container_name: sabnzbd
