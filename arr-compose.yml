@@ -112,6 +112,12 @@ services:
   deemix:
     container_name: Deemix
     image: ghcr.io/bambanah/deemix:latest
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=America/New_York
+      - UMASK=002
+      - DEEMIX_SINGLE_USER=false
     volumes:
       - /volume1/plex-media/Music:/downloads
       - /volume2/docker-configs/deemix/config:/config
