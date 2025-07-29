@@ -109,6 +109,7 @@ services:
       - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
     restart: unless-stopped
     
+  deemix:
     container_name: Deemix
     image: ghcr.io/bambanah/deemix:latest
     environment:
@@ -125,7 +126,7 @@ services:
     networks:
       - traefik-public
     labels:
-      - "traefik.enable=false"  # Disable Traefik access for offline use only.
+      - "traefik.enable=false"
     restart: unless-stopped
     
   sabnzbd:
