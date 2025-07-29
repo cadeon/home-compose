@@ -119,7 +119,7 @@ services:
       - UMASK=002
       - DEEMIX_SINGLE_USER=false
     volumes:
-      - /volume1/plex-media/Music:/downloads
+      - /volume1/plex-media/Music/downloads:/downloads
       - /volume2/docker-configs/deemix/config:/config
     ports:
       - "6595:6595"
