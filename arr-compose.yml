@@ -109,7 +109,6 @@ services:
       - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
     restart: unless-stopped
     
-  deemix:
     container_name: Deemix
     image: ghcr.io/bambanah/deemix:latest
     environment:
@@ -126,11 +125,7 @@ services:
     networks:
       - traefik-public
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.deemix.entryPoints=websecure"
-      - "traefik.http.routers.deemix.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.deemix.rule=Host(`deemix.not-really.me`)"
-      - "traefik.http.services.deemix.loadbalancer.server.port=6595"
+      - "traefik.enable=false"  # Disable Traefik access for offline use only.
     restart: unless-stopped
     
   sabnzbd:
