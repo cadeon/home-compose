@@ -68,7 +68,7 @@ services:
       - UMASK=002
     ports:
       - 8096:8096
-networks:
+    networks:
       - traefik-public
     labels:
       - "traefik.enable=true"
