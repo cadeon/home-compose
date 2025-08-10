@@ -40,31 +40,6 @@ services:
       - "traefik.http.services.tau.loadbalancer.server.port=8181"
     restart: unless-stopped
 
-  jellyfin:
-    image: lscr.io/linuxserver/jellyfin:latest
-    container_name: jellyfin
-    environment:
-      - PUID=1000
-      - PGID=100
-      - TZ=America/New_York
-      - UMASK=002
-    volumes:
-      - /volume2/docker-configs/jellyfin/config:/config
-      - /volume1/plex-media:/media
-    devices:
-      - /dev/dri:/dev/dri
-    ports:
-      - 8096:8096
-    networks:
-      - traefik-public
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.jellyfin.entryPoints=websecure"
-      - "traefik.http.routers.jellyfin.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.not-really.me`)" # Edit here to change the domain name
-      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
-    restart: unless-stopped
-
 ###### ----- Docker control ----- ######
 networks:
   traefik-public:

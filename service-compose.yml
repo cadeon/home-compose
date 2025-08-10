@@ -3,29 +3,6 @@ version: "3.7"
 
 services:
   
-  homepage:
-    image: ghcr.io/gethomepage/homepage:latest
-    container_name: homepage
-    ports:
-      - 2000:2000
-    volumes:
-      - /volume2/docker-configs/homepage/config:/app/config # Make sure your local config directory exists
-      - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations
-    environment:
-      - PORT=2000
-      - TZ=America/New_York
-    networks:
-      - traefik-public
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.homepage.entryPoints=websecure"
-      - "traefik.http.routers.homepage.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.homepage.rule=Host(`not-really.me`)" 
-      - "traefik.http.services.homepage.loadbalancer.server.port=2000"
-      - "traefik.docker.network=traefik-public"
-      - "traefik.port=2000"
-    restart: unless-stopped
-
   rickroll:
     image: modem7/docker-rickroll
     container_name: Rickroll
@@ -127,7 +104,6 @@ services:
       - "traefik.docker.network=traefik-public"
       - "traefik.port=8083"
     restart: unless-stopped
-
 
   utfodem:
     image: cadeon924/utfodem:latest
