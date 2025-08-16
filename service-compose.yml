@@ -147,7 +147,7 @@ services:
       - /volume2/docker-configs/copyparty:/cfg
       - /volume1/plex-media/Music:/music:ro
       - /volume1/files/warez:/warez
-      - /volume1/files/imgs/imgs:imgs
+      - /volume1/files/imgs/imgs:/imgs
 
     environment:
       LD_PRELOAD: /usr/lib/libmimalloc-secure.so.2
