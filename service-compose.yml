@@ -136,6 +136,43 @@ services:
       - "traefik.http.services.duckiesays.loadbalancer.server.port=7007"
       - "traefik.docker.network=traefik-public"
     restart: unless-stopped
+  
+  copyparty:
+    image: copyparty/ac:latest
+    container_name: copyparty
+    user: "1000:100"
+    ports:
+      - 3923:3923
+    volumes:
+      - /volume2/docker-configs/copyparty:/cfg
+      - /volume1/plex-media/Music:/music:ro
+      - /volume1/files/warez:/warez
+      - /volume1/files/imgs/imgs:imgs
+
+    environment:
+      LD_PRELOAD: /usr/lib/libmimalloc-secure.so.2
+      # enable mimalloc by replacing "NOPE" with "2" for a nice speed-boost (will use twice as much ram)
+
+      PYTHONUNBUFFERED: 1
+      # ensures log-messages are not delayed (but can reduce speed a tiny bit)
+
+    stop_grace_period: 15s  # thumbnailer is allowed to continue finishing up for 10s after the shutdown signal
+    healthcheck:
+      # hide it from logs with "/._" so it matches the default --lf-url filter 
+      test: ["CMD-SHELL", "wget --spider -q 127.0.0.1:3923/?reset=/._"]
+      interval: 1m
+      timeout: 2s
+      retries: 5
+      start_period: 15s
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.copyparty.entryPoints=websecure"
+      - "traefik.http.routers.copyparty.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.copyparty.rule=Host(`files.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.copyparty.loadbalancer.server.port=3923"
+      - "traefik.docker.network=traefik-public"
 
 ###### ----- Docker control ----- ######
 networks:
