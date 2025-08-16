@@ -146,7 +146,7 @@ services:
     volumes:
       - /volume2/docker-configs/copyparty:/cfg
       - /volume1/files/public:/files/public
-      - /volume1/plex-media/Music:/files/music
+      - /volume1/plex-media:/files/plex-media
       - /volume1/files/warez:/files/warez
       - /volume1/files/imgs/imgs:/files/imgs
 
