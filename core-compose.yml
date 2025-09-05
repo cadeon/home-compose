@@ -46,7 +46,7 @@ services:
       - /volume2/docker-configs/ha-config:/config
       - /etc/localtime:/etc/localtime:ro
       - /run/dbus:/run/dbus:ro
-      - /volume1/plex-media:/plex-media
+      - /volume1/plex-media:/media/plex-media
     restart: unless-stopped
     privileged: true
     network_mode: host
