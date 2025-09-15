@@ -52,7 +52,7 @@ services:
     restart: unless-stopped
   
   mcp-searxng:
-    image: isokoliuk/mcp-searxng:latest
+    image: jhstatewide/mcp-server-searxng:latest
     container_name: mcp-searxng
     environment:
       - SEARXNG_URL=http://searxng:8080
