@@ -52,10 +52,10 @@ services:
     restart: unless-stopped
   
   mcp-searxng:
-    image: overtlids/mcp-searxng-enhanced:latest
+    image: isokoliuk/mcp-searxng:latest
     container_name: mcp-searxng
     environment:
-      - SEARXNG_URL=http://searxng:8080/
+      - SEARXNG_URL=https://search.not-really.me/
       - MCP_HTTP_PORT=3000
     ports:
       - 3000:3000
