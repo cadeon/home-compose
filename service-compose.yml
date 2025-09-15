@@ -59,6 +59,13 @@ services:
       - MCP_HTTP_PORT=3000
     ports:
       - 3000:3000
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mcp.entryPoints=websecure"
+      - "traefik.http.routers.mcp.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.mcp.rule=Host(`mcp.not-really.me`)"
+      - "traefik.http.services.mcp.loadbalancer.server.port=3000"
+      - "traefik.docker.network=traefik-public"
     networks:
       - traefik-public
     restart: unless-stopped
