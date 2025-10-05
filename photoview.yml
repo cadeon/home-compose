@@ -51,7 +51,7 @@ services:
       ## Example:
       ## - "/host/folder:/container/folder"
       - "/etc/localtime:/etc/localtime:ro" ## use local time from host
-      - "/etc/timezone:/etc/timezone:ro"   ## use timezone from host
+      ## - "/etc/timezone:/etc/timezone:ro"   ## use timezone from host
       ## Uncomment the next line if PHOTOVIEW_DATABASE_DRIVER is set to `sqlite` in the .env
       # - "${HOST_PHOTOVIEW_LOCATION}/database:/home/photoview/database"
       - "${HOST_PHOTOVIEW_LOCATION}/storage:/home/photoview/media-cache"
@@ -89,7 +89,7 @@ services:
       ## Example:
       ## - "/host/folder:/container/folder"
       - "/etc/localtime:/etc/localtime:ro" ## use local time from host
-      - "/etc/timezone:/etc/timezone:ro"   ## use timezone from host
+      ## - "/etc/timezone:/etc/timezone:ro"   ## use timezone from host
       - "${HOST_PHOTOVIEW_LOCATION}/database/mariadb:/var/lib/mysql" ## DO NOT REMOVE
     healthcheck:
       test: healthcheck.sh --connect --innodb_initialized
