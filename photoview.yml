@@ -21,7 +21,7 @@ services:
     restart: unless-stopped
     stop_grace_period: 10s
     ports:
-      - "8000:80" ## HTTP port (host:container)
+      - "28000:80" ## HTTP port (host:container)
     ## This ensures that DB is initialized and ready for connections.
     ## Comment out the entire `depends_on` section if PHOTOVIEW_DATABASE_DRIVER is set to `sqlite` in the .env
     depends_on:
