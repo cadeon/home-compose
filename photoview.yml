@@ -10,8 +10,8 @@ services:
     cap_add:
       - CHOWN
     volumes:
-      - "/etc/localtime:/etc/localtime:ro" ## use local time from host
-      - "/etc/timezone:/etc/timezone:ro"   ## use timezone from host
+      ##- "/etc/localtime:/etc/localtime:ro" ## use local time from host
+      ##- "/etc/timezone:/etc/timezone:ro"   ## use timezone from host
       - "${HOST_PHOTOVIEW_LOCATION}/storage:/home/photoview/media-cache"
 
   photoview:
