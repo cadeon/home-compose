@@ -11,7 +11,7 @@ services:
       - CHOWN
     volumes:
       - "/etc/localtime:/etc/localtime:ro" ## use local time from host
-      - "/usr/builtin/share/zoneinfo/EST5EDT:/etc/timezone:ro"   ## use timezone from host
+      - "/usr/builtin/share/zoneinfo:/etc/timezone:ro"   ## use timezone from host
       - "${HOST_PHOTOVIEW_LOCATION}/storage:/home/photoview/media-cache"
 
   photoview:
