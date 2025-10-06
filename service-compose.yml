@@ -125,6 +125,29 @@ services:
       - "traefik.port=8083"
     restart: unless-stopped
 
+  pigallery2:
+    image: bpatrik/pigallery2:latest
+    container_name: pigallery2
+    environment:
+      - NODE_ENV=production # set to 'debug' for full debug logging
+      # - NODE_OPTIONS=--enable-source-maps # enable source map support on the backend  for development
+    volumes:
+      - "/volume2/docker-configs/pigallery2/config:/app/data/config" 
+      - "/volume2/docker-configs/pigallery2/db:/app/data/db"
+      - "/volume1/files/imgs:/app/data/images:ro" # ro = read only
+      - "/volume2/docker-configs/pigallery2/tmp:/app/data/tmp" 
+    ports:
+      - 28000:80
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.imgs.entryPoints=websecure"
+      - "traefik.http.routers.imgs.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.imgs.rule=Host(`imgs.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.services.imgs.loadbalancer.server.port=80"
+      - "traefik.docker.network=traefik-public"
+    restart: unless-stopped
+
+
   utfodem:
     image: cadeon924/utfodem:latest
     container_name: utfodem
