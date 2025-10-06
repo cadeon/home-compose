@@ -136,6 +136,8 @@ services:
       - "/volume2/docker-configs/pigallery2/db:/app/data/db"
       - "/volume1/files/imgs:/app/data/images:ro" # ro = read only
       - "/volume2/docker-configs/pigallery2/tmp:/app/data/tmp" 
+    networks:
+      - traefik-public
     ports:
       - 28000:80
     labels:
