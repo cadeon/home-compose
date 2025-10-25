@@ -204,7 +204,7 @@ services:
       - "traefik.http.services.copyparty.loadbalancer.server.port=3923"
       - "traefik.docker.network=traefik-public"
 
-ultrafeeder:
+  ultrafeeder:
     image: ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder:latest
     container_name: ultrafeeder
     restart: unless-stopped
