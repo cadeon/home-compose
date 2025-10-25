@@ -208,7 +208,6 @@ services:
     image: ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder:latest
     container_name: ultrafeeder
     restart: unless-stopped
-    devices:
     device_cgroup_rules:
       - "c 189:* rwm"
     volumes:
