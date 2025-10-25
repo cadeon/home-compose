@@ -204,6 +204,26 @@ services:
       - "traefik.http.services.copyparty.loadbalancer.server.port=3923"
       - "traefik.docker.network=traefik-public"
 
+ultrafeeder:
+    image: ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder:latest
+    container_name: ultrafeeder
+    restart: unless-stopped
+    devices:
+      - /dev/bus/usb/002/002:/dev/bus/usb/002/002
+    volumes:
+      - /volume2/docker-configs/ultrafeeder:/config
+    environment:
+      - TZ=America/New_York
+      - ADSBEXCHANGE_FEED=1
+      - ADSBEXCHANGE_UUID="YROBz2GVNJWV"
+      - LAT="29.02"
+      - LON="-81.28"
+      - ALT="30.42"
+    ports:
+      - "40000:8080"
+
+
+
 ###### ----- Docker control ----- ######
 networks:
   traefik-public:

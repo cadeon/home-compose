@@ -39,17 +39,16 @@ services:
     restart: unless-stopped
 
 # HA is going to end up being a "core service" eventually, I suppose. 
-  homeassistant:
-    container_name: homeassistant
-    image: "ghcr.io/home-assistant/home-assistant:stable"
-    volumes:
-      - /volume2/docker-configs/ha-config:/config
-      - /etc/localtime:/etc/localtime:ro
-      - /run/dbus:/run/dbus:ro
-      - /volume1/plex-media:/media/plex-media
-    restart: unless-stopped
-    privileged: true
-    network_mode: host
+#  homeassistant:
+#    container_name: homeassistant
+#    image: "ghcr.io/home-assistant/home-assistant:stable"
+#    volumes:
+#      - /volume2/docker-configs/ha-config:/config
+#      - /etc/localtime:/etc/localtime:ro
+#      - /run/dbus:/run/dbus:ro
+#    restart: unless-stopped
+#    privileged: true
+#    network_mode: host
 
 
 ###### ----- Docker control ----- ######
