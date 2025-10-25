@@ -208,8 +208,8 @@ services:
     image: ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder:latest
     container_name: ultrafeeder
     restart: unless-stopped
-    device_cgroup_rules:
-      - "c 189:* rwm"
+    devices:
+      - /dev/bus/usb/002/002:/dev/bus/usb/002/002
     volumes:
       - /volume2/docker-configs/ultrafeeder:/config
     environment:
