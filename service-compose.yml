@@ -208,10 +208,11 @@ services:
     image: ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder:latest
     container_name: ultrafeeder
     restart: unless-stopped
-    devices:
-      - /dev/bus/usb/002/002:/dev/bus/usb/002/002
+    device_cgroup_rules:
+      - 'c 189:* rwm'
     volumes:
       - /volume2/docker-configs/ultrafeeder:/config
+      - /dev/bus/usb:/dev/bus/usb:rw
     environment:
       - TZ=America/New_York
       # --------------------------------------------------
@@ -228,9 +229,9 @@ services:
       - READSB_ALT="30.42m"
       - READSB_RX_LOCATION_ACCURACY=2
       - READSB_STATS_RANGE=true
-      - ULTRAFEEDER_CONFIG=
-        adsb,feed1.adsbexchange.com,30004,beast_reduce_plus_out,uuid="YROBz2GVNJWV";
-        mlat,feed.adsbexchange.com,31090,39008,uuid="YROBz2GVNJWV" 
+      #- ULTRAFEEDER_CONFIG=
+      #  adsb,feed1.adsbexchange.com,30004,beast_reduce_plus_out,uuid="YROBz2GVNJWV";
+      #  mlat,feed.adsbexchange.com,31090,39008,uuid="YROBz2GVNJWV" 
 
       # TAR1090 (Map Web Page) parameters:
       - UPDATE_TAR1090=true
