@@ -15,7 +15,7 @@ services:
       - /volume2/docker-configs/overseerr/app/config:/config
     networks:
       - traefik-public
-    labels:
+    #labels:
     #  - "traefik.enable=true"
     #  - "traefik.http.routers.overseerr.entryPoints=websecure"
     #  - "traefik.http.routers.overseerr.tls.certResolver=letsEncrypt"
@@ -44,7 +44,7 @@ services:
       - 8989:8989
     networks:
       - traefik-public
-    labels:
+    #labels:
     #  - "traefik.enable=true"
     #  - "traefik.http.routers.sonarr.entryPoints=websecure"
     #  - "traefik.http.routers.sonarr.tls.certResolver=letsEncrypt"
@@ -70,7 +70,7 @@ services:
       - 7676:7878
     networks:
       - traefik-public
-    labels:
+    #labels:
     #  - "traefik.enable=true"
     #  - "traefik.http.routers.radarr.entryPoints=websecure"
     #  - "traefik.http.routers.radarr.tls.certResolver=letsEncrypt"
@@ -92,7 +92,7 @@ services:
       - 9696:9696
     networks:
       - traefik-public
-    labels:
+    #labels:
     #  - "traefik.enable=true"
     #  - "traefik.http.routers.prowlarr.entryPoints=websecure"
     #  - "traefik.http.routers.prowlarr.tls.certResolver=letsEncrypt"
@@ -124,7 +124,7 @@ services:
         limits:
           cpus: '3' # Use 3 of 4 cores
           memory: '4g' # Support large article cache
-    labels:
+    #labels:
     #  - "traefik.enable=true"
     #  - "traefik.http.routers.sabnzbd.entryPoints=websecure"
     #  - "traefik.http.routers.sabnzbd.tls.certResolver=letsEncrypt"
