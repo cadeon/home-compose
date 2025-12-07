@@ -16,22 +16,13 @@ services:
     networks:
       - traefik-public
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.overseerr.entryPoints=websecure"
-      - "traefik.http.routers.overseerr.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.overseerr.rule=Host(`requests.not-really.me`)" # Edit here to change the domain name
-      - "traefik.http.services.overseerr.loadbalancer.server.port=5055"
-      - "traefik.docker.network=traefik-public"
-      - "traefik.port=5055"
-      - homepage.group=Media
-      - homepage.name=Requests
-      - homepage.href=https://requests.not-really.me
-      - homepage.description=Where it begins
-      - homepage.icon=https://overseerr.dev/os_logo_filled.svg
-      - homepage.widget.type=overseerr
-      - homepage.widget.url=https://requests.not-really.me
-      - homepage.widget.key=MTcyMjEwODg5MzE4NDRlNzM4YmQ2LTg0ZGItNGE4NS1iZTIwLTFiYzZlNjU5ZjU1NA==
-      - homepage.widget.fields=["pending", "approved", "available", "processing"]
+    #  - "traefik.enable=true"
+    #  - "traefik.http.routers.overseerr.entryPoints=websecure"
+    #  - "traefik.http.routers.overseerr.tls.certResolver=letsEncrypt"
+    #  - "traefik.http.routers.overseerr.rule=Host(`requests.not-really.me`)" # Edit here to change the domain name
+    #  - "traefik.http.services.overseerr.loadbalancer.server.port=5055"
+    #  - "traefik.docker.network=traefik-public"
+    #  - "traefik.port=5055"
     restart: unless-stopped
 
   sonarr:
@@ -54,13 +45,13 @@ services:
     networks:
       - traefik-public
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.sonarr.entryPoints=websecure"
-      - "traefik.http.routers.sonarr.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.sonarr.rule=Host(`sonarr.not-really.me`)" # Edit here to change the domain name
-      - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
-      - "traefik.docker.network=traefik-public"
-      - "traefik.port=8989"
+    #  - "traefik.enable=true"
+    #  - "traefik.http.routers.sonarr.entryPoints=websecure"
+    #  - "traefik.http.routers.sonarr.tls.certResolver=letsEncrypt"
+    #  - "traefik.http.routers.sonarr.rule=Host(`sonarr.not-really.me`)" # Edit here to change the domain name
+    #  - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
+    #  - "traefik.docker.network=traefik-public"
+    #  - "traefik.port=8989"
     restart: unless-stopped
 
   radarr:
@@ -80,11 +71,11 @@ services:
     networks:
       - traefik-public
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.radarr.entryPoints=websecure"
-      - "traefik.http.routers.radarr.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.radarr.rule=Host(`radarr.not-really.me`)" # Edit here to change the domain name
-      - "traefik.http.services.radarr.loadbalancer.server.port=7878"
+    #  - "traefik.enable=true"
+    #  - "traefik.http.routers.radarr.entryPoints=websecure"
+    #  - "traefik.http.routers.radarr.tls.certResolver=letsEncrypt"
+    #  - "traefik.http.routers.radarr.rule=Host(`radarr.not-really.me`)" # Edit here to change the domain name
+    #  - "traefik.http.services.radarr.loadbalancer.server.port=7878"
     restart: unless-stopped
 
   prowlarr:
@@ -102,11 +93,11 @@ services:
     networks:
       - traefik-public
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.prowlarr.entryPoints=websecure"
-      - "traefik.http.routers.prowlarr.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.not-really.me`)" # Edit here to change the domain name
-      - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
+    #  - "traefik.enable=true"
+    #  - "traefik.http.routers.prowlarr.entryPoints=websecure"
+    #  - "traefik.http.routers.prowlarr.tls.certResolver=letsEncrypt"
+    #  - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.not-really.me`)" # Edit here to change the domain name
+    #  - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
     restart: unless-stopped
   
   sabnzbd:
@@ -134,11 +125,11 @@ services:
           cpus: '3' # Use 3 of 4 cores
           memory: '4g' # Support large article cache
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.sabnzbd.entryPoints=websecure"
-      - "traefik.http.routers.sabnzbd.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.sabnzbd.rule=Host(`sab.not-really.me`)"
-      - "traefik.http.services.sabnzbd.loadbalancer.server.port=9000"
+    #  - "traefik.enable=true"
+    #  - "traefik.http.routers.sabnzbd.entryPoints=websecure"
+    #  - "traefik.http.routers.sabnzbd.tls.certResolver=letsEncrypt"
+    #  - "traefik.http.routers.sabnzbd.rule=Host(`sab.not-really.me`)"
+    #  - "traefik.http.services.sabnzbd.loadbalancer.server.port=9000"
     restart: unless-stopped
 
 ###### ----- Docker control ----- ######

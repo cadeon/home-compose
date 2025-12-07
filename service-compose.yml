@@ -51,79 +51,79 @@ services:
       - "traefik.docker.network=traefik-public"
     restart: unless-stopped
   
-  mcp-searxng:
-    image: isokoliuk/mcp-searxng:latest
-    container_name: mcp-searxng
-    environment:
-      - SEARXNG_URL=https://search.not-really.me/
-      - MCP_HTTP_PORT=3000
-    ports:
-      - 3000:3000
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.mcp.entryPoints=websecure"
-      - "traefik.http.routers.mcp.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.mcp.rule=Host(`mcp.not-really.me`)"
-      - "traefik.http.services.mcp.loadbalancer.server.port=3000"
-      - "traefik.docker.network=traefik-public"
-    networks:
-      - traefik-public
-    restart: unless-stopped
+  #mcp-searxng:
+  #  image: isokoliuk/mcp-searxng:latest
+  #  container_name: mcp-searxng
+  #  environment:
+  #    - SEARXNG_URL=https://search.not-really.me/
+  #    - MCP_HTTP_PORT=3000
+  #  ports:
+  #    - 3000:3000
+  #  labels:
+  #    - "traefik.enable=true"
+  #    - "traefik.http.routers.mcp.entryPoints=websecure"
+  #    - "traefik.http.routers.mcp.tls.certResolver=letsEncrypt"
+  #    - "traefik.http.routers.mcp.rule=Host(`mcp.not-really.me`)"
+  #    - "traefik.http.services.mcp.loadbalancer.server.port=3000"
+  #    - "traefik.docker.network=traefik-public"
+  #  networks:
+  #    - traefik-public
+  #  restart: unless-stopped
 
 
-  syncthing:
-    image: lscr.io/linuxserver/syncthing:latest
-    container_name: syncthing
-    hostname: sync.not-really.me
-    environment:
-      - PUID=1000
-      - PGID=100
-      - TZ=America/New_York
-    volumes:
-      - /volume2/docker-configs/syncthing/config:/config
-      - /volume1:/volume1
-    ports:
-      - 8384:8384
-      - 22000:22000/tcp
-      - 22000:22000/udp
-      - 21027:21027/udp
-    networks:
-      - traefik-public
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.sync.entryPoints=websecure"
-      - "traefik.http.routers.sync.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.sync.rule=Host(`sync.not-really.me`)" # Edit here to change the domain name
-      - "traefik.http.services.sync.loadbalancer.server.port=8384"
-      - "traefik.docker.network=traefik-public"
-      - "traefik.port=8384"
-    restart: unless-stopped
+  #syncthing:
+  #  image: lscr.io/linuxserver/syncthing:latest
+  #  container_name: syncthing
+  #  hostname: sync.not-really.me
+  #  environment:
+  #    - PUID=1000
+  #    - PGID=100
+  #    - TZ=America/New_York
+  #  volumes:
+  #    - /volume2/docker-configs/syncthing/config:/config
+  #    - /volume1:/volume1
+  #  ports:
+  #    - 8384:8384
+  #    - 22000:22000/tcp
+  #    - 22000:22000/udp
+  #    - 21027:21027/udp
+  #  networks:
+  #    - traefik-public
+  #  labels:
+  #    - "traefik.enable=true"
+  #    - "traefik.http.routers.sync.entryPoints=websecure"
+  #    - "traefik.http.routers.sync.tls.certResolver=letsEncrypt"
+  #    - "traefik.http.routers.sync.rule=Host(`sync.not-really.me`)" # Edit here to change the domain name
+  #    - "traefik.http.services.sync.loadbalancer.server.port=8384"
+  #    - "traefik.docker.network=traefik-public"
+  #    - "traefik.port=8384"
+  #  restart: unless-stopped
 
-  calibre-web:
-    image: lscr.io/linuxserver/calibre-web:latest
-    container_name: calibre-web
-    environment:
-      - PUID=1000
-      - PGID=100
-      - TZ=America/New_York
-      - DOCKER_MODS=linuxserver/mods:universal-calibre #optional
-      - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
-    volumes:
-      - /volume2/docker-configs/calibre-web/config:/config
-      - /volume1/files/books/:/books
-    networks:
-      - traefik-public
-    ports:
-      - 8083:8083
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.books.entryPoints=websecure"
-      - "traefik.http.routers.books.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.books.rule=Host(`books.not-really.me`)" # Edit here to change the domain name
-      - "traefik.http.services.books.loadbalancer.server.port=8083"
-      - "traefik.docker.network=traefik-public"
-      - "traefik.port=8083"
-    restart: unless-stopped
+#  calibre-web:
+#    image: lscr.io/linuxserver/calibre-web:latest
+#    container_name: calibre-web
+#    environment:
+#      - PUID=1000
+#      - PGID=100
+#      - TZ=America/New_York
+#      - DOCKER_MODS=linuxserver/mods:universal-calibre #optional
+#      - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
+#    volumes:
+#      - /volume2/docker-configs/calibre-web/config:/config
+#      - /volume1/files/books/:/books
+#    networks:
+#      - traefik-public
+#    ports:
+#      - 8083:8083
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.books.entryPoints=websecure"
+#      - "traefik.http.routers.books.tls.certResolver=letsEncrypt"
+#      - "traefik.http.routers.books.rule=Host(`books.not-really.me`)" # Edit here to change the domain name
+#      - "traefik.http.services.books.loadbalancer.server.port=8083"
+#      - "traefik.docker.network=traefik-public"
+#      - "traefik.port=8083"
+#    restart: unless-stopped
 
   pigallery2:
     image: bpatrik/pigallery2:edge-alpine
@@ -149,23 +149,6 @@ services:
       - "traefik.docker.network=traefik-public"
     restart: unless-stopped
 
-
-  utfodem:
-    image: cadeon924/utfodem:latest
-    container_name: utfodem
-    networks:
-      - traefik-public
-    ports:
-      - 12345:8000
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.utfodem.entryPoints=websecure"
-      - "traefik.http.routers.utfodem.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.utfodem.rule=Host(`cypher.not-really.me`)" # Edit here to change the domain name
-      - "traefik.http.services.utfodem.loadbalancer.server.port=8000"
-      - "traefik.docker.network=traefik-public"
-    restart: unless-stopped
- 
   copyparty:
     image: copyparty/ac:latest
     container_name: copyparty
