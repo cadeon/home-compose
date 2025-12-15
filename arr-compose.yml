@@ -130,7 +130,10 @@ services:
       - "traefik.http.routers.sabnzbd.tls.certResolver=letsEncrypt"
       - "traefik.http.routers.sabnzbd.rule=Host(`sab.not-really.me`)"
       - "traefik.http.services.sabnzbd.loadbalancer.server.port=9000"
-      - "traefik.http.routers.sabnzbd.middlewares=local-only@file"
+       # Direct middleware definition in labels
+      - "traefik.http.routers.sabnzbd.middlewares=sabnzbd-ipwhitelist"
+      - "traefik.http.middlewares.sabnzbd-ipwhitelist.ipWhiteList.sourceRange=172.31.250.0/24"
+      - "traefik.http.middlewares.sabnzbd-ipwhitelist.ipWhiteList.sourceRange=127.0.0.1/32"
       - "traefik.docker.network=traefik-public"
 
 
