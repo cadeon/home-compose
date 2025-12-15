@@ -130,7 +130,9 @@ services:
       - "traefik.http.routers.sabnzbd.tls.certResolver=letsEncrypt"
       - "traefik.http.routers.sabnzbd.rule=Host(`sab.not-really.me`)"
       - "traefik.http.services.sabnzbd.loadbalancer.server.port=9000"
-      - "traefik.http.routers.sabnzbd.middlewares=local-only"
+      - "traefik.http.routers.sabnzbd.middlewares=local-only@file"
+      - "traefik.docker.network=traefik-public"
+
 
     restart: unless-stopped
 
