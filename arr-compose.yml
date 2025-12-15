@@ -103,7 +103,6 @@ services:
   sabnzbd:
     image: lscr.io/linuxserver/sabnzbd:latest
     container_name: sabnzbd
-    network_mode: host
     environment:
       - PUID=1000
       - PGID=100
@@ -114,6 +113,8 @@ services:
       - /volume2/docker-configs/downloads:/downloads
     ports:
       - 9000:9000
+    networks:
+      - traefik-public
     ulimits:
       nofile:
         soft: 65535
