@@ -9,14 +9,14 @@ services:
     ports:
       - 1987:8080
     environment:
-      - TITLE="not-really-roll" # Changes the title of the webpage
+      - TITLE="not-really-roll" 
     networks:
       - traefik-public
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.rr.entryPoints=websecure"
       - "traefik.http.routers.rr.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.rr.rule=Host(`rr.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.routers.rr.rule=Host(`rr.not-really.me`)" 
       - "traefik.http.services.rr.loadbalancer.server.port=8080"
       - "traefik.docker.network=traefik-public"
     restart: unless-stopped
@@ -46,7 +46,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.search.entryPoints=websecure"
       - "traefik.http.routers.search.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.search.rule=Host(`search.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.routers.search.rule=Host(`search.not-really.me`)" 
       - "traefik.http.services.search.loadbalancer.server.port=8080"
       - "traefik.docker.network=traefik-public"
     restart: unless-stopped
@@ -93,7 +93,7 @@ services:
   #    - "traefik.enable=true"
   #    - "traefik.http.routers.sync.entryPoints=websecure"
   #    - "traefik.http.routers.sync.tls.certResolver=letsEncrypt"
-  #    - "traefik.http.routers.sync.rule=Host(`sync.not-really.me`)" # Edit here to change the domain name
+  #    - "traefik.http.routers.sync.rule=Host(`sync.not-really.me`)" 
   #    - "traefik.http.services.sync.loadbalancer.server.port=8384"
   #    - "traefik.docker.network=traefik-public"
   #    - "traefik.port=8384"
@@ -119,7 +119,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.books.entryPoints=websecure"
       - "traefik.http.routers.books.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.books.rule=Host(`books.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.routers.books.rule=Host(`books.not-really.me`)" 
       - "traefik.http.services.books.loadbalancer.server.port=8083"
       - "traefik.docker.network=traefik-public"
       - "traefik.port=8083"
@@ -144,7 +144,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.imgs.entryPoints=websecure"
       - "traefik.http.routers.imgs.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.imgs.rule=Host(`imgs.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.routers.imgs.rule=Host(`imgs.not-really.me`)" 
       - "traefik.http.services.imgs.loadbalancer.server.port=80"
       - "traefik.docker.network=traefik-public"
     restart: unless-stopped
@@ -183,7 +183,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.copyparty.entryPoints=websecure"
       - "traefik.http.routers.copyparty.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.copyparty.rule=Host(`files.not-really.me`)" # Edit here to change the domain name
+      - "traefik.http.routers.copyparty.rule=Host(`files.not-really.me`)" 
       - "traefik.http.services.copyparty.loadbalancer.server.port=3923"
       - "traefik.docker.network=traefik-public"
 
