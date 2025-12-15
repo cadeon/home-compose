@@ -6,22 +6,14 @@ services:
   traefik:
     image: traefik:latest
     container_name: traefik
-    ports:
-      - 80:80/tcp
-      - 443:443/tcp
-      - 172.31.250.200:8080:8080/tcp 
+    network_mode: host
     labels:
       - traefik.enable=true
-      - traefik.docker.network=traefik-public
-      - traefik.constraint-label=traefik-public
       - "--providers.docker.allowEmptyServices=true" # Enable allowEmptyServices
-      - "--entryPoints.web.address=:80"
       - "--entrypoints.websecure.http.tls.domains[0].main=not-really.me"
       - "--entrypoints.websecure.http.tls.domains[0].sans=*.not-really.me"
       - "--entrypoints.websecure.http.tls.domains[1].main=duckiesays.com"
       - "--entrypoints.websecure.http.tls.domains[1].sans=*.duckiesays.com"
-    networks:
-      - traefik-public
     volumes:
       - /volume2/docker-configs/traefik/:/etc/traefik/
       - /volume2/docker-configs/traefik/logs:/var/log
