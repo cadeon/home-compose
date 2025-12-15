@@ -114,8 +114,6 @@ services:
       - /volume2/docker-configs/downloads:/downloads
     ports:
       - 9000:9000
-    networks:
-      - traefik-public
     ulimits:
       nofile:
         soft: 65535
