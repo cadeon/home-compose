@@ -103,6 +103,7 @@ services:
   sabnzbd:
     image: lscr.io/linuxserver/sabnzbd:latest
     container_name: sabnzbd
+    network_mode: host
     environment:
       - PUID=1000
       - PGID=100
@@ -130,12 +131,6 @@ services:
       - "traefik.http.routers.sabnzbd.tls.certResolver=letsEncrypt"
       - "traefik.http.routers.sabnzbd.rule=Host(`sab.not-really.me`)"
       - "traefik.http.services.sabnzbd.loadbalancer.server.port=9000"
-       # Direct middleware definition in labels
-      - "traefik.http.routers.sabnzbd.middlewares=sabnzbd-ipwhitelist"
-      - "traefik.http.middlewares.sabnzbd-ipwhitelist.ipWhiteList.sourceRange=172.31.250.0/24"
-      - "traefik.http.middlewares.sabnzbd-ipwhitelist.ipWhiteList.sourceRange=127.0.0.1/32"
-      - "traefik.docker.network=traefik-public"
-
 
     restart: unless-stopped
 
