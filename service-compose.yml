@@ -9,7 +9,7 @@ services:
     devices:
       - /dev/bus/usb:/dev/bus/usb
     ports:
-      - "1090:8080"   # tar1090
+      - "1090:80"   # tar1090
       - "30005:30005" # Beast output
     environment:
       - TZ=America/New_York
