@@ -5,7 +5,6 @@ services:
   ultrafeeder:
     image: ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder
     container_name: ultrafeeder
-    restart: always
     devices:
       - /dev/bus/usb:/dev/bus/usb
     ports:
@@ -24,7 +23,6 @@ services:
       - ULTRAFEEDER_CONFIG=
         adsb,feed.airplanes.live,30004,beast_reduce_plus_out,uuid=6EA5C30F-6087-4D92-B79F-4C9CE075E4FF;
         mlat,feed.airplanes.live,31090,uuid=6EA5C30F-6087-4D92-B79F-4C9CE075E4FF
-
       
       - UPDATE_TAR1090=true
       - TAR1090_MESSAGERATEINTITLE=true
@@ -40,6 +38,14 @@ services:
       - TAR1090_USEROUTEAPI=true
       - GRAPHS1090_DARKMODE=true
 
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.planes.entryPoints=public-websecure"
+      - "traefik.http.routers.planes.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.planes.rule=Host(`planes.not-really.me`)"
+      - "traefik.http.services.planes.loadbalancer.server.port=80"
+      - "traefik.docker.network=traefik-public"
+    restart: unless-stopped
 
 
       
