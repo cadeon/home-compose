@@ -23,9 +23,9 @@ services:
 
       - ULTRAFEEDER_CONFIG=
         adsb,feed.airplanes.live,30004,beast_reduce_plus_out,uuid=6EA5C30F-6087-4D92-B79F-4C9CE075E4FF;
-        adsb,feed1.adsbexchange.com,30004,beast_reduce_plus_out,uuid=YROBz2GVNJWV;
+        adsb,feed1.adsbexchange.com,30004,beast_reduce_plus_out,uuid=${ADSBX_UUID};
         mlat,feed.airplanes.live,31090,uuid=6EA5C30F-6087-4D92-B79F-4C9CE075E4FF;
-        mlat,feed.adsbexchange.com,31090,39008,uuid=YROBz2GVNJWV
+        mlat,feed.adsbexchange.com,31090,39008,uuid=${ADSBX_UUID}
       
       - UPDATE_TAR1090=true
       - TAR1090_MESSAGERATEINTITLE=true
