@@ -172,7 +172,7 @@ services:
     restart: unless-stopped
 
   pigallery2:
-    image: bpatrik/pigallery2:edge-alpine
+    image: bpatrik/pigallery2:latest
     container_name: pigallery2
     environment:
       - NODE_ENV=production # set to 'debug' for full debug logging
