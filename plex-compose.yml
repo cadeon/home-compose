@@ -53,7 +53,7 @@ services:
     devices:
       - /dev/dri:/dev/dri
     ports:
-      - 8888:8888
+      - 8409:8409
     networks:
       - traefik-public
     tmpfs:
