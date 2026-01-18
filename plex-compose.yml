@@ -40,7 +40,7 @@ services:
     restart: unless-stopped
 
   ersatztv:
-    image: ghcr.io/ersatz-tv/ersatz-tv:latest
+    image: ghcr.io/ersatztv/ersatztv:latest
     container_name: ersatztv
     environment:
       - PUID=1000
