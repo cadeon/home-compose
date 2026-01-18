@@ -39,6 +39,33 @@ services:
       - "traefik.http.services.tau.loadbalancer.server.port=8181"
     restart: unless-stopped
 
+  ersatztv:
+    image: ghcr.io/ersatz-tv/ersatz-tv:latest
+    container_name: ersatztv
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=America/New_York
+      - UMASK=002
+    volumes:
+      - /volume2/docker-configs/ersatztv:/config
+      - /volume1/plex-media:/plex-media:ro
+    devices:
+      - /dev/dri:/dev/dri
+    ports:
+      - 8888:8888
+    networks:
+      - traefik-public
+    tmpfs:
+      - /transcode
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ersatz.entryPoints=websecure"
+      - "traefik.http.routers.planes.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.ersatz.rule=Host(`tv.not-really.me`)"
+      - "traefik.http.services.ersatz.loadbalancer.server.port=8409"
+    restart: unless-stopped
+
 ###### ----- Docker control ----- ######
 networks:
   traefik-public:
