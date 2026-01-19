@@ -60,9 +60,8 @@ services:
       - /transcode
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.ersatz.entryPoints=websecure"
-      - "traefik.http.routers.planes.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.ersatz.rule=Host(`tv.not-really.me`)"
+      - "traefik.http.routers.ersatz.entryPoints=zt-web"
+      - "traefik.http.routers.ersatz.rule=Host(`tv.zt.not-really.me`)"
       - "traefik.http.services.ersatz.loadbalancer.server.port=8409"
     restart: unless-stopped
 
