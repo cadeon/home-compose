@@ -41,7 +41,10 @@ services:
     ports:
       - "53:53/tcp"
       - "53:53/udp"
-      - "853:853/tcp"  
+      - "[::]:53:53/tcp"  # IPv6 port binding
+      - "[::]:53:53/udp"
+      - "853:853/tcp"  # DoT
+      - "[::]:853:853/tcp"
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
