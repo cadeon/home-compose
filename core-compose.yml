@@ -33,22 +33,11 @@ services:
   adguardhome:
     image: adguard/adguardhome:latest
     container_name: adguardhome
-    networks:
-      - traefik-public
+    network_mode: host
     volumes:
       - /volume2/docker-configs/adguard/work:/opt/adguardhome/work
       - /volume2/docker-configs/adguard/conf:/opt/adguardhome/conf
-    ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "853:853/tcp"  # DoT
-      
     restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.adguard.rule=Host(`adguard.zt.not-really.me`)"  # Adjust subdomain as needed
-      - "traefik.http.routers.adguard.entrypoints=zt-web"
-      - "traefik.http.services.adguard.loadbalancer.server.port=80"  # Use 3000 for initial setup, then change to 80
 
 
 ###### ----- Docker control ----- ######
