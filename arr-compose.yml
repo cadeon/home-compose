@@ -2,9 +2,10 @@ version: "3.7"
 
 services:
   ###### ----- Media related ----- ######
-  overseerr:
-    image: lscr.io/linuxserver/overseerr:develop
-    container_name: overseerr
+  seerr:
+    image: ghcr.io/seerr-team/seerr:latest
+    init: true
+    container_name: seerr
     environment:
       - LOG_LEVEL=info
       - TZ=America/New_York
