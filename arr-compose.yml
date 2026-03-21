@@ -13,7 +13,7 @@ services:
     ports:
       - 5055:5055
     volumes:
-      - /volume2/docker-configs/overseerr/app/config:/config
+      - /volume2/docker-configs/overseerr/app/config:/app/config
     networks:
       - traefik-public
     labels:
