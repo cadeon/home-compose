@@ -30,16 +30,6 @@ services:
     command: --interval 28800 --cleanup
     restart: unless-stopped
 
-  adguardhome:
-    image: adguard/adguardhome:latest
-    container_name: adguardhome
-    network_mode: host
-    volumes:
-      - /volume2/docker-configs/adguard/work:/opt/adguardhome/work
-      - /volume2/docker-configs/adguard/conf:/opt/adguardhome/conf
-    restart: unless-stopped
-
-
 ###### ----- Docker control ----- ######
 networks:
   traefik-public:
