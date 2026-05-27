@@ -34,8 +34,8 @@ services:
       - traefik-public
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.tau.entryPoints=zt-web"
-      - "traefik.http.routers.tau.rule=Host(`tau.zt.not-really.me`)" 
+      - "traefik.http.routers.tau.entryPoints=websecure"
+      - "traefik.http.routers.tau.rule=Host(`tau.not-really.me`)" 
       - "traefik.http.services.tau.loadbalancer.server.port=8181"
     restart: unless-stopped
 
