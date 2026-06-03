@@ -35,10 +35,7 @@ services:
     image: networkstatic/iperf3:latest
     container_name: iperf3-server
     network_mode: host
-    environment:
-      - IPERF3_SERVER_ARGS=-s -p 5201 --logfile /logs/iperf3.log
-    volumes:
-      - /volume2/docker-configs/iperf3/logs:/logs
+    command: ["-s", "-p", "5201"]
     restart: unless-stopped
 
 ###### ----- Docker control ----- ######
