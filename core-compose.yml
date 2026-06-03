@@ -32,7 +32,7 @@ services:
 
   # iperf3 server — raw TCP, exposed via host network (Traefik can't proxy this)
   iperf3:
-    image: ghcr.io/thesmartrecord/iperf3-server:latest
+    image: networkstatic/iperf3:latest
     container_name: iperf3-server
     network_mode: host
     environment:
