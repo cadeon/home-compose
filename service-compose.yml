@@ -267,7 +267,6 @@ services:
       - NODE_ENV=production
       - LLM_API_URL=https://llm.not-really.me/v1/chat/completions
       - LLM_MODEL=qwen-35b-a3b
-      - DUCKIE_BASE_URL=https://duckiesays.not-really.me
     volumes:
       - /volume2/docker-configs/duckiesays/logs:/usr/src/app/logs
     networks:
