@@ -278,6 +278,23 @@ services:
       - "traefik.docker.network=traefik-public"
     restart: unless-stopped
 
+  duckiesays-legacy:
+    image: docker.io/cadeon924/duckiesays-legacy:latest
+    container_name: duckiesays-legacy
+    environment:
+      - NODE_ENV=production
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.duckiesays-legacy.entryPoints=public-websecure"
+      - "traefik.http.routers.duckiesays-legacy.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.duckiesays-legacy.rule=Host(`legacy.duckiesays.com`)"
+      - "traefik.http.routers.duckiesays-legacy.priority=100"
+      - "traefik.http.services.duckiesays-legacy.loadbalancer.server.port=3000"
+      - "traefik.docker.network=traefik-public"
+    restart: unless-stopped
+
 ###### ----- Docker control ----- ######
 networks:
   traefik-public:
