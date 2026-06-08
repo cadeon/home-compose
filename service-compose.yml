@@ -268,8 +268,6 @@ services:
       - /volume2/docker-configs/duckiesays/logs:/usr/src/app/logs
     networks:
       - traefik-public
-    ports:
-      - 3000:3000
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.duckiesays.entryPoints=public-websecure"
