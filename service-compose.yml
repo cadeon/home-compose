@@ -260,6 +260,27 @@ services:
       - "traefik.docker.network=traefik-public"
     restart: unless-stopped
 
+  duckiesays:
+    image: docker.io/cadeon924/duckiesays:latest
+    container_name: duckiesays
+    environment:
+      - NODE_ENV=production
+      - LLM_API_URL=https://llm.not-really.me/v1/chat/completions
+      - LLM_MODEL=qwen-35b-a3b
+      - DUCKIE_BASE_URL=https://duckiesays.not-really.me
+    volumes:
+      - /volume2/docker-configs/duckiesays/logs:/usr/src/app/logs
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.duckiesays.entryPoints=public-websecure"
+      - "traefik.http.routers.duckiesays.tls.certResolver=letsEncrypt"
+      - "traefik.http.routers.duckiesays.rule=Host(`duckiesays.not-really.me`)"
+      - "traefik.http.services.duckiesays.loadbalancer.server.port=3000"
+      - "traefik.docker.network=traefik-public"
+    restart: unless-stopped
+
 ###### ----- Docker control ----- ######
 networks:
   traefik-public:
