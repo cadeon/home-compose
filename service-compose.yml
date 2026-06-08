@@ -242,15 +242,12 @@ services:
     environment:
       - MODE=standalone
       - PUID=1000
-      - PGID=100
-      - TZ=America/New_York
+      - PGID=1000
       - PORT=3000
     volumes:
       - /volume2/docker-configs/openspeedtest:/app/data
     networks:
       - traefik-public
-    ports:
-      - 3000:3000
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.speed.entryPoints=public-websecure"
@@ -271,6 +268,8 @@ services:
       - /volume2/docker-configs/duckiesays/logs:/usr/src/app/logs
     networks:
       - traefik-public
+    ports:
+      - 3000:3000
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.duckiesays.entryPoints=public-websecure"
