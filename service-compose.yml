@@ -258,7 +258,7 @@ services:
     restart: unless-stopped
 
   duckiesays:
-    image: docker.io/cadeon924/duckiesays:v20
+    image: docker.io/cadeon924/duckiesays:v21
     container_name: duckiesays
     environment:
       - NODE_ENV=production
