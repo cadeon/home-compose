@@ -258,12 +258,12 @@ services:
     restart: unless-stopped
 
   duckiesays:
-    image: docker.io/cadeon924/duckiesays:v6
+    image: docker.io/cadeon924/duckiesays:v7
     container_name: duckiesays
     environment:
       - NODE_ENV=production
-      - LLM_API_URL=https://llm.not-really.me/v1/chat/completions
-      - LLM_MODEL=qwen-35b-a3b
+      - LLM_API_URL=http://172.30.250.65:8000/v1/chat/completions
+      - LLM_MODEL=qwen
     volumes:
       - /volume2/docker-configs/duckiesays/logs:/usr/src/app/logs
     networks:
