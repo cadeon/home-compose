@@ -66,14 +66,14 @@ data:
     CLONE_OR_PULL "ComfyUI-Impact-Subpack" "https://github.com/ltdrdata/ComfyUI-Impact-Subpack.git"
     CLONE_OR_PULL "ComfyUI_IPAdapter_plus" "https://github.com/cubiq/ComfyUI_IPAdapter_plus.git"
     CLONE_OR_PULL "Derfuu_ComfyUI_ModdedNodes" "https://github.com/Derfuu/Derfuu_ComfyUI_ModdedNodes.git"
-    CLONE_OR_PULL "ComfyUI-tooling-nodes" "https://github.com/Urinx/ComfyUI-tooling-nodes.git"
+    CLONE_OR_PULL "comfyui-tooling-nodes" "https://github.com/Acly/comfyui-tooling-nodes.git"
     CLONE_OR_PULL "ComfyUI_Essential" "https://github.com/0x-jc/ComfyUI_Essential.git"
 
     # Install pip dependencies for custom nodes
     echo "=== Installing pip dependencies ==="
     cd "$CUSTOM/ComfyUI-Impact-Pack" && pip install -q -r requirements.txt
     cd "$CUSTOM/ComfyUI-Impact-Subpack" && pip install -q -r requirements.txt
-    for node in ComfyUI_IPAdapter_plus ComfyUI-tooling-nodes ComfyUI_Essential Derfuu_ComfyUI_ModdedNodes; do
+    for node in ComfyUI_IPAdapter_plus comfyui-tooling-nodes ComfyUI_Essential Derfuu_ComfyUI_ModdedNodes; do
       if [ -f "$CUSTOM/$node/requirements.txt" ]; then
         cd "$CUSTOM/$node" && pip install -q -r requirements.txt || true
       fi
