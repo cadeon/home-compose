@@ -112,10 +112,18 @@ spec:
             - /bin/bash
             - -ec
             - |
-              # Patch start-xorg.sh: clean stale locks/sockets and remove vt7 (causes SIGINT in containers)
+              # Fix crash loop: patch Xorg startup and supervisor config
               if [ -f /usr/bin/start-xorg.sh ]; then
                 sed -i '/^set -e/a rm -f /tmp/.X*-lock /tmp/.X11-unix/X*' /usr/bin/start-xorg.sh
                 sed -i 's/ vt7 / /' /usr/bin/start-xorg.sh
+                # Remove SIGINT from trap so stray INT signals dont kill Xorg
+                sed -i 's/trap _term SIGTERM SIGINT/trap _term SIGTERM/' /usr/bin/start-xorg.sh
+              fi
+              # Change stopsignal from INT to TERM and disable stopasgroup for xorg
+              # to prevent cascade kills from dying child processes (xiccd, etc.)
+              if [ -f /etc/supervisor.d/xorg.ini ]; then
+                sed -i 's/stopsignal=INT/stopsignal=TERM/' /etc/supervisor.d/xorg.ini
+                echo 'stopasgroup=false' >> /etc/supervisor.d/xorg.ini
               fi
               exec /entrypoint.sh
           envFrom:
