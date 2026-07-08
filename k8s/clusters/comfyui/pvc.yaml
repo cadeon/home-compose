@@ -1,0 +1,12 @@
+# Persistent storage for ComfyUI data (models, outputs, custom nodes, input)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: comfyui-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: local-path

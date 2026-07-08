@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: comfyui
+  labels:
+    app: comfyui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: comfyui
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: comfyui
+    spec:
+      hostname: comfyui
+      restartPolicy: Always
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - novacore
+      containers:
+        - name: comfyui
+          image: rocm/pytorch:latest
+          command:
+            - /bin/bash
+            - -ec
+            - |
+              /opt/setup/setup.sh
+              exec /opt/venv/bin/python /opt/ComfyUI/main.py \
+                --listen 0.0.0.0 \
+                --port 8188 \
+                --cuda-device 0
+          ports:
+            - containerPort: 8188
+              name: http
+          env:
+            - name: DEBIAN_FRONTEND
+              value: "noninteractive"
+            - name: LD_LIBRARY_PATH
+              value: "/opt/rocm/lib"
+            - name: HSA_ENABLE_SDMA
+              value: "0"
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            - name: PATH
+              value: "/opt/venv/bin:/opt/rocm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+          resources:
+            requests:
+              cpu: "4"
+              memory: "8Gi"
+              amd.com/gpu: "1"
+            limits:
+              cpu: "16"
+              memory: "48Gi"
+              amd.com/gpu: "1"
+          volumeMounts:
+            - name: setup
+              mountPath: /opt/setup
+            - name: comfyui-data
+              mountPath: /opt/ComfyUI/data
+            - name: comfyui-data
+              mountPath: /opt/ComfyUI/output
+              subPath: output
+            - name: comfyui-data
+              mountPath: /opt/ComfyUI/input
+              subPath: input
+            - name: comfyui-data
+              mountPath: /opt/ComfyUI/custom_nodes
+              subPath: custom_nodes
+            - name: dev-dri
+              mountPath: /dev/dri
+          securityContext:
+            allowPrivilegeEscalation: false
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 5"]
+      volumes:
+        - name: setup
+          configMap:
+            name: comfyui-setup
+            defaultMode: 0755
+        - name: comfyui-data
+          persistentVolumeClaim:
+            claimName: comfyui-data
+        - name: dev-dri
+          hostPath:
+            path: /dev/dri

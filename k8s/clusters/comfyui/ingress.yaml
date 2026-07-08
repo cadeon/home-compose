@@ -1,22 +1,23 @@
-# Ingress for noVNC web access
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: steam-ingress
+  name: comfyui
   annotations:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+    nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   ingressClassName: nginx
   rules:
-    - host: steam.k8s.not-really.me
+    - host: comfy.k8s.not-really.me
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: steam-novnc
+                name: comfyui
                 port:
-                  number: 8083
+                  number: 8188

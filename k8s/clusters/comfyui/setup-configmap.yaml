@@ -1,0 +1,61 @@
+# ConfigMap with startup script
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: comfyui-setup
+data:
+  setup.sh: |
+    #!/bin/bash
+    set -e
+
+    # Only run setup if ComfyUI isn't already installed
+    if [ ! -d "/opt/ComfyUI/.git" ]; then
+      echo "=== Installing ComfyUI ==="
+      cd /opt
+      git clone https://github.com/comfyanonymous/ComfyUI.git
+      cd ComfyUI
+
+      echo "=== Installing base dependencies ==="
+      pip install -r requirements.txt
+
+      echo "=== Installing ComfyUI-Manager ==="
+      mkdir -p custom_nodes
+      git clone https://github.com/ltdrdata/ComfyUI-Manager.git custom_nodes/ComfyUI-Manager
+
+      echo "=== Installing Impact Pack (face detection/detailer) ==="
+      git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack.git custom_nodes/ComfyUI-Impact-Pack
+      git clone https://github.com/ltdrdata/ComfyUI-Impact-Subpack.git custom_nodes/ComfyUI-Impact-Subpack
+
+      echo "=== Installing IP-Adapter Plus ==="
+      git clone https://github.com/cubiq/ComfyUI_IPAdapter_plus.git custom_nodes/ComfyUI_IPAdapter_plus
+
+      echo "=== Installing WAS Node Suite ==="
+      git clone https://github.com/Derfuu/Derfuu_ComfyUI_ModdedNodes.git custom_nodes/Derfuu_ComfyUI_ModdedNodes
+
+      echo "=== Installing ComfyUI-tooling-nodes ==="
+      git clone https://github.com/Urinx/ComfyUI-tooling-nodes.git custom_nodes/ComfyUI-tooling-nodes
+
+      echo "=== Installing ComfyUI-Essential ==="
+      git clone https://github.com/0x-jc/ComfyUI_Essential.git custom_nodes/ComfyUI_Essential
+
+      echo "=== Installing custom nodes dependencies ==="
+      cd custom_nodes/ComfyUI-Impact-Pack
+      pip install -r requirements.txt
+      cd ../ComfyUI-Impact-Subpack
+      pip install -r requirements.txt
+      cd ../ComfyUI_IPAdapter_plus
+      pip install -r requirements.txt 2>/dev/null || true
+      cd ../ComfyUI-tooling-nodes
+      pip install -r requirements.txt 2>/dev/null || true
+      cd ../ComfyUI_Essential
+      pip install -r requirements.txt 2>/dev/null || true
+      cd ../Derfuu_ComfyUI_ModdedNodes
+      pip install -r requirements.txt 2>/dev/null || true
+      cd ../../..
+
+      echo "=== Setup complete ==="
+    else
+      echo "ComfyUI already installed, skipping setup"
+      cd /opt/ComfyUI/custom_nodes/ComfyUI-Manager
+      git pull || true
+    fi
