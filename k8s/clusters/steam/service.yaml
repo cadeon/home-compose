@@ -11,3 +11,10 @@ spec:
     - name: novnc
       port: 8083
       targetPort: 8083
+    - name: sunshine-https
+      port: 47990
+      targetPort: 47990
+    - name: sunshine-udp
+      port: 47999
+      targetPort: 47999
+      protocol: UDP
