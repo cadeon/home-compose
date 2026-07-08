@@ -108,12 +108,27 @@ spec:
               hostPort: 47999
               protocol: UDP
               name: sunshine-udp
+          command:
+            - /bin/bash
+            - -ec
+            - |
+              # Remove stale X lock files from previous crashes
+              rm -f /tmp/.X*-lock
+              # Patch start-xorg.sh to clean stale locks on every restart
+              if [ -f /usr/bin/start-xorg.sh ]; then
+                sed -i '/^set -e/a rm -f /tmp/.X*-lock' /usr/bin/start-xorg.sh
+              fi
+              exec /usr/bin/supervisord -n -c /etc/supervisord.conf
           envFrom:
             - configMapRef:
                 name: steam-env
           env:
             - name: USER_PASSWORD
               value: "***"
+            - name: LD_LIBRARY_PATH
+              value: "/usr/lib/x86_64-linux-gnu/dri:/usr/lib/dri"
+            - name: GPGPU_TOOLS_PATH
+              value: "/opt/rocm"
           securityContext:
             privileged: true
             capabilities:
