@@ -1,0 +1,163 @@
+# Persistent storage for Steam home directory
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: steam-home
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: local-path
+---
+# Persistent storage for games library
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: steam-games
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: local-path
+---
+# Persistent storage for shared sockets (X11, pulse)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: steam-sockets
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-path
+---
+# ConfigMap with environment variables
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: steam-env
+data:
+  TZ: "America/New_York"
+  USER_LOCALES: "en_US.UTF-8 UTF-8"
+  DISPLAY: ":55"
+  PUID: "1000"
+  PGID: "1000"
+  UMASK: "000"
+  MODE: "primary"
+  WEB_UI_MODE: "vnc"
+  ENABLE_VNC_AUDIO: "true"
+  PORT_NOVNC_WEB: "8083"
+  ENABLE_STEAM: "true"
+  STEAM_ARGS: "-silent"
+  ENABLE_SUNSHINE: "false"
+  ENABLE_EVDEV_INPUTS: "true"
+  FORCE_X11_DUMMY_CONFIG: "true"
+---
+# Deployment for Steam Headless
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: steam-headless
+  labels:
+    app: steam-headless
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: steam-headless
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: steam-headless
+    spec:
+      hostNetwork: true
+      hostname: steamheadless
+      restartPolicy: Always
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - novacore
+      containers:
+        - name: steam
+          image: josh5/steam-headless:latest
+          ports:
+            - containerPort: 8083
+              hostPort: 8083
+              name: novnc
+          envFrom:
+            - configMapRef:
+                name: steam-env
+          env:
+            - name: USER_PASSWORD
+              value: "***"
+          securityContext:
+            privileged: true
+            capabilities:
+              add:
+                - NET_ADMIN
+                - SYS_ADMIN
+                - SYS_NICE
+          resources:
+            requests:
+              cpu: "2"
+              memory: "4Gi"
+              amd.com/gpu: "1"
+            limits:
+              cpu: "4"
+              memory: "8Gi"
+              amd.com/gpu: "1"
+          volumeMounts:
+            - name: steam-home
+              mountPath: /home/default
+            - name: steam-games
+              mountPath: /mnt/games
+            - name: steam-sockets
+              mountPath: /tmp/.X11-unix
+              subPath: .X11-unix
+            - name: steam-sockets
+              mountPath: /tmp/pulse
+              subPath: pulse
+            - name: dev-fuse
+              mountPath: /dev/fuse
+            - name: dev-uinput
+              mountPath: /dev/uinput
+            - name: dev-dri
+              mountPath: /dev/dri
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 5"]
+      volumes:
+        - name: steam-home
+          persistentVolumeClaim:
+            claimName: steam-home
+        - name: steam-games
+          persistentVolumeClaim:
+            claimName: steam-games
+        - name: steam-sockets
+          persistentVolumeClaim:
+            claimName: steam-sockets
+        - name: dev-fuse
+          hostPath:
+            path: /dev/fuse
+        - name: dev-uinput
+          hostPath:
+            path: /dev/uinput
+        - name: dev-dri
+          hostPath:
+            path: /dev/dri

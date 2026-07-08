@@ -1,0 +1,22 @@
+# Ingress for noVNC web access
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: steam-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: steam.novacore.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: steam-novnc
+                port:
+                  number: 8083
