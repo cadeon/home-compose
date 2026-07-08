@@ -37,6 +37,13 @@ spec:
             - -ec
             - |
               /opt/setup/setup.sh
+              # Copy models from persistent data/ dirs to ephemeral models/ dir
+              for src in checkpoints vae clip_vision loras embeddings controlnet upscale_models latent_upscale_models hypernetworks model_patches gligen photomaker style_models; do
+                [ -d "/opt/ComfyUI/data/$src" ] && cp -n /opt/ComfyUI/data/$src/* /opt/ComfyUI/models/$src/ 2>/dev/null || true
+              done
+              [ -d "/opt/ComfyUI/data/ultralytics" ] && mkdir -p /opt/ComfyUI/models/ultralytics/bbox && cp -n /opt/ComfyUI/data/ultralytics/* /opt/ComfyUI/models/ultralytics/bbox/ 2>/dev/null || true
+              [ -d "/opt/ComfyUI/data/sams" ] && mkdir -p /opt/ComfyUI/models/sams && cp -n /opt/ComfyUI/data/sams/* /opt/ComfyUI/models/sams/ 2>/dev/null || true
+              [ -d "/opt/ComfyUI/data/facelib" ] && mkdir -p /opt/ComfyUI/models/facelib && cp -n /opt/ComfyUI/data/facelib/* /opt/ComfyUI/models/facelib/ 2>/dev/null || true
               exec /opt/venv/bin/python /opt/ComfyUI/main.py \
                 --listen 0.0.0.0 \
                 --port 8188 \
@@ -69,9 +76,6 @@ spec:
               mountPath: /opt/setup
             - name: comfyui-data
               mountPath: /opt/ComfyUI/data
-            - name: comfyui-data
-              mountPath: /opt/ComfyUI/models
-              subPath: models
             - name: comfyui-data
               mountPath: /opt/ComfyUI/output
               subPath: output
