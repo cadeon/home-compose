@@ -8,56 +8,95 @@ data:
     #!/bin/bash
     set -e
 
-    # Only run setup if ComfyUI isn't already installed (check for main.py + custom_nodes)
-    if [ ! -f "/opt/ComfyUI/main.py" ] || [ ! -d "/opt/ComfyUI/custom_nodes/ComfyUI-Manager" ]; then
-      # Clean any leftover partial install
-      rm -rf /opt/ComfyUI
-      echo "=== Installing ComfyUI ==="
-      cd /opt
-      git clone https://github.com/comfyanonymous/ComfyUI.git
-      cd ComfyUI
+    COMFY="/opt/ComfyUI"
+    CUSTOM="$COMFY/custom_nodes"
+
+    # Check if we need full install or just updates
+    NEED_INSTALL=true
+    if [ -f "$COMFY/main.py" ] && [ -d "$CUSTOM/ComfyUI-Manager" ]; then
+      NEED_INSTALL=false
+    fi
+
+    if [ "$NEED_INSTALL" = true ]; then
+      # If ComfyUI dir exists but is incomplete, update in place
+      if [ -d "$COMFY" ]; then
+        echo "=== Updating existing partial ComfyUI ==="
+        cd "$COMFY"
+        git pull || true
+      else
+        echo "=== Fresh install: cloning ComfyUI ==="
+        cd /opt
+        git clone https://github.com/comfyanonymous/ComfyUI.git
+        cd ComfyUI
+      fi
 
       echo "=== Installing base dependencies ==="
       pip install -r requirements.txt
-
-      echo "=== Installing ComfyUI-Manager ==="
-      mkdir -p custom_nodes
-      git clone https://github.com/ltdrdata/ComfyUI-Manager.git custom_nodes/ComfyUI-Manager
-
-      echo "=== Installing Impact Pack (face detection/detailer) ==="
-      git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack.git custom_nodes/ComfyUI-Impact-Pack
-      git clone https://github.com/ltdrdata/ComfyUI-Impact-Subpack.git custom_nodes/ComfyUI-Impact-Subpack
-
-      echo "=== Installing IP-Adapter Plus ==="
-      git clone https://github.com/cubiq/ComfyUI_IPAdapter_plus.git custom_nodes/ComfyUI_IPAdapter_plus
-
-      echo "=== Installing WAS Node Suite ==="
-      git clone https://github.com/Derfuu/Derfuu_ComfyUI_ModdedNodes.git custom_nodes/Derfuu_ComfyUI_ModdedNodes
-
-      echo "=== Installing ComfyUI-tooling-nodes ==="
-      git clone https://github.com/Urinx/ComfyUI-tooling-nodes.git custom_nodes/ComfyUI-tooling-nodes
-
-      echo "=== Installing ComfyUI-Essential ==="
-      git clone https://github.com/0x-jc/ComfyUI_Essential.git custom_nodes/ComfyUI_Essential
-
-      echo "=== Installing custom nodes dependencies ==="
-      cd custom_nodes/ComfyUI-Impact-Pack
-      pip install -r requirements.txt
-      cd ../ComfyUI-Impact-Subpack
-      pip install -r requirements.txt
-      cd ../ComfyUI_IPAdapter_plus
-      pip install -r requirements.txt 2>/dev/null || true
-      cd ../ComfyUI-tooling-nodes
-      pip install -r requirements.txt 2>/dev/null || true
-      cd ../ComfyUI_Essential
-      pip install -r requirements.txt 2>/dev/null || true
-      cd ../Derfuu_ComfyUI_ModdedNodes
-      pip install -r requirements.txt 2>/dev/null || true
-      cd ../../..
-
-      echo "=== Setup complete ==="
     else
-      echo "ComfyUI already installed, skipping setup"
-      cd /opt/ComfyUI/custom_nodes/ComfyUI-Manager
+      echo "=== ComfyUI installed, updating ==="
+      cd "$COMFY"
       git pull || true
     fi
+
+    # Always ensure custom nodes are present
+    mkdir -p "$CUSTOM"
+
+    echo "=== Installing/Updating ComfyUI-Manager ==="
+    if [ -d "$CUSTOM/ComfyUI-Manager" ]; then
+      cd "$CUSTOM/ComfyUI-Manager" && git pull || true
+    else
+      git clone https://github.com/ltdrdata/ComfyUI-Manager.git "$CUSTOM/ComfyUI-Manager"
+    fi
+
+    echo "=== Installing/Updating Impact Pack ==="
+    if [ -d "$CUSTOM/ComfyUI-Impact-Pack" ]; then
+      cd "$CUSTOM/ComfyUI-Impact-Pack" && git pull || true
+    else
+      git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack.git "$CUSTOM/ComfyUI-Impact-Pack"
+    fi
+
+    if [ -d "$CUSTOM/ComfyUI-Impact-Subpack" ]; then
+      cd "$CUSTOM/ComfyUI-Impact-Subpack" && git pull || true
+    else
+      git clone https://github.com/ltdrdata/ComfyUI-Impact-Subpack.git "$CUSTOM/ComfyUI-Impact-Subpack"
+    fi
+
+    echo "=== Installing/Updating IP-Adapter Plus ==="
+    if [ -d "$CUSTOM/ComfyUI_IPAdapter_plus" ]; then
+      cd "$CUSTOM/ComfyUI_IPAdapter_plus" && git pull || true
+    else
+      git clone https://github.com/cubiq/ComfyUI_IPAdapter_plus.git "$CUSTOM/ComfyUI_IPAdapter_plus"
+    fi
+
+    echo "=== Installing/Updating WAS Node Suite ==="
+    if [ -d "$CUSTOM/Derfuu_ComfyUI_ModdedNodes" ]; then
+      cd "$CUSTOM/Derfuu_ComfyUI_ModdedNodes" && git pull || true
+    else
+      git clone https://github.com/Derfuu/Derfuu_ComfyUI_ModdedNodes.git "$CUSTOM/Derfuu_ComfyUI_ModdedNodes"
+    fi
+
+    echo "=== Installing/Updating ComfyUI-tooling-nodes ==="
+    if [ -d "$CUSTOM/ComfyUI-tooling-nodes" ]; then
+      cd "$CUSTOM/ComfyUI-tooling-nodes" && git pull || true
+    else
+      git clone https://github.com/Urinx/ComfyUI-tooling-nodes.git "$CUSTOM/ComfyUI-tooling-nodes"
+    fi
+
+    echo "=== Installing/Updating ComfyUI-Essential ==="
+    if [ -d "$CUSTOM/ComfyUI_Essential" ]; then
+      cd "$CUSTOM/ComfyUI_Essential" && git pull || true
+    else
+      git clone https://github.com/0x-jc/ComfyUI_Essential.git "$CUSTOM/ComfyUI_Essential"
+    fi
+
+    # Install pip dependencies for custom nodes
+    echo "=== Installing custom nodes pip dependencies ==="
+    cd "$CUSTOM/ComfyUI-Impact-Pack" && pip install -r requirements.txt 2>&1 | tail -3
+    cd "$CUSTOM/ComfyUI-Impact-Subpack" && pip install -r requirements.txt 2>&1 | tail -3
+    cd "$CUSTOM/ComfyUI_IPAdapter_plus" && pip install -r requirements.txt 2>&1 | tail -3 || true
+    cd "$CUSTOM/ComfyUI-tooling-nodes" && pip install -r requirements.txt 2>&1 | tail -3 || true
+    cd "$CUSTOM/ComfyUI_Essential" && pip install -r requirements.txt 2>&1 | tail -3 || true
+    cd "$CUSTOM/Derfuu_ComfyUI_ModdedNodes" && pip install -r requirements.txt 2>&1 | tail -3 || true
+
+    cd "$COMFY"
+    echo "=== Setup complete ==="
