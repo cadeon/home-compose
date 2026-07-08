@@ -8,8 +8,10 @@ data:
     #!/bin/bash
     set -e
 
-    # Only run setup if ComfyUI isn't already installed
-    if [ ! -d "/opt/ComfyUI/.git" ]; then
+    # Only run setup if ComfyUI isn't already installed (check for main.py + custom_nodes)
+    if [ ! -f "/opt/ComfyUI/main.py" ] || [ ! -d "/opt/ComfyUI/custom_nodes/ComfyUI-Manager" ]; then
+      # Clean any leftover partial install
+      rm -rf /opt/ComfyUI
       echo "=== Installing ComfyUI ==="
       cd /opt
       git clone https://github.com/comfyanonymous/ComfyUI.git
