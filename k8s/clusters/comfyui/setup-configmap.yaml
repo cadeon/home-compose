@@ -21,7 +21,7 @@ data:
       if [ -d "$COMFY" ]; then
         cd "$COMFY"
         find . -maxdepth 1 -not -name '.' \
-          -not -name 'data' -not -name 'output' -not -name 'input' -not -name 'custom_nodes' \
+          -not -name 'data' -not -name 'output' -not -name 'input' -not -name 'custom_nodes' -not -name 'models' \
           -exec rm -rf {} +
         rm -f custom_nodes/example_node.py.example custom_nodes/websocket_image_save.py
         rm -f input/example.png
