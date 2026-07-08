@@ -26,10 +26,17 @@ data:
         find . -maxdepth 1 -not -name '.' \
           -not -name 'data' -not -name 'output' -not -name 'input' -not -name 'custom_nodes' \
           -exec rm -rf {} +
+        # Clean example files that conflict with git pull
+        rm -f custom_nodes/example_node.py.example custom_nodes/websocket_image_save.py
+        rm -f input/example.png
+        rm -f output/_output_images_will_be_put_here
         # Now init git and pull
         git init -b master
         git remote add origin https://github.com/comfyanonymous/ComfyUI.git
-        git pull --depth=1 origin master
+        git pull --depth=1 origin master || {
+          # If pull still fails, force the files
+          git pull --depth=1 origin master --strategy-option=ours || true
+        }
       else
         cd /opt
         git clone --depth=1 https://github.com/comfyanonymous/ComfyUI.git
