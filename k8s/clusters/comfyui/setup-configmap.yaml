@@ -11,92 +11,69 @@ data:
     COMFY="/opt/ComfyUI"
     CUSTOM="$COMFY/custom_nodes"
 
-    # Check if we need full install or just updates
-    NEED_INSTALL=true
-    if [ -f "$COMFY/main.py" ] && [ -d "$CUSTOM/ComfyUI-Manager" ]; then
-      NEED_INSTALL=false
-    fi
-
-    if [ "$NEED_INSTALL" = true ]; then
-      # If ComfyUI dir exists but is incomplete, update in place
-      if [ -d "$COMFY" ]; then
-        echo "=== Updating existing partial ComfyUI ==="
-        cd "$COMFY"
-        git pull || true
-      else
-        echo "=== Fresh install: cloning ComfyUI ==="
-        cd /opt
-        git clone https://github.com/comfyanonymous/ComfyUI.git
-        cd ComfyUI
-      fi
-
-      echo "=== Installing base dependencies ==="
-      pip install -r requirements.txt
-    else
+    # Check if we have a working ComfyUI install with Manager
+    if [ -f "$COMFY/main.py" ] && [ -f "$COMFY/requirements.txt" ] && [ -d "$CUSTOM/ComfyUI-Manager" ]; then
       echo "=== ComfyUI installed, updating ==="
       cd "$COMFY"
       git pull || true
+    else
+      echo "=== Fresh install of ComfyUI ==="
+      # Remove whatever is at /opt/ComfyUI except the mounted subdirs
+      # The PVC mounts: data, output, input, custom_nodes — protect those
+      for keep in data output input custom_nodes; do
+        if [ -d "$COMFY/$keep" ]; then
+          mv "$COMFY/$keep" "/tmp/comfy_${keep}_backup"
+        fi
+      done
+      rm -rf "$COMFY"
+
+      cd /opt
+      git clone https://github.com/comfyanonymous/ComfyUI.git
+      cd ComfyUI
+
+      # Restore mounted dirs
+      for keep in data output input custom_nodes; do
+        if [ -d "/tmp/comfy_${keep}_backup" ]; then
+          mv "/tmp/comfy_${keep}_backup" "$COMFY/$keep"
+          rm -rf "/tmp/comfy_${keep}_backup"
+        fi
+      done
+
+      echo "=== Installing base dependencies ==="
+      pip install -r requirements.txt
     fi
 
     # Always ensure custom nodes are present
     mkdir -p "$CUSTOM"
 
-    echo "=== Installing/Updating ComfyUI-Manager ==="
-    if [ -d "$CUSTOM/ComfyUI-Manager" ]; then
-      cd "$CUSTOM/ComfyUI-Manager" && git pull || true
-    else
-      git clone https://github.com/ltdrdata/ComfyUI-Manager.git "$CUSTOM/ComfyUI-Manager"
-    fi
+    CLONE_OR_PULL() {
+      local name="$1" url="$2"
+      echo "=== $name ==="
+      if [ -d "$CUSTOM/$name" ] && [ -d "$CUSTOM/$name/.git" ]; then
+        cd "$CUSTOM/$name" && git pull || true
+      else
+        rm -rf "$CUSTOM/$name"
+        git clone "$url" "$CUSTOM/$name"
+      fi
+    }
 
-    echo "=== Installing/Updating Impact Pack ==="
-    if [ -d "$CUSTOM/ComfyUI-Impact-Pack" ]; then
-      cd "$CUSTOM/ComfyUI-Impact-Pack" && git pull || true
-    else
-      git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack.git "$CUSTOM/ComfyUI-Impact-Pack"
-    fi
-
-    if [ -d "$CUSTOM/ComfyUI-Impact-Subpack" ]; then
-      cd "$CUSTOM/ComfyUI-Impact-Subpack" && git pull || true
-    else
-      git clone https://github.com/ltdrdata/ComfyUI-Impact-Subpack.git "$CUSTOM/ComfyUI-Impact-Subpack"
-    fi
-
-    echo "=== Installing/Updating IP-Adapter Plus ==="
-    if [ -d "$CUSTOM/ComfyUI_IPAdapter_plus" ]; then
-      cd "$CUSTOM/ComfyUI_IPAdapter_plus" && git pull || true
-    else
-      git clone https://github.com/cubiq/ComfyUI_IPAdapter_plus.git "$CUSTOM/ComfyUI_IPAdapter_plus"
-    fi
-
-    echo "=== Installing/Updating WAS Node Suite ==="
-    if [ -d "$CUSTOM/Derfuu_ComfyUI_ModdedNodes" ]; then
-      cd "$CUSTOM/Derfuu_ComfyUI_ModdedNodes" && git pull || true
-    else
-      git clone https://github.com/Derfuu/Derfuu_ComfyUI_ModdedNodes.git "$CUSTOM/Derfuu_ComfyUI_ModdedNodes"
-    fi
-
-    echo "=== Installing/Updating ComfyUI-tooling-nodes ==="
-    if [ -d "$CUSTOM/ComfyUI-tooling-nodes" ]; then
-      cd "$CUSTOM/ComfyUI-tooling-nodes" && git pull || true
-    else
-      git clone https://github.com/Urinx/ComfyUI-tooling-nodes.git "$CUSTOM/ComfyUI-tooling-nodes"
-    fi
-
-    echo "=== Installing/Updating ComfyUI-Essential ==="
-    if [ -d "$CUSTOM/ComfyUI_Essential" ]; then
-      cd "$CUSTOM/ComfyUI_Essential" && git pull || true
-    else
-      git clone https://github.com/0x-jc/ComfyUI_Essential.git "$CUSTOM/ComfyUI_Essential"
-    fi
+    CLONE_OR_PULL "ComfyUI-Manager" "https://github.com/ltdrdata/ComfyUI-Manager.git"
+    CLONE_OR_PULL "ComfyUI-Impact-Pack" "https://github.com/ltdrdata/ComfyUI-Impact-Pack.git"
+    CLONE_OR_PULL "ComfyUI-Impact-Subpack" "https://github.com/ltdrdata/ComfyUI-Impact-Subpack.git"
+    CLONE_OR_PULL "ComfyUI_IPAdapter_plus" "https://github.com/cubiq/ComfyUI_IPAdapter_plus.git"
+    CLONE_OR_PULL "Derfuu_ComfyUI_ModdedNodes" "https://github.com/Derfuu/Derfuu_ComfyUI_ModdedNodes.git"
+    CLONE_OR_PULL "ComfyUI-tooling-nodes" "https://github.com/Urinx/ComfyUI-tooling-nodes.git"
+    CLONE_OR_PULL "ComfyUI_Essential" "https://github.com/0x-jc/ComfyUI_Essential.git"
 
     # Install pip dependencies for custom nodes
-    echo "=== Installing custom nodes pip dependencies ==="
-    cd "$CUSTOM/ComfyUI-Impact-Pack" && pip install -r requirements.txt 2>&1 | tail -3
-    cd "$CUSTOM/ComfyUI-Impact-Subpack" && pip install -r requirements.txt 2>&1 | tail -3
-    cd "$CUSTOM/ComfyUI_IPAdapter_plus" && pip install -r requirements.txt 2>&1 | tail -3 || true
-    cd "$CUSTOM/ComfyUI-tooling-nodes" && pip install -r requirements.txt 2>&1 | tail -3 || true
-    cd "$CUSTOM/ComfyUI_Essential" && pip install -r requirements.txt 2>&1 | tail -3 || true
-    cd "$CUSTOM/Derfuu_ComfyUI_ModdedNodes" && pip install -r requirements.txt 2>&1 | tail -3 || true
+    echo "=== Installing pip dependencies ==="
+    cd "$CUSTOM/ComfyUI-Impact-Pack" && pip install -q -r requirements.txt
+    cd "$CUSTOM/ComfyUI-Impact-Subpack" && pip install -q -r requirements.txt
+    for node in ComfyUI_IPAdapter_plus ComfyUI-tooling-nodes ComfyUI_Essential Derfuu_ComfyUI_ModdedNodes; do
+      if [ -f "$CUSTOM/$node/requirements.txt" ]; then
+        cd "$CUSTOM/$node" && pip install -q -r requirements.txt || true
+      fi
+    done
 
     cd "$COMFY"
     echo "=== Setup complete ==="
