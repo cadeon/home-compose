@@ -112,9 +112,9 @@ spec:
             - /bin/bash
             - -ec
             - |
-              # Patch start-xorg.sh to clean stale locks before each Xorg start
+              # Patch start-xorg.sh to clean stale locks and sockets before each Xorg start
               if [ -f /usr/bin/start-xorg.sh ]; then
-                sed -i '/^set -e/a rm -f /tmp/.X*-lock' /usr/bin/start-xorg.sh
+                sed -i '/^set -e/a rm -f /tmp/.X*-lock /tmp/.X11-unix/X*' /usr/bin/start-xorg.sh
               fi
               exec /entrypoint.sh
           envFrom:
