@@ -112,12 +112,29 @@ spec:
             - /bin/bash
             - -ec
             - |
-              # Fix crash loop: patch Xorg startup and supervisor config
+              # Fix crash loop: patch start-xorg.sh and supervisor config
               if [ -f /usr/bin/start-xorg.sh ]; then
-                sed -i '/^set -e/a rm -f /tmp/.X*-lock /tmp/.X11-unix/X*' /usr/bin/start-xorg.sh
-                sed -i 's/ vt7 / /' /usr/bin/start-xorg.sh
-                # Remove SIGINT from trap so stray INT signals dont kill Xorg
-                sed -i 's/trap _term SIGTERM SIGINT/trap _term SIGTERM/' /usr/bin/start-xorg.sh
+                # Replace the script entirely to avoid signal cascade issues
+                cat > /usr/bin/start-xorg.sh << 'XORGSCRIPT'
+#!/usr/bin/env bash
+rm -f /tmp/.X*-lock /tmp/.X11-unix/X*
+source /usr/bin/common-functions.sh
+if [ $(grep autostart /etc/supervisor.d/udev.ini 2> /dev/null) == "autostart=true" ]; then
+    wait_for_udev
+fi
+# Ignore all signals - only exit when Xorg exits naturally
+trap '' INT TERM HUP QUIT
+exec /usr/bin/Xorg \
+    -ac -noreset -novtswitch -sharevts \
+    +extension RANDR +extension RENDER +extension GLX \
+    +extension XVideo +extension DOUBLE-BUFFER +extension SECURITY \
+    +extension DAMAGE +extension X-Resource \
+    -extension XINERAMA -xinerama \
+    +extension Composite +extension COMPOSITE \
+    -dpms -s off -nolisten tcp -iglx -verbose \
+    "${DISPLAY:?}"
+XORGSCRIPT
+                chmod +x /usr/bin/start-xorg.sh
               fi
               # Change stopsignal from INT to TERM and disable stopasgroup for xorg
               # to prevent cascade kills from dying child processes (xiccd, etc.)
