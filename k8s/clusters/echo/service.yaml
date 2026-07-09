@@ -3,13 +3,9 @@ kind: Service
 metadata:
   name: echo
 spec:
-  type: ClusterIP
   selector:
     app: echo
   ports:
     - name: http
-      port: 8642
-      targetPort: 8642
-    - name: dashboard
       port: 9119
       targetPort: 9119

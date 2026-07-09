@@ -9,15 +9,40 @@ spec:
   selector:
     matchLabels:
       app: echo
-  strategy:
-    type: Recreate
   template:
     metadata:
       labels:
         app: echo
     spec:
-      hostname: echo
-      restartPolicy: Always
+      volumes:
+        - name: setup
+          configMap:
+            name: echo-setup
+            defaultMode: 0755
+        - name: echo-files
+          configMap:
+            name: echo-setup
+        - name: echo-data
+          persistentVolumeClaim:
+            claimName: echo-data
+      initContainers:
+        - name: setup
+          image: python:3.12-slim
+          command: ["/opt/setup/setup.sh"]
+          volumeMounts:
+            - name: setup
+              mountPath: /opt/setup
+            - name: echo-files
+              mountPath: /opt/echo
+            - name: echo-data
+              mountPath: /home/hermes/.hermes
+          env:
+            - name: HERMES_HOME
+              value: "/home/hermes/.hermes"
+            - name: DEBIAN_FRONTEND
+              value: "noninteractive"
+            - name: PYTHONUNBUFFERED
+              value: "1"
       containers:
         - name: echo
           image: python:3.12-slim
@@ -26,16 +51,18 @@ spec:
             - -ec
             - |
               /opt/setup/setup.sh
-              # Start dashboard in background
-              hermes dashboard --host 0.0.0.0 --port 9119 --no-open &
-              sleep 2
-              # Start gateway as main process
-              exec hermes gateway run
+              # hermes dashboard starts the gateway internally
+              exec hermes dashboard --host 0.0.0.0 --port 9119 --no-open
+          volumeMounts:
+            - name: setup
+              mountPath: /opt/setup
+            - name: echo-files
+              mountPath: /opt/echo
+            - name: echo-data
+              mountPath: /home/hermes/.hermes
           ports:
-            - containerPort: 8642
-              name: http
             - containerPort: 9119
-              name: dashboard
+              name: http
           env:
             - name: DEBIAN_FRONTEND
               value: "noninteractive"
@@ -54,56 +81,51 @@ spec:
               value: "http://172.30.250.101:8080/v1"
             - name: MODEL_API_KEY
               value: "optional"
-            # API Server config
+            # Dashboard config
+            - name: HERMES_DASHBOARD
+              value: "true"
+            - name: HERMES_DASHBOARD_BASIC_AUTH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: echo-credentials
+                  key: dashboard_user
+            - name: HERMES_DASHBOARD_BASIC_AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: echo-credentials
+                  key: dashboard_pass
+            # API Server config - runs inside dashboard process
             - name: API_SERVER_ENABLED
               value: "true"
             - name: API_SERVER_HOST
               value: "0.0.0.0"
             - name: API_SERVER_PORT
               value: "8642"
-            - name: API_SERVER_KEY
+            - name: API_SERVER_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: echo-secret
+                  name: echo-credentials
                   key: api_key
-            # Dashboard config
-            - name: HERMES_DASHBOARD
-              value: "true"
-            - name: HERMES_DASHBOARD_BASIC_AUTH_USERNAME
-              value: "admin"
-            - name: HERMES_DASHBOARD_BASIC_AUTH_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: echo-secret
-                  key: dashboard_password
           resources:
             requests:
-              cpu: "500m"
-              memory: "2Gi"
+              memory: "256Mi"
+              cpu: "100m"
             limits:
-              cpu: "4"
-              memory: "8Gi"
-          volumeMounts:
-            - name: setup
-              mountPath: /opt/setup/setup.sh
-              subPath: setup.sh
-            - name: echo-files
-              mountPath: /opt/echo
-              readOnly: true
-            - name: echo-data
-              mountPath: /home/hermes/.hermes
-          lifecycle:
-            preStop:
-              exec:
-                command: ["/bin/sh", "-c", "sleep 5"]
-      volumes:
-        - name: setup
-          configMap:
-            name: echo-setup
-            defaultMode: 0755
-        - name: echo-files
-          configMap:
-            name: echo-setup
-        - name: echo-data
-          persistentVolumeClaim:
-            claimName: echo-data
+              memory: "1Gi"
+              cpu: "1000m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9119
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9119
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+      nodeSelector:
+        kubernetes.io/hostname: novacore
