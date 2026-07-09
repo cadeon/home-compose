@@ -12,11 +12,11 @@ data:
     # Install Hermes Agent + dependencies
     if ! command -v hermes &>/dev/null; then
       echo "Installing Hermes Agent..."
-      pip install hermes-agent aiohttp
-    else
-      # Hermes already installed (from PVC), ensure aiohttp is present
-      pip install aiohttp 2>/dev/null || true
+      pip install hermes-agent
     fi
+    # Always ensure aiohttp is present (required for API server)
+    echo "Ensuring aiohttp..."
+    pip install aiohttp
 
     # Copy SOUL.md into place
     mkdir -p "$HERMES_HOME"
