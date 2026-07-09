@@ -55,7 +55,14 @@ spec:
         - name: gemma
           image: rocm/dev-ubuntu-24.04:7.2.1
           command:
-            - /opt/llama/llama-server
+            - /bin/bash
+            - -ec
+            - |
+              # Install ffmpeg if not present
+              if ! command -v ffprobe &>/dev/null; then
+                apt-get update -qq && apt-get install -y -qq --no-install-recommends ffmpeg > /dev/null 2>&1
+              fi
+              exec /opt/llama/llama-server "$@"
           args:
             - --model
             - /models/gemma-4-12b-it-UD-Q6_K_XL.gguf
@@ -87,8 +94,6 @@ spec:
               value: "noninteractive"
             - name: LD_LIBRARY_PATH
               value: "/opt/llama:/opt/rocm/lib"
-            - name: PATH
-              value: "/models:/opt/llama/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
             - name: HSA_ENABLE_SDMA
               value: "0"
           resources:
