@@ -9,10 +9,13 @@ data:
 
     echo "=== Echo setup ==="
 
-    # Install Hermes Agent if not present
+    # Install Hermes Agent + dependencies
     if ! command -v hermes &>/dev/null; then
       echo "Installing Hermes Agent..."
-      pip install hermes-agent
+      pip install hermes-agent aiohttp
+    else
+      # Hermes already installed (from PVC), ensure aiohttp is present
+      pip install aiohttp 2>/dev/null || true
     fi
 
     # Copy SOUL.md into place
