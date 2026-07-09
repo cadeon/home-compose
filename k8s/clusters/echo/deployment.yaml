@@ -51,8 +51,8 @@ spec:
             - -ec
             - |
               /opt/setup/setup.sh
-              # Dashboard on loopback (auth not required for 127.0.0.1)
-              hermes dashboard --host 127.0.0.1 --port 9119 --no-open &
+              # Dashboard on 0.0.0.0 (no auth = LAN-only access)
+              hermes dashboard --host 0.0.0.0 --port 9119 --no-open &
               sleep 3
               # Gateway as main process (serves /api/pty WebSocket)
               exec hermes gateway run
