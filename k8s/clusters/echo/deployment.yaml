@@ -105,11 +105,12 @@ spec:
               /opt/setup/setup.sh
 
               # Start dashboard on 0.0.0.0
-              cd /opt/hermes-src
+              cd "$HERMES_HOME"
               hermes dashboard --host 0.0.0.0 --port 9119 --no-open &
               sleep 3
 
               # Gateway as main process (serves /api/pty WebSocket + API server)
+              cd "$HERMES_HOME"
               exec hermes gateway run --replace
           volumeMounts:
             - name: setup
