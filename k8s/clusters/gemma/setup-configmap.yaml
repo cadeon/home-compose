@@ -1,0 +1,23 @@
+# Init script: download the model on first run
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gemma-setup
+data:
+  setup.sh: |
+    #!/bin/bash
+    set -euo pipefail
+
+    MODEL_DIR="/models"
+    MODEL_FILE="gemma-4-12B-it-Q4_K_M.gguf"
+    HF_REPO="bartowski/gemma-4-12B-it-GGUF"
+
+    if [ ! -f "$MODEL_DIR/$MODEL_FILE" ]; then
+      echo "Downloading $MODEL_FILE from $HF_REPO..."
+      mkdir -p "$MODEL_DIR"
+      curl -fSL -o "$MODEL_DIR/$MODEL_FILE" \
+        "https://huggingface.co/$HF_REPO/resolve/main/$MODEL_FILE"
+      echo "Download complete."
+    else
+      echo "Model already present, skipping download."
+    fi

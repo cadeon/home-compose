@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gemma
+  labels:
+    app: gemma
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gemma
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: gemma
+    spec:
+      hostname: gemma
+      restartPolicy: Always
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - novacore
+      initContainers:
+        - name: download-model
+          image: rocm/llama.cpp:llama.cpp-b6652.amd0_rocm7.0.0_ubuntu24.04_server
+          command: ["/bin/bash", "/opt/setup/setup.sh"]
+          env:
+            - name: DEBIAN_FRONTEND
+              value: "noninteractive"
+          volumeMounts:
+            - name: setup
+              mountPath: /opt/setup
+            - name: gemma-models
+              mountPath: /models
+      containers:
+        - name: gemma
+          image: rocm/llama.cpp:llama.cpp-b6652.amd0_rocm7.0.0_ubuntu24.04_server
+          command:
+            - /bin/bash
+            - -ec
+            - |
+              exec llama-server \
+                --model /models/gemma-4-12B-it-Q4_K_M.gguf \
+                --host 0.0.0.0 \
+                --port 8080 \
+                --ctx-size 8192 \
+                --gpu-layers 99 \
+                --threads 8 \
+                --threads-batch 8 \
+                --batch-size 2048
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: DEBIAN_FRONTEND
+              value: "noninteractive"
+            - name: LD_LIBRARY_PATH
+              value: "/opt/rocm/lib"
+            - name: HSA_ENABLE_SDMA
+              value: "0"
+          resources:
+            requests:
+              cpu: "4"
+              memory: "16Gi"
+              amd.com/gpu: "1"
+            limits:
+              cpu: "16"
+              memory: "48Gi"
+              amd.com/gpu: "1"
+          volumeMounts:
+            - name: gemma-models
+              mountPath: /models
+            - name: dev-dri
+              mountPath: /dev/dri
+          securityContext:
+            allowPrivilegeEscalation: false
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 5"]
+      volumes:
+        - name: setup
+          configMap:
+            name: gemma-setup
+            defaultMode: 0755
+        - name: gemma-models
+          persistentVolumeClaim:
+            claimName: gemma-models
+        - name: dev-dri
+          hostPath:
+            path: /dev/dri
