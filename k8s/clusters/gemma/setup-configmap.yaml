@@ -11,6 +11,7 @@ data:
     MODEL_FILE="gemma-4-12b-it-UD-Q6_K_XL.gguf"
     HF_REPO="unsloth/gemma-4-12b-it-GGUF"
     BIN_DIR="/opt/llama"
+    
     if [ ! -f "$BIN_DIR/llama-server" ]; then
       echo "Downloading llama.cpp build with gemma4 support..."
       mkdir -p "$BIN_DIR"
@@ -19,6 +20,7 @@ data:
       rm -f /tmp/llama.zip
       echo "llama-server installed."
     fi
+
     if [ ! -f "$MODEL_DIR/$MODEL_FILE" ]; then
       echo "Downloading $MODEL_FILE from $HF_REPO..."
       mkdir -p "$MODEL_DIR"
@@ -27,7 +29,7 @@ data:
     else
       echo "Model already present, skipping download."
     fi
-    # Download vision projector (mmproj) for multimodal support
+
     if [ ! -f "$MODEL_DIR/mmproj-BF16.gguf" ]; then
       echo "Downloading mmproj-BF16.gguf from $HF_REPO..."
       curl -fSL -o "$MODEL_DIR/mmproj-BF16.gguf" -H "User-Agent: curl" "https://huggingface.co/$HF_REPO/resolve/main/mmproj-BF16.gguf"
@@ -35,6 +37,15 @@ data:
     else
       echo "mmproj already present, skipping download."
     fi
+
+    # Fix rocBLAS library paths
+    echo "Fixing rocBLAS library paths..."
+    mkdir -p /opt/llama/rocblas/library
+    ln -sf /opt/llama/librocblas.so /opt/llama/rocblas/library/librocblas.so
+    ln -sf /opt/llama/bin/librocblas.so.5 /opt/llama/rocblas/library/librocblas.so.5
+    ln -sf /opt/llama/bin/librocblas.so.5.5 /opt/llama/rocblas/library/librocblas.so.5.5
+    echo "rocBLAS paths fixed."
+
   extract.py: |
     import zipfile, os
     BINDIR = "/opt/llama"
