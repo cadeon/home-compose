@@ -19,19 +19,17 @@ data:
       mkdir -p "$BIN_DIR"
       ZIP_URL="https://github.com/lemonade-sdk/llamacpp-rocm/releases/download/b1294/llama-b1294-ubuntu-rocm-gfx103X-x64.zip"
       curl -fSL -o /tmp/llama.zip "$ZIP_URL"
-      python3 -c "
-      import zipfile, shutil, os
-      z = zipfile.ZipFile('/tmp/llama.zip')
-      # Extract llama-server binary
-      z.extract('llama-server', '$BIN_DIR')
-      os.rename('$BIN_DIR/llama-server', '$BIN_DIR/llama-server')
-      # Extract all shared libs
+      python3 << 'PYEOF'
+      import zipfile, os
+      BINDIR = "/opt/llama"
+      z = zipfile.ZipFile("/tmp/llama.zip")
+      z.extract("llama-server", BINDIR)
+      os.chmod(os.path.join(BINDIR, "llama-server"), 0o755)
       for name in z.namelist():
-          if name.startswith('libggml') or name.startswith('libllama') or name.startswith('libhip') or name.startswith('libhsa') or name.startswith('libamd') or name.startswith('libroc') or name.startswith('libLLVM') or name.startswith('libclang') or name.startswith('libmtmd'):
-              z.extract(name, '$BIN_DIR')
+          if any(name.startswith(p) for p in ["libggml","libllama","libhip","libhsa","libamd","libroc","libLLVM","libclang","libmtmd","libomp","libgomp"]):
+              z.extract(name, BINDIR)
       z.close()
-      "
-      chmod +x "$BIN_DIR/llama-server"
+      PYEOF
       rm -f /tmp/llama.zip
       echo "llama-server installed."
     fi
