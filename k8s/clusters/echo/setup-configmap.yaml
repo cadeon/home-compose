@@ -53,11 +53,15 @@ data:
       apt-get install -y -qq git > /dev/null 2>&1
       GIT_URL="https://${GIT_USER}:${GIT_TOKEN}@github.com/${GIT_USER}/home-compose.git"
       git clone "$GIT_URL" "$FLUX_REPO"
-      cd "$FLUX_REPO"
-      git config user.name "$GIT_USER"
-      git config user.email "$GIT_EMAIL"
-      cd -
     fi
+
+    # Always update remote URL (token may rotate)
+    cd "$FLUX_REPO"
+    GIT_URL="https://${GIT_USER}:${GIT_TOKEN}@github.com/${GIT_USER}/home-compose.git"
+    git remote set-url origin "$GIT_URL"
+    git config user.name "$GIT_USER"
+    git config user.email "$GIT_EMAIL"
+    cd -
 
     # Configure git globally (persisted on PVC)
     git config --global user.name "$GIT_USER"
