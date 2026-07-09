@@ -43,7 +43,6 @@ spec:
               mountPath: /models
             - name: gemma-data
               mountPath: /opt/llama
-              subPath: bin
           resources:
             requests:
               cpu: "2"
@@ -90,7 +89,6 @@ spec:
               mountPath: /models
             - name: gemma-data
               mountPath: /opt/llama
-              subPath: bin
             - name: dev-dri
               mountPath: /dev/dri
           startupProbe:
