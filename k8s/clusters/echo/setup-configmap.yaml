@@ -68,6 +68,13 @@ data:
     git config --global user.name "$GIT_USER"
     git config --global user.email "$GIT_EMAIL"
 
+    # Rename AGENTS.md so Hermes loads SOUL.md from HERMES_HOME instead
+    # AGENTS.md in the source tree is 70KB and gets truncated, and overrides our SOUL.md
+    if [ -f "$HERMES_SRC/AGENTS.md" ]; then
+      mv "$HERMES_SRC/AGENTS.md" "$HERMES_SRC/AGENTS.md.bak"
+      echo "AGENTS.md renamed to .bak (SOUL.md takes precedence)"
+    fi
+
     # Always overwrite config.yaml and SOUL.md (source of truth from git)
     mkdir -p "$HERMES_HOME"
     if [ -f /opt/echo/config.yaml ]; then
