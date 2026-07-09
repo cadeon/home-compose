@@ -140,6 +140,10 @@ data:
     dashboard:
       theme: default-large
       show_token_analytics: false
+      basic_auth:
+        username: admin
+        password_hash: "scrypt$16384$8$1\$kEL4Olk4FDS+ZBkOgNl0FA==\$FxI4s/mEs3sMYhacvjjnfau/O90vhd0tc4GIBuHArJs="
+        secret: echo-dashboard-secret-change-me
 
     gateway:
       api_server:
