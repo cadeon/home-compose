@@ -87,6 +87,8 @@ spec:
               value: "noninteractive"
             - name: LD_LIBRARY_PATH
               value: "/opt/llama:/opt/rocm/lib"
+            - name: PATH
+              value: "/opt/llama/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
             - name: HSA_ENABLE_SDMA
               value: "0"
           resources:

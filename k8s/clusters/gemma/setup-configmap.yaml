@@ -35,6 +35,14 @@ data:
     else
       echo "mmproj already present, skipping download."
     fi
+    # Install ffmpeg/ffprobe for vision support
+    if [ ! -f "/opt/llama/bin/ffprobe" ]; then
+      echo "Installing ffmpeg for vision support..."
+      apt-get update -qq && apt-get install -y -qq --no-install-recommends ffmpeg > /dev/null 2>&1
+      cp $(which ffprobe) /opt/llama/bin/ffprobe
+      cp $(which ffmpeg) /opt/llama/bin/ffmpeg
+      echo "ffprobe installed."
+    fi
   extract.py: |
     import zipfile, os
     BINDIR = "/opt/llama"
