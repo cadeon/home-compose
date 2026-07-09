@@ -54,8 +54,25 @@ spec:
             - /bin/bash
             - -ec
             - |
+              # Install nodejs/npm if not present (needed for TUI bundle build)
+              if ! command -v node &>/dev/null || ! command -v npm &>/dev/null; then
+                apt-get update -qq && apt-get install -y -qq nodejs npm > /dev/null 2>&1
+              fi
+
+              # Ensure TUI bundle is built
+              if [ -d /opt/hermes-src/ui-tui ]; then
+                cd /opt/hermes-src/ui-tui
+                if [ ! -f dist/entry-exports.js ] && [ ! -f dist/ink-bundle.js ]; then
+                  npm install --silent --no-fund --no-audit --progress=false 2>/dev/null || true
+                  npm run build 2>/dev/null || true
+                fi
+              fi
+
+              # Run setup (config, SOUL.md, skills)
               /opt/setup/setup.sh
+
               # Dashboard on 0.0.0.0 (no auth = LAN-only access)
+              cd /opt/hermes-src
               hermes dashboard --host 0.0.0.0 --port 9119 --no-open &
               sleep 3
               # Gateway as main process (serves /api/pty WebSocket)
@@ -106,14 +123,14 @@ spec:
             httpGet:
               path: /health
               port: 8642
-            initialDelaySeconds: 30
+            initialDelaySeconds: 120
             periodSeconds: 30
             timeoutSeconds: 5
           readinessProbe:
             httpGet:
               path: /health
               port: 8642
-            initialDelaySeconds: 10
+            initialDelaySeconds: 60
             periodSeconds: 10
             timeoutSeconds: 5
       nodeSelector:
