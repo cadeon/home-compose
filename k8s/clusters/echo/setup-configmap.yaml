@@ -55,12 +55,13 @@ data:
       git clone "$GIT_URL" "$FLUX_REPO"
     fi
 
-    # Always update remote URL (token may rotate)
+    # Always update remote URL (token may rotate) and pull latest
     cd "$FLUX_REPO"
     GIT_URL="https://${GIT_USER}:${GIT_TOKEN}@github.com/${GIT_USER}/home-compose.git"
     git remote set-url origin "$GIT_URL"
     git config user.name "$GIT_USER"
     git config user.email "$GIT_EMAIL"
+    git pull --ff-only origin main 2>/dev/null || true
     cd -
 
     # Configure git globally (persisted on PVC)
