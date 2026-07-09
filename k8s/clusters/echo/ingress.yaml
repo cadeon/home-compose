@@ -3,11 +3,16 @@ kind: Ingress
 metadata:
   name: echo
   annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - echo.k8s.not-really.me
+      secretName: echo-tls
   rules:
     - host: echo.k8s.not-really.me
       http:
