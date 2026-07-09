@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echo
+  labels:
+    app: echo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: echo
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: echo
+    spec:
+      hostname: echo
+      restartPolicy: Always
+      containers:
+        - name: echo
+          image: python:3.12-slim
+          command:
+            - /bin/bash
+            - -ec
+            - |
+              /opt/setup/setup.sh
+              exec hermes gateway run
+          ports:
+            - containerPort: 8642
+              name: http
+          env:
+            - name: DEBIAN_FRONTEND
+              value: "noninteractive"
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            - name: HERMES_HOME
+              value: "/home/hermes/.hermes"
+            - name: PATH
+              value: "/home/hermes/.local/bin:/usr/local/bin:/usr/bin:/bin"
+            # Model config - Qwen 27B on local vLLM
+            - name: MODEL_DEFAULT
+              value: "qwen3.6-hermes-27b"
+            - name: MODEL_PROVIDER
+              value: "custom"
+            - name: MODEL_BASE_URL
+              value: "http://172.30.250.101:8080/v1"
+            - name: MODEL_API_KEY
+              value: "optional"
+            # API Server config
+            - name: API_SERVER_ENABLED
+              value: "true"
+            - name: API_SERVER_HOST
+              value: "0.0.0.0"
+            - name: API_SERVER_PORT
+              value: "8642"
+            - name: API_SERVER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: echo-secret
+                  key: api_key
+            # Dashboard config
+            - name: DASHBOARD_ENABLED
+              value: "true"
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "2Gi"
+            limits:
+              cpu: "4"
+              memory: "8Gi"
+          volumeMounts:
+            - name: setup
+              mountPath: /opt/setup
+            - name: echo-data
+              mountPath: /home/hermes/.hermes
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 5"]
+      volumes:
+        - name: setup
+          configMap:
+            name: echo-setup
+            defaultMode: 0755
+        - name: echo-data
+          persistentVolumeClaim:
+            claimName: echo-data
