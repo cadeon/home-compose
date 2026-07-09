@@ -87,8 +87,8 @@ spec:
             - name: HERMES_DASHBOARD_BASIC_AUTH_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: echo-credentials
-                  key: dashboard_user
+                  name: echo-secret
+                  key: dashboard_password
             - name: HERMES_DASHBOARD_BASIC_AUTH_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -104,7 +104,7 @@ spec:
             - name: API_SERVER_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: echo-credentials
+                  name: echo-secret
                   key: api_key
           resources:
             requests:
