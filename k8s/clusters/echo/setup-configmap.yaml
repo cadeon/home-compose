@@ -68,15 +68,15 @@ data:
     git config --global user.name "$GIT_USER"
     git config --global user.email "$GIT_EMAIL"
 
-    # Always overwrite config.yaml and SOUL.md (source of truth from git)
+    # Copy config.yaml and SOUL.md on first boot only (allow echo to evolve)
     mkdir -p "$HERMES_HOME"
-    if [ -f /opt/echo/config.yaml ]; then
+    if [ -f /opt/echo/config.yaml ] && [ ! -f "$HERMES_HOME/config.yaml" ]; then
       cp /opt/echo/config.yaml "$HERMES_HOME/config.yaml"
-      echo "config.yaml updated"
+      echo "config.yaml created"
     fi
-    if [ -f /opt/echo/SOUL.md ]; then
+    if [ -f /opt/echo/SOUL.md ] && [ ! -f "$HERMES_HOME/SOUL.md" ]; then
       cp /opt/echo/SOUL.md "$HERMES_HOME/SOUL.md"
-      echo "SOUL.md updated"
+      echo "SOUL.md created"
     fi
 
     echo "Setup complete"
