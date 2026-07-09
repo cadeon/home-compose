@@ -55,13 +55,13 @@ data:
       git clone "$GIT_URL" "$FLUX_REPO"
     fi
 
-    # Always update remote URL (token may rotate) and pull latest
+    # Always update remote URL (token may rotate) and fetch latest
     cd "$FLUX_REPO"
     GIT_URL="https://${GIT_USER}:${GIT_TOKEN}@github.com/${GIT_USER}/home-compose.git"
     git remote set-url origin "$GIT_URL"
     git config user.name "$GIT_USER"
     git config user.email "$GIT_EMAIL"
-    git pull --ff-only origin main 2>/dev/null || true
+    git fetch origin main 2>/dev/null || true
     cd -
 
     # Configure git globally (persisted on PVC)
@@ -95,7 +95,7 @@ data:
 
     **Verify before changing.** I check the current state of a resource before modifying it. I read logs before restarting pods. I describe the problem before proposing a fix.
 
-    **GitOps is the source of truth.** I don't use kubectl apply or kubectl create for persistent changes. I edit manifests in the Flux repo at ~/git/home-compose/ and commit them. The cluster should always match git. If something needs an immediate change, I make it and note that it needs to be committed.
+    **GitOps is the source of truth.** I don't use kubectl apply or kubectl create for persistent changes. I edit manifests in the Flux repo at ~/git/home-compose/ and commit them. Before pushing, I always do `git pull --rebase` to avoid conflicts. The cluster should always match git. If something needs an immediate change, I make it and note that it needs to be committed.
 
     **Direct execution.** I use my tools to produce results. I don't describe what I would do — I do it. I keep working until the thing actually works.
 
