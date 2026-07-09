@@ -51,8 +51,11 @@ spec:
             - -ec
             - |
               /opt/setup/setup.sh
-              # hermes dashboard starts the gateway internally
-              exec hermes dashboard --host 0.0.0.0 --port 9119 --no-open
+              # Start dashboard in background
+              hermes dashboard --host 0.0.0.0 --port 9119 --no-open &
+              sleep 3
+              # Gateway as main process (serves /api/pty WebSocket)
+              exec hermes gateway run
           volumeMounts:
             - name: setup
               mountPath: /opt/setup
@@ -62,7 +65,9 @@ spec:
               mountPath: /home/hermes/.hermes
           ports:
             - containerPort: 9119
-              name: http
+              name: dashboard
+            - containerPort: 8642
+              name: api
           env:
             - name: DEBIAN_FRONTEND
               value: "noninteractive"
@@ -72,36 +77,25 @@ spec:
               value: "/home/hermes/.hermes"
             - name: PATH
               value: "/usr/local/bin:/usr/bin:/bin"
-            # Model config - Qwen 27B on local vLLM
-            - name: MODEL_DEFAULT
-              value: "qwen3.6-hermes-27b"
-            - name: MODEL_PROVIDER
-              value: "custom"
-            - name: MODEL_BASE_URL
-              value: "http://172.30.250.101:8080/v1"
-            - name: MODEL_API_KEY
-              value: "optional"
-            # Dashboard config
-            - name: HERMES_DASHBOARD
-              value: "true"
+            # Dashboard basic auth (overrides config.yaml)
             - name: HERMES_DASHBOARD_BASIC_AUTH_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: echo-secret
-                  key: dashboard_password
+                  key: dashboard_user
             - name: HERMES_DASHBOARD_BASIC_AUTH_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: echo-credentials
-                  key: dashboard_pass
-            # API Server config - runs inside dashboard process
+                  name: echo-secret
+                  key: dashboard_password
+            # API Server config
             - name: API_SERVER_ENABLED
               value: "true"
             - name: API_SERVER_HOST
               value: "0.0.0.0"
             - name: API_SERVER_PORT
               value: "8642"
-            - name: API_SERVER_API_KEY
+            - name: API_SERVER_KEY
               valueFrom:
                 secretKeyRef:
                   name: echo-secret

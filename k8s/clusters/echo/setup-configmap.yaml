@@ -141,8 +141,8 @@ data:
       theme: default-large
       show_token_analytics: false
       basic_auth:
-        username: admin
-        password: admin
+        username: ""
+        password: ""
         secret: echo-dashboard-secret-change-me
 
     gateway:

@@ -16,6 +16,15 @@ spec:
     - host: echo.k8s.not-really.me
       http:
         paths:
+          # API routes (gateway WebSocket + REST)
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: echo
+                port:
+                  number: 8642
+          # Dashboard UI (everything else)
           - path: /
             pathType: Prefix
             backend:
