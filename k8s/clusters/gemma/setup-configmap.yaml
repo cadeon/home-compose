@@ -22,7 +22,7 @@ data:
     if [ ! -f "$MODEL_DIR/$MODEL_FILE" ]; then
       echo "Downloading $MODEL_FILE from $HF_REPO..."
       mkdir -p "$MODEL_DIR"
-      curl -fSL -o "$MODEL_DIR/$MODEL_FILE" "https://huggingface.co/$HF_REPO/resolve/main/$MODEL_FILE"
+      curl -fSL -o "$MODEL_DIR/$MODEL_FILE" -H "User-Agent: curl" "https://huggingface.co/$HF_REPO/resolve/main/$MODEL_FILE"
       echo "Download complete."
     else
       echo "Model already present, skipping download."
