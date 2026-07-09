@@ -27,6 +27,14 @@ data:
     else
       echo "Model already present, skipping download."
     fi
+    # Download vision projector (mmproj) for multimodal support
+    if [ ! -f "$MODEL_DIR/mmproj-BF16.gguf" ]; then
+      echo "Downloading mmproj-BF16.gguf from $HF_REPO..."
+      curl -fSL -o "$MODEL_DIR/mmproj-BF16.gguf" -H "User-Agent: curl" "https://huggingface.co/$HF_REPO/resolve/main/mmproj-BF16.gguf"
+      echo "mmproj download complete."
+    else
+      echo "mmproj already present, skipping download."
+    fi
   extract.py: |
     import zipfile, os
     BINDIR = "/opt/llama"
