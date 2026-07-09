@@ -18,7 +18,22 @@ spec:
     - host: echo.k8s.not-really.me
       http:
         paths:
-          # Dashboard at root
+          # API server routes
+          - path: /v1/(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: echo
+                port:
+                  number: 8642
+          - path: /health
+            pathType: Prefix
+            backend:
+              service:
+                name: echo
+                port:
+                  number: 8642
+          # Dashboard catches everything else
           - path: /
             pathType: Prefix
             backend:
