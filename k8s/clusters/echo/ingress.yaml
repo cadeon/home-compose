@@ -3,30 +3,15 @@ kind: Ingress
 metadata:
   name: echo
   annotations:
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
-    nginx.ingress.kubernetes.io/auth-type: basic
-    nginx.ingress.kubernetes.io/auth-secret: echo-ingress-auth
 spec:
   ingressClassName: nginx
-  tls:
-    - hosts:
-        - echo.k8s.not-really.me
-      secretName: k8s-not-really-me-tls
   rules:
     - host: echo.k8s.not-really.me
       http:
         paths:
-          # API routes (gateway WebSocket + REST)
-          - path: /api
-            pathType: Prefix
-            backend:
-              service:
-                name: echo
-                port:
-                  number: 8642
-          # Dashboard UI (everything else)
           - path: /
             pathType: Prefix
             backend:
