@@ -17,7 +17,7 @@ spec:
       labels:
         app: echo
     spec:
-      # Give the pod time to shut down gracefully
+      serviceAccountName: echo
       terminationGracePeriodSeconds: 30
       volumes:
         - name: setup
@@ -52,6 +52,22 @@ spec:
               value: "noninteractive"
             - name: PYTHONUNBUFFERED
               value: "1"
+            # Git credentials for Flux repo
+            - name: GIT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: echo-secret
+                  key: git_user
+            - name: GIT_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: echo-secret
+                  key: git_email
+            - name: GIT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: echo-secret
+                  key: git_token
           resources:
             requests:
               memory: "512Mi"
@@ -67,7 +83,6 @@ spec:
             - -ec
             - |
               # Install nodejs/npm if not present (needed for TUI bundle build)
-              # Init container's apt cache doesn't carry over to main container
               if ! command -v node &>/dev/null || ! command -v npm &>/dev/null; then
                 apt-get update -qq && apt-get install -y -qq nodejs npm > /dev/null 2>&1
               fi
@@ -121,6 +136,22 @@ spec:
               value: "/home/hermes/.hermes"
             - name: PATH
               value: "/usr/local/bin:/usr/bin:/bin"
+            # Git credentials for Flux repo
+            - name: GIT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: echo-secret
+                  key: git_user
+            - name: GIT_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: echo-secret
+                  key: git_email
+            - name: GIT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: echo-secret
+                  key: git_token
             # API Server config
             - name: API_SERVER_ENABLED
               value: "true"

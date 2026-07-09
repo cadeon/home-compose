@@ -1,0 +1,6 @@
+# ServiceAccount for echo with cluster-wide read + namespace-wide write
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: echo
+  namespace: echo

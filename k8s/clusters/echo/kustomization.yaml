@@ -5,6 +5,11 @@ namespace: echo
 
 resources:
   - namespace.yaml
+  - rbac.yaml
+  - cluster-role.yaml
+  - cluster-role-binding.yaml
+  - role.yaml
+  - role-binding.yaml
   - pvc.yaml
   - secret.yaml
   - setup-configmap.yaml

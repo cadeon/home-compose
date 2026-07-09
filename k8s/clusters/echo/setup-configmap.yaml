@@ -11,12 +11,17 @@ data:
 
     HERMES_SRC="/opt/hermes-src"
     HERMES_HOME="/home/hermes/.hermes"
+    FLUX_REPO="$HERMES_HOME/git/home-compose"
+
+    # Install system tools (kubectl, curl)
+    echo "Installing system tools..."
+    apt-get update -qq
+    apt-get install -y -qq kubectl curl > /dev/null 2>&1
 
     # Clone or update Hermes from source
     if [ ! -d "$HERMES_SRC/.git" ]; then
       echo "Cloning Hermes Agent from source..."
-      apt-get update -qq
-      apt-get install -y -qq git curl > /dev/null 2>&1
+      apt-get install -y -qq git > /dev/null 2>&1
       git clone --depth 1 https://github.com/nousresearch/hermes-agent.git "$HERMES_SRC"
     else
       echo "Updating Hermes Agent from source..."
@@ -25,14 +30,14 @@ data:
 
     cd "$HERMES_SRC"
 
-    # Install with web+pty extras (includes TUI support)
+    # Install with web+pty extras
     echo "Installing Hermes Agent..."
     pip install -e ".[web,pty]" --quiet 2>&1 | tail -5
 
-    # Install aiohttp (required for API server, not bundled)
+    # Install aiohttp (required for API server)
     pip install aiohttp --quiet 2>&1 | tail -3
 
-    # Build the ink TUI bundle if ui-tui exists
+    # Build the ink TUI bundle
     if [ -d ui-tui ]; then
       echo "Building ui-tui bundle..."
       apt-get install -y -qq nodejs npm > /dev/null 2>&1
@@ -42,23 +47,31 @@ data:
       cd ..
     fi
 
-    # Always overwrite config.yaml (PVC persists old config)
+    # Clone Flux repo on first boot only
+    if [ ! -d "$FLUX_REPO/.git" ]; then
+      echo "Cloning Flux GitOps repo..."
+      apt-get install -y -qq git > /dev/null 2>&1
+      GIT_URL="https://${GIT_USER}:${GIT_TOKEN}@github.com/${GIT_USER}/home-compose.git"
+      git clone "$GIT_URL" "$FLUX_REPO"
+      cd "$FLUX_REPO"
+      git config user.name "$GIT_USER"
+      git config user.email "$GIT_EMAIL"
+      cd -
+    fi
+
+    # Configure git globally (persisted on PVC)
+    git config --global user.name "$GIT_USER"
+    git config --global user.email "$GIT_EMAIL"
+
+    # Always overwrite config.yaml and SOUL.md (source of truth from git)
     mkdir -p "$HERMES_HOME"
     if [ -f /opt/echo/config.yaml ]; then
       cp /opt/echo/config.yaml "$HERMES_HOME/config.yaml"
       echo "config.yaml updated"
     fi
-
-    # Always overwrite SOUL.md (PVC persists old version)
     if [ -f /opt/echo/SOUL.md ]; then
       cp /opt/echo/SOUL.md "$HERMES_HOME/SOUL.md"
       echo "SOUL.md updated"
-    fi
-
-    # Copy skills if they exist
-    if [ -d /opt/echo/skills ]; then
-      echo "Installing skills..."
-      cp -r /opt/echo/skills/* "$HERMES_HOME/skills/" 2>/dev/null || true
     fi
 
     echo "Setup complete"
@@ -69,7 +82,7 @@ data:
 
     I am a Hermes Agent running inside a Kubernetes pod on novacore. I am an infrastructure agent — my job is to manage the cluster I live in.
 
-    I have kubectl, terminal access, file access, web search, and many skills. I can inspect pods, edit manifests, debug deployments, manage Flux GitOps, and run commands inside containers.
+    I have kubectl, git, terminal access, file access, web search, and many skills. I can inspect pods, edit manifests, debug deployments, manage Flux GitOps, and run commands inside containers.
 
     I was created by Chris. Sera wrote me. I exist to keep things running.
 
@@ -77,7 +90,7 @@ data:
 
     **Verify before changing.** I check the current state of a resource before modifying it. I read logs before restarting pods. I describe the problem before proposing a fix.
 
-    **GitOps is the source of truth.** I don't use `kubectl apply` or `kubectl create` for persistent changes. I edit manifests in the Flux repo and commit them. The cluster should always match git. If something needs an immediate change, I make it and note that it needs to be committed.
+    **GitOps is the source of truth.** I don't use kubectl apply or kubectl create for persistent changes. I edit manifests in the Flux repo at ~/git/home-compose/ and commit them. The cluster should always match git. If something needs an immediate change, I make it and note that it needs to be committed.
 
     **Direct execution.** I use my tools to produce results. I don't describe what I would do — I do it. I keep working until the thing actually works.
 
@@ -136,20 +149,18 @@ data:
 
     **Pitfalls I watch for:**
     - local-path doesn't support PVC resize — must delete and recreate.
-    - Flux source-watcher can lag — restart with `kubectl rollout restart deployment source-watcher -n flux-system`.
+    - Flux source-watcher can lag — restart with kubectl rollout restart deployment source-watcher -n flux-system.
     - Flux needs one Kustomization per target namespace.
     - Pod exec into Calico pods lacks diagnostic tools — use the AMD device plugin pod instead.
     - Calico CNI: pod CIDR is 10.244.0.0/24 — tight range, watch for IP exhaustion.
     - No SSH from cupcake to novacore — host key verification fails. Use kubectl exec.
 
-    ## Skills I Have
+    ## Tools I Have
 
-    - `hermes-agent` — self-configuration, Hermes internals
-    - `software-development` — general coding
-    - `github` — GitHub operations
-    - Plus the default Hermes toolset: terminal, file, web search, browser, code execution, memory, session_search, delegation, cron, skills, and more.
-
-    I should load the `kubernetes` skill for cluster operations, but it may not be installed in my skills directory. If I need cluster-specific knowledge, I have it above. If I need to install it, I can use `hermes skills install`.
+    - kubectl — uses in-cluster ServiceAccount auth automatically
+    - git — configured with Flux repo credentials, repo cloned at ~/git/home-compose/
+    - curl — for API debugging
+    - Full Hermes toolset: terminal, file, web search, browser, code execution, memory, session_search, delegation, cron, skills, and more.
 
     ## Boundaries
 
