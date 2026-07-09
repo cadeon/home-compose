@@ -3,36 +3,56 @@ kind: ClusterRole
 metadata:
   name: echo-cluster-reader
 rules:
+  # Core resources: full access
   - apiGroups: [""]
     resources: ["*"]
-    verbs: ["get", "list", "watch"]
+    verbs: ["*"]
+  # Apps: full access
   - apiGroups: ["apps"]
     resources: ["*"]
-    verbs: ["get", "list", "watch"]
+    verbs: ["*"]
+  # Batch: full access
   - apiGroups: ["batch"]
     resources: ["*"]
-    verbs: ["get", "list", "watch"]
+    verbs: ["*"]
+  # Networking: full access
   - apiGroups: ["networking.k8s.io"]
     resources: ["*"]
-    verbs: ["get", "list", "watch"]
+    verbs: ["*"]
+  # Cert-manager: full access
   - apiGroups: ["cert-manager.io"]
     resources: ["*"]
-    verbs: ["get", "list", "watch"]
+    verbs: ["*"]
+  # Flux CD: full access (GitRepository, Kustomization, HelmRelease, etc.)
   - apiGroups: ["source.toolkit.fluxcd.io"]
     resources: ["*"]
-    verbs: ["get", "list", "watch"]
+    verbs: ["*"]
   - apiGroups: ["kustomize.toolkit.fluxcd.io"]
     resources: ["*"]
-    verbs: ["get", "list", "watch"]
+    verbs: ["*"]
   - apiGroups: ["helm.toolkit.fluxcd.io"]
     resources: ["*"]
-    verbs: ["get", "list", "watch"]
+    verbs: ["*"]
   - apiGroups: ["eventing.toolkit.fluxcd.io"]
     resources: ["*"]
-    verbs: ["get", "list", "watch"]
+    verbs: ["*"]
   - apiGroups: ["notification.toolkit.fluxcd.io"]
     resources: ["*"]
+    verbs: ["*"]
+  # RBAC: can manage roles and bindings within its own namespace
+  # (cluster-wide RBAC managed by git, not echo directly)
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources: ["roles", "rolebindings"]
     verbs: ["get", "list", "watch"]
-  - apiGroups: [""]
-    resources: ["pods/log", "pods/exec", "nodes", "events"]
+  # Storage: can manage PVCs, StorageClasses (read only for SC)
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch"]
+  # Policy: can manage PDBs, etc.
+  - apiGroups: ["policy"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch"]
+  # Coordination: leases, etc.
+  - apiGroups: ["coordination.k8s.io"]
+    resources: ["*"]
     verbs: ["get", "list", "watch"]
