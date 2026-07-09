@@ -48,6 +48,8 @@ spec:
           env:
             - name: HERMES_HOME
               value: "/home/hermes/.hermes"
+            - name: HOME
+              value: "/home/hermes"
             - name: DEBIAN_FRONTEND
               value: "noninteractive"
             - name: PYTHONUNBUFFERED
@@ -135,6 +137,8 @@ spec:
               value: "1"
             - name: HERMES_HOME
               value: "/home/hermes/.hermes"
+            - name: HOME
+              value: "/home/hermes"
             - name: PATH
               value: "/usr/local/bin:/usr/bin:/bin"
             # Git credentials for Flux repo
