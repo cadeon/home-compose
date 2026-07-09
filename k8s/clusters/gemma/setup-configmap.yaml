@@ -8,8 +8,8 @@ data:
     #!/bin/bash
     set -euo pipefail
     MODEL_DIR="/models"
-    MODEL_FILE="gemma-4-12B-it-Q6_K.gguf"
-    HF_REPO="bartowski/gemma-4-12B-it-GGUF"
+    MODEL_FILE="gemma-4-12b-it-UD-Q6_K_XL.gguf"
+    HF_REPO="unsloth/gemma-4-12b-it-GGUF"
     BIN_DIR="/opt/llama"
     if [ ! -f "$BIN_DIR/llama-server" ]; then
       echo "Downloading llama.cpp build with gemma4 support..."

@@ -58,7 +58,7 @@ spec:
             - /opt/llama/llama-server
           args:
             - --model
-            - /models/gemma-4-12B-it-Q6_K.gguf
+            - /models/gemma-4-12b-it-UD-Q6_K_XL.gguf
             - --host
             - 0.0.0.0
             - --port
