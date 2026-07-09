@@ -1,4 +1,4 @@
-# Init script: download the model on first run
+# Init script: download model + llama.cpp binary with gemma4 support
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -9,9 +9,34 @@ data:
     set -euo pipefail
 
     MODEL_DIR="/models"
-    MODEL_FILE="gemma-3-12b-it-Q4_K_M.gguf"
-    HF_REPO="unsloth/gemma-3-12b-it-GGUF"
+    MODEL_FILE="gemma-4-12B-it-Q4_K_M.gguf"
+    HF_REPO="bartowski/gemma-4-12B-it-GGUF"
+    BIN_DIR="/opt/llama"
 
+    # Download llama-server with gemma4 support (lemonade-sdk nightly, ROCm 7, gfx103X)
+    if [ ! -f "$BIN_DIR/llama-server" ]; then
+      echo "Downloading llama.cpp build with gemma4 support..."
+      mkdir -p "$BIN_DIR"
+      ZIP_URL="https://github.com/lemonade-sdk/llamacpp-rocm/releases/download/b1294/llama-b1294-ubuntu-rocm-gfx103X-x64.zip"
+      curl -fSL -o /tmp/llama.zip "$ZIP_URL"
+      python3 -c "
+      import zipfile, shutil, os
+      z = zipfile.ZipFile('/tmp/llama.zip')
+      # Extract llama-server binary
+      z.extract('llama-server', '$BIN_DIR')
+      os.rename('$BIN_DIR/llama-server', '$BIN_DIR/llama-server')
+      # Extract all shared libs
+      for name in z.namelist():
+          if name.startswith('libggml') or name.startswith('libllama') or name.startswith('libhip') or name.startswith('libhsa') or name.startswith('libamd') or name.startswith('libroc') or name.startswith('libLLVM') or name.startswith('libclang') or name.startswith('libmtmd'):
+              z.extract(name, '$BIN_DIR')
+      z.close()
+      "
+      chmod +x "$BIN_DIR/llama-server"
+      rm -f /tmp/llama.zip
+      echo "llama-server installed."
+    fi
+
+    # Download model
     if [ ! -f "$MODEL_DIR/$MODEL_FILE" ]; then
       echo "Downloading $MODEL_FILE from $HF_REPO..."
       mkdir -p "$MODEL_DIR"
