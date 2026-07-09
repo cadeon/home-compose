@@ -68,15 +68,20 @@ spec:
                 fi
               fi
 
+              # Kill any stale processes from previous crashes
+              pkill -f "hermes dashboard" 2>/dev/null || true
+              pkill -f "hermes gateway" 2>/dev/null || true
+              sleep 1
+
               # Run setup (config, SOUL.md, skills)
               /opt/setup/setup.sh
 
-              # Dashboard on 0.0.0.0 (no auth = LAN-only access)
+              # Dashboard on 0.0.0.0
               cd /opt/hermes-src
               hermes dashboard --host 0.0.0.0 --port 9119 --no-open &
               sleep 3
               # Gateway as main process (serves /api/pty WebSocket)
-              exec hermes gateway run
+              exec hermes gateway run --replace
           volumeMounts:
             - name: setup
               mountPath: /opt/setup
