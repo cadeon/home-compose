@@ -77,6 +77,13 @@ spec:
               value: "/home/hermes/.hermes"
             - name: PATH
               value: "/usr/local/bin:/usr/bin:/bin"
+            # Dashboard basic auth (required for non-loopback bind)
+            - name: HERMES_DASHBOARD_BASIC_AUTH_USERNAME
+              value: "admin"
+            - name: HERMES_DASHBOARD_BASIC_AUTH_PASSWORD
+              value: "echo"
+            - name: HERMES_DASHBOARD_BASIC_AUTH_SECRET
+              value: "echo-dashboard-secret-change-me"
             # API Server config
             - name: API_SERVER_ENABLED
               value: "true"
