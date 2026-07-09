@@ -6,6 +6,9 @@ metadata:
     app: echo
 spec:
   replicas: 1
+  # Recreate strategy: with PVC persistence, RollingUpdate causes mount conflicts
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: echo
@@ -14,6 +17,8 @@ spec:
       labels:
         app: echo
     spec:
+      # Give the pod time to shut down gracefully
+      terminationGracePeriodSeconds: 30
       volumes:
         - name: setup
           configMap:
@@ -47,6 +52,13 @@ spec:
               value: "noninteractive"
             - name: PYTHONUNBUFFERED
               value: "1"
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "200m"
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
       containers:
         - name: echo
           image: python:3.12-slim
@@ -55,6 +67,7 @@ spec:
             - -ec
             - |
               # Install nodejs/npm if not present (needed for TUI bundle build)
+              # Init container's apt cache doesn't carry over to main container
               if ! command -v node &>/dev/null || ! command -v npm &>/dev/null; then
                 apt-get update -qq && apt-get install -y -qq nodejs npm > /dev/null 2>&1
               fi
@@ -76,11 +89,12 @@ spec:
               # Run setup (config, SOUL.md, skills)
               /opt/setup/setup.sh
 
-              # Dashboard on 0.0.0.0
+              # Start dashboard on 0.0.0.0
               cd /opt/hermes-src
               hermes dashboard --host 0.0.0.0 --port 9119 --no-open &
               sleep 3
-              # Gateway as main process (serves /api/pty WebSocket)
+
+              # Gateway as main process (serves /api/pty WebSocket + API server)
               exec hermes gateway run --replace
           volumeMounts:
             - name: setup
@@ -94,8 +108,10 @@ spec:
           ports:
             - containerPort: 9119
               name: dashboard
+              protocol: TCP
             - containerPort: 8642
               name: api
+              protocol: TCP
           env:
             - name: DEBIAN_FRONTEND
               value: "noninteractive"
@@ -119,18 +135,19 @@ spec:
                   key: api_key
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "100m"
+              memory: "512Mi"
+              cpu: "200m"
             limits:
-              memory: "1Gi"
-              cpu: "1000m"
+              memory: "2Gi"
+              cpu: "2000m"
           livenessProbe:
             httpGet:
               path: /health
               port: 8642
-            initialDelaySeconds: 120
+            initialDelaySeconds: 180
             periodSeconds: 30
-            timeoutSeconds: 5
+            timeoutSeconds: 10
+            failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /health
@@ -138,5 +155,6 @@ spec:
             initialDelaySeconds: 60
             periodSeconds: 10
             timeoutSeconds: 5
+            failureThreshold: 3
       nodeSelector:
         kubernetes.io/hostname: novacore

@@ -5,16 +5,18 @@ metadata:
 data:
   setup.sh: |
     #!/bin/bash
-    set -e
+    set -euo pipefail
 
     echo "=== Echo setup ==="
 
     HERMES_SRC="/opt/hermes-src"
+    HERMES_HOME="/home/hermes/.hermes"
 
-    # Install Hermes Agent from source (needed for ui-tui / embedded chat)
+    # Clone or update Hermes from source
     if [ ! -d "$HERMES_SRC/.git" ]; then
       echo "Cloning Hermes Agent from source..."
-      apt-get update -qq && apt-get install -y -qq git curl nodejs npm > /dev/null 2>&1
+      apt-get update -qq
+      apt-get install -y -qq git curl > /dev/null 2>&1
       git clone --depth 1 https://github.com/nousresearch/hermes-agent.git "$HERMES_SRC"
     else
       echo "Updating Hermes Agent from source..."
@@ -24,34 +26,36 @@ data:
     cd "$HERMES_SRC"
 
     # Install with web+pty extras (includes TUI support)
-    pip install -e ".[web,pty]"
+    echo "Installing Hermes Agent..."
+    pip install -e ".[web,pty]" --quiet 2>&1 | tail -5
+
+    # Install aiohttp (required for API server, not bundled)
+    pip install aiohttp --quiet 2>&1 | tail -3
 
     # Build the ink TUI bundle if ui-tui exists
     if [ -d ui-tui ]; then
       echo "Building ui-tui bundle..."
+      apt-get install -y -qq nodejs npm > /dev/null 2>&1
       cd ui-tui
       npm install --silent --no-fund --no-audit --progress=false 2>/dev/null || true
       npm run build 2>/dev/null || true
       cd ..
     fi
 
-    # Always ensure aiohttp is present (required for API server)
-    pip install aiohttp
-
-    # Copy SOUL.md into place
+    # Always overwrite config.yaml (PVC persists old config)
     mkdir -p "$HERMES_HOME"
+    if [ -f /opt/echo/config.yaml ]; then
+      cp /opt/echo/config.yaml "$HERMES_HOME/config.yaml"
+      echo "config.yaml updated"
+    fi
+
+    # Copy SOUL.md only if not present (preserve user edits)
     if [ -f /opt/echo/SOUL.md ] && [ ! -f "$HERMES_HOME/SOUL.md" ]; then
       cp /opt/echo/SOUL.md "$HERMES_HOME/SOUL.md"
       echo "SOUL.md installed"
     fi
 
-    # Always ensure config.yaml is up to date
-    if [ -f /opt/echo/config.yaml ]; then
-      cp /opt/echo/config.yaml "$HERMES_HOME/config.yaml"
-      echo "config.yaml installed"
-    fi
-
-    # Copy skills if they exist in the mount
+    # Copy skills if they exist
     if [ -d /opt/echo/skills ]; then
       echo "Installing skills..."
       cp -r /opt/echo/skills/* "$HERMES_HOME/skills/" 2>/dev/null || true
