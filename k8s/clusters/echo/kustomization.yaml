@@ -7,8 +7,6 @@ resources:
   - namespace.yaml
   - pvc.yaml
   - secret.yaml
-  - ingress-auth.yaml
   - setup-configmap.yaml
   - deployment.yaml
   - service.yaml
-  - ingress.yaml
