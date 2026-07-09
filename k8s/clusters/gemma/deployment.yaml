@@ -58,34 +58,12 @@ spec:
             - /bin/bash
             - -ec
             - |
-              # Install ffmpeg if not present
               if ! command -v ffprobe &>/dev/null; then
-                apt-get update -qq && apt-get install -y -qq --no-install-recommends ffmpeg > /dev/null 2>&1
+                apt-get update -qq >/dev/null 2>&1
+                apt-get install -y -qq --no-install-recommends ffmpeg >/dev/null 2>&1
               fi
-              exec /opt/llama/llama-server "$@"
-          args:
-            - --model
-            - /models/gemma-4-12b-it-UD-Q6_K_XL.gguf
-            - --mmproj
-            - /models/mmproj-BF16.gguf
-            - --host
-            - 0.0.0.0
-            - --port
-            - "8080"
-            - --ctx-size
-            - "131072"
-            - --cache-type-k
-            - "q8_0"
-            - --cache-type-v
-            - "q8_0"
-            - --gpu-layers
-            - "99"
-            - --threads
-            - "8"
-            - --threads-batch
-            - "8"
-            - --batch-size
-            - "2048"
+              exec /opt/llama/llama-server --model /models/gemma-4-12b-it-UD-Q6_K_XL.gguf --mmproj /models/mmproj-BF16.gguf --host 0.0.0.0 --port 8080 --ctx-size 131072 --cache-type-k q8_0 --cache-type-v q8_0 --gpu-layers 99 --threads 8 --threads-batch 8 --batch-size 2048
+          args: []
           ports:
             - containerPort: 8080
               name: http
