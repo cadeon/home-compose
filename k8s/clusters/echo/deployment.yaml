@@ -26,10 +26,16 @@ spec:
             - -ec
             - |
               /opt/setup/setup.sh
+              # Start dashboard in background
+              hermes dashboard --host 0.0.0.0 --port 9119 --no-open &
+              sleep 2
+              # Start gateway as main process
               exec hermes gateway run
           ports:
             - containerPort: 8642
               name: http
+            - containerPort: 9119
+              name: dashboard
           env:
             - name: DEBIAN_FRONTEND
               value: "noninteractive"
@@ -61,8 +67,15 @@ spec:
                   name: echo-secret
                   key: api_key
             # Dashboard config
-            - name: DASHBOARD_ENABLED
+            - name: HERMES_DASHBOARD
               value: "true"
+            - name: HERMES_DASHBOARD_BASIC_AUTH_USERNAME
+              value: "admin"
+            - name: HERMES_DASHBOARD_BASIC_AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: echo-secret
+                  key: dashboard_password
           resources:
             requests:
               cpu: "500m"
