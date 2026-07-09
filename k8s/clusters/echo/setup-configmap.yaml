@@ -9,13 +9,33 @@ data:
 
     echo "=== Echo setup ==="
 
-    # Install Hermes Agent + dependencies
-    if ! command -v hermes &>/dev/null; then
-      echo "Installing Hermes Agent..."
-      pip install hermes-agent
+    HERMES_SRC="/opt/hermes-src"
+
+    # Install Hermes Agent from source (needed for ui-tui / embedded chat)
+    if [ ! -d "$HERMES_SRC/.git" ]; then
+      echo "Cloning Hermes Agent from source..."
+      apt-get update -qq && apt-get install -y -qq git curl nodejs npm > /dev/null 2>&1
+      git clone --depth 1 https://github.com/nousresearch/hermes-agent.git "$HERMES_SRC"
+    else
+      echo "Updating Hermes Agent from source..."
+      cd "$HERMES_SRC" && git pull --ff-only || true
     fi
+
+    cd "$HERMES_SRC"
+
+    # Install with web+pty extras (includes TUI support)
+    pip install -e ".[web,pty]"
+
+    # Build the ink TUI bundle if ui-tui exists
+    if [ -d ui-tui ]; then
+      echo "Building ui-tui bundle..."
+      cd ui-tui
+      npm install --silent --no-fund --no-audit --progress=false 2>/dev/null || true
+      npm run build 2>/dev/null || true
+      cd ..
+    fi
+
     # Always ensure aiohttp is present (required for API server)
-    echo "Ensuring aiohttp..."
     pip install aiohttp
 
     # Copy SOUL.md into place

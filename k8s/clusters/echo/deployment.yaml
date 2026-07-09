@@ -25,6 +25,8 @@ spec:
         - name: echo-data
           persistentVolumeClaim:
             claimName: echo-data
+        - name: hermes-src
+          emptyDir: {}
       initContainers:
         - name: setup
           image: python:3.12-slim
@@ -36,6 +38,8 @@ spec:
               mountPath: /opt/echo
             - name: echo-data
               mountPath: /home/hermes/.hermes
+            - name: hermes-src
+              mountPath: /opt/hermes-src
           env:
             - name: HERMES_HOME
               value: "/home/hermes/.hermes"
@@ -63,6 +67,8 @@ spec:
               mountPath: /opt/echo
             - name: echo-data
               mountPath: /home/hermes/.hermes
+            - name: hermes-src
+              mountPath: /opt/hermes-src
           ports:
             - containerPort: 9119
               name: dashboard
