@@ -51,8 +51,8 @@ spec:
             - -ec
             - |
               /opt/setup/setup.sh
-              # Start dashboard in background
-              hermes dashboard --host 0.0.0.0 --port 9119 --no-open &
+              # Dashboard on loopback (auth not required for 127.0.0.1)
+              hermes dashboard --host 127.0.0.1 --port 9119 --no-open &
               sleep 3
               # Gateway as main process (serves /api/pty WebSocket)
               exec hermes gateway run
@@ -77,13 +77,6 @@ spec:
               value: "/home/hermes/.hermes"
             - name: PATH
               value: "/usr/local/bin:/usr/bin:/bin"
-            # Dashboard basic auth (required for non-loopback bind)
-            - name: HERMES_DASHBOARD_BASIC_AUTH_USERNAME
-              value: "admin"
-            - name: HERMES_DASHBOARD_BASIC_AUTH_PASSWORD
-              value: "echo"
-            - name: HERMES_DASHBOARD_BASIC_AUTH_SECRET
-              value: "echo-dashboard-secret-change-me"
             # API Server config
             - name: API_SERVER_ENABLED
               value: "true"
