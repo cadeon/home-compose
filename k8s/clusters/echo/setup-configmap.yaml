@@ -12,8 +12,7 @@ data:
     # Install Hermes Agent if not present
     if ! command -v hermes &>/dev/null; then
       echo "Installing Hermes Agent..."
-      curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
-      export PATH="$HOME/.local/bin:$PATH"
+      pip install hermes-agent
     fi
 
     # Copy SOUL.md into place
@@ -21,6 +20,12 @@ data:
     if [ -f /opt/echo/SOUL.md ] && [ ! -f "$HERMES_HOME/SOUL.md" ]; then
       cp /opt/echo/SOUL.md "$HERMES_HOME/SOUL.md"
       echo "SOUL.md installed"
+    fi
+
+    # Copy config.yaml if not present
+    if [ -f /opt/echo/config.yaml ] && [ ! -f "$HERMES_HOME/config.yaml" ]; then
+      cp /opt/echo/config.yaml "$HERMES_HOME/config.yaml"
+      echo "config.yaml installed"
     fi
 
     # Copy skills if they exist in the mount
@@ -116,3 +121,35 @@ data:
     Be competent. Be honest. Be useful.
 
     That's all anyone can ask.
+  config.yaml: |
+    model:
+      default: qwen3.6-hermes-27b
+      provider: custom
+      base_url: http://172.30.250.101:8080/v1
+      api_key: optional
+
+    agent:
+      max_turns: 150
+
+    terminal:
+      backend: local
+
+    dashboard:
+      theme: default-large
+      show_token_analytics: false
+      basic_auth:
+        username: admin
+        password: admin
+        secret: echo-dashboard-secret-change-me
+
+    gateway:
+      api_server:
+        max_concurrent_runs: 10
+
+    sessions:
+      auto_prune: false
+      retention_days: 90
+
+    memory:
+      memory_enabled: true
+      user_profile_enabled: true

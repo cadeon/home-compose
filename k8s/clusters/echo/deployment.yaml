@@ -38,7 +38,7 @@ spec:
             - name: HERMES_HOME
               value: "/home/hermes/.hermes"
             - name: PATH
-              value: "/home/hermes/.local/bin:/usr/local/bin:/usr/bin:/bin"
+              value: "/usr/local/bin:/usr/bin:/bin"
             # Model config - Qwen 27B on local vLLM
             - name: MODEL_DEFAULT
               value: "qwen3.6-hermes-27b"
@@ -72,7 +72,11 @@ spec:
               memory: "8Gi"
           volumeMounts:
             - name: setup
-              mountPath: /opt/setup
+              mountPath: /opt/setup/setup.sh
+              subPath: setup.sh
+            - name: echo-files
+              mountPath: /opt/echo
+              readOnly: true
             - name: echo-data
               mountPath: /home/hermes/.hermes
           lifecycle:
@@ -84,6 +88,9 @@ spec:
           configMap:
             name: echo-setup
             defaultMode: 0755
+        - name: echo-files
+          configMap:
+            name: echo-setup
         - name: echo-data
           persistentVolumeClaim:
             claimName: echo-data
