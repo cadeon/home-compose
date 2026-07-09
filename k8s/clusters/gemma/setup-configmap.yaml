@@ -7,40 +7,33 @@ data:
   setup.sh: |
     #!/bin/bash
     set -euo pipefail
-
     MODEL_DIR="/models"
     MODEL_FILE="gemma-4-12B-it-Q4_K_M.gguf"
     HF_REPO="bartowski/gemma-4-12B-it-GGUF"
     BIN_DIR="/opt/llama"
-
-    # Download llama-server with gemma4 support (lemonade-sdk nightly, ROCm 7, gfx103X)
     if [ ! -f "$BIN_DIR/llama-server" ]; then
       echo "Downloading llama.cpp build with gemma4 support..."
       mkdir -p "$BIN_DIR"
-      ZIP_URL="https://github.com/lemonade-sdk/llamacpp-rocm/releases/download/b1294/llama-b1294-ubuntu-rocm-gfx103X-x64.zip"
-      curl -fSL -o /tmp/llama.zip "$ZIP_URL"
-      python3 << 'PYEOF'
-      import zipfile, os
-      BINDIR = "/opt/llama"
-      z = zipfile.ZipFile("/tmp/llama.zip")
-      z.extract("llama-server", BINDIR)
-      os.chmod(os.path.join(BINDIR, "llama-server"), 0o755)
-      for name in z.namelist():
-          if any(name.startswith(p) for p in ["libggml","libllama","libhip","libhsa","libamd","libroc","libLLVM","libclang","libmtmd","libomp","libgomp"]):
-              z.extract(name, BINDIR)
-      z.close()
-      PYEOF
+      curl -fSL -o /tmp/llama.zip "https://github.com/lemonade-sdk/llamacpp-rocm/releases/download/b1294/llama-b1294-ubuntu-rocm-gfx103X-x64.zip"
+      python3 /opt/setup/extract.py
       rm -f /tmp/llama.zip
       echo "llama-server installed."
     fi
-
-    # Download model
     if [ ! -f "$MODEL_DIR/$MODEL_FILE" ]; then
       echo "Downloading $MODEL_FILE from $HF_REPO..."
       mkdir -p "$MODEL_DIR"
-      curl -fSL -o "$MODEL_DIR/$MODEL_FILE" \
-        "https://huggingface.co/$HF_REPO/resolve/main/$MODEL_FILE"
+      curl -fSL -o "$MODEL_DIR/$MODEL_FILE" "https://huggingface.co/$HF_REPO/resolve/main/$MODEL_FILE"
       echo "Download complete."
     else
       echo "Model already present, skipping download."
     fi
+  extract.py: |
+    import zipfile, os
+    BINDIR = "/opt/llama"
+    z = zipfile.ZipFile("/tmp/llama.zip")
+    z.extract("llama-server", BINDIR)
+    os.chmod(os.path.join(BINDIR, "llama-server"), 0o755)
+    for name in z.namelist():
+        if any(name.startswith(p) for p in ["libggml","libllama","libhip","libhsa","libamd","libroc","libLLVM","libclang","libmtmd","libomp","libgomp"]):
+            z.extract(name, BINDIR)
+    z.close()
