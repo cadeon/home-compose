@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gemma
+  labels:
+    app: gemma
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gemma
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: gemma
+    spec:
+      hostname: gemma
+      restartPolicy: Always
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - novacore
+      initContainers:
+        - name: setup
+          image: rocm/dev-ubuntu-24.04:7.2.1
+          command: ["/bin/bash", "/opt/setup/setup.sh"]
+          env:
+            - name: DEBIAN_FRONTEND
+              value: "noninteractive"
+          volumeMounts:
+            - name: setup
+              mountPath: /opt/setup
+            - name: gemma-data
+              mountPath: /models
+            - name: gemma-data
+              mountPath: /opt/llama
+          resources:
+            requests:
+              cpu: "2"
+              memory: "4Gi"
+            limits:
+              cpu: "4"
+              memory: "8Gi"
+      containers:
+        - name: gemma
+          image: rocm/dev-ubuntu-24.04:7.2.1
+          command:
+            - /bin/bash
+            - -ec
+            - |
+              if ! command -v ffprobe &>/dev/null; then
+                apt-get update -qq >/dev/null 2>&1
+                apt-get install -y -qq --no-install-recommends ffmpeg >/dev/null 2>&1
+              fi
+              exec /opt/llama/llama-server --model /models/gemma-4-12b-it-UD-Q6_K_XL.gguf --mmproj /models/mmproj-BF16.gguf --host 0.0.0.0 --port 8080 --ctx-size 131072 --cache-type-k q8_0 --cache-type-v q8_0 --gpu-layers 99 --threads 8 --threads-batch 8 --batch-size 2048
+          args: []
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: DEBIAN_FRONTEND
+              value: "noninteractive"
+            - name: LD_LIBRARY_PATH
+              value: "/opt/llama:/opt/rocm/lib"
+            - name: HSA_ENABLE_SDMA
+              value: "0"
+            - name: HSA_OVERRIDE_GFX_VERSION
+              value: "10.3.0"
+          resources:
+            requests:
+              cpu: "4"
+              memory: "16Gi"
+              amd.com/gpu: "1"
+            limits:
+              cpu: "16"
+              memory: "48Gi"
+              amd.com/gpu: "1"
+          volumeMounts:
+            - name: gemma-data
+              mountPath: /models
+            - name: gemma-data
+              mountPath: /opt/llama
+            - name: dev-dri
+              mountPath: /dev/dri
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            failureThreshold: 120
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 5"]
+      volumes:
+        - name: setup
+          configMap:
+            name: gemma-setup
+            defaultMode: 0755
+        - name: gemma-data
+          persistentVolumeClaim:
+            claimName: gemma-models
+        - name: dev-dri
+          hostPath:
+            path: /dev/dri

@@ -1,0 +1,58 @@
+# Init script: download model + llama.cpp binary with gemma4 support
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gemma-setup
+data:
+  setup.sh: |
+    #!/bin/bash
+    set -euo pipefail
+    MODEL_DIR="/models"
+    MODEL_FILE="gemma-4-12b-it-UD-Q6_K_XL.gguf"
+    HF_REPO="unsloth/gemma-4-12b-it-GGUF"
+    BIN_DIR="/opt/llama"
+    
+    if [ ! -f "$BIN_DIR/llama-server" ]; then
+      echo "Downloading llama.cpp build with gemma4 support..."
+      mkdir -p "$BIN_DIR"
+      curl -fSL -o /tmp/llama.zip "https://github.com/lemonade-sdk/llamacpp-rocm/releases/download/b1294/llama-b1294-ubuntu-rocm-gfx103X-x64.zip"
+      python3 /opt/setup/extract.py
+      rm -f /tmp/llama.zip
+      echo "llama-server installed."
+    fi
+
+    if [ ! -f "$MODEL_DIR/$MODEL_FILE" ]; then
+      echo "Downloading $MODEL_FILE from $HF_REPO..."
+      mkdir -p "$MODEL_DIR"
+      curl -fSL -o "$MODEL_DIR/$MODEL_FILE" -H "User-Agent: curl" "https://huggingface.co/$HF_REPO/resolve/main/$MODEL_FILE"
+      echo "Download complete."
+    else
+      echo "Model already present, skipping download."
+    fi
+
+    if [ ! -f "$MODEL_DIR/mmproj-BF16.gguf" ]; then
+      echo "Downloading mmproj-BF16.gguf from $HF_REPO..."
+      curl -fSL -o "$MODEL_DIR/mmproj-BF16.gguf" -H "User-Agent: curl" "https://huggingface.co/$HF_REPO/resolve/main/mmproj-BF16.gguf"
+      echo "mmproj download complete."
+    else
+      echo "mmproj already present, skipping download."
+    fi
+
+    # Fix rocBLAS library paths
+    echo "Fixing rocBLAS library paths..."
+    mkdir -p /opt/llama/rocblas/library
+    ln -sf /opt/llama/librocblas.so /opt/llama/rocblas/library/librocblas.so
+    ln -sf /opt/llama/bin/librocblas.so.5 /opt/llama/rocblas/library/librocblas.so.5
+    ln -sf /opt/llama/bin/librocblas.so.5.5 /opt/llama/rocblas/library/librocblas.so.5.5
+    echo "rocBLAS paths fixed."
+
+  extract.py: |
+    import zipfile, os
+    BINDIR = "/opt/llama"
+    z = zipfile.ZipFile("/tmp/llama.zip")
+    z.extract("llama-server", BINDIR)
+    os.chmod(os.path.join(BINDIR, "llama-server"), 0o755)
+    for name in z.namelist():
+        if any(name.startswith(p) for p in ["libggml","libllama","libhip","libhsa","libamd","libroc","libLLVM","libclang","libmtmd","libomp","libgomp"]):
+            z.extract(name, BINDIR)
+    z.close()
