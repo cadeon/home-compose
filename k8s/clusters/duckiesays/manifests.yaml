@@ -56,6 +56,20 @@ spec:
     port: 80
     targetPort: 3000
 ---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: duckiesays-com
+  namespace: duckiesays
+spec:
+  secretName: duckiesays-com-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+  - duckiesays.com
+  - www.duckiesays.com
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -70,8 +84,32 @@ spec:
   - hosts:
     - duckiesays.k8s.not-really.me
     secretName: k8s-not-really-me-tls
+  - hosts:
+    - duckiesays.com
+    - www.duckiesays.com
+    secretName: duckiesays-com-tls
   rules:
   - host: duckiesays.k8s.not-really.me
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: duckiesays
+            port:
+              number: 80
+  - host: duckiesays.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: duckiesays
+            port:
+              number: 80
+  - host: www.duckiesays.com
     http:
       paths:
       - path: /
