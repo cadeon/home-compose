@@ -4,12 +4,15 @@ metadata:
   name: headlamp
   namespace: headlamp
   annotations:
-    kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    nginx.ingress.kubernetes.io/websocket-services: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-http-version: 1.1
+    nginx.ingress.kubernetes.io/proxy-read-timeout: 3600
+    nginx.ingress.kubernetes.io/proxy-send-timeout: 3600
+    nginx.ingress.kubernetes.io/websocket-services: headlamp
+
 spec:
   rules:
-  - host: headlamp.k8s.not-really.me
+  - host: k8s.not-really.me
     http:
       paths:
       - path: /
