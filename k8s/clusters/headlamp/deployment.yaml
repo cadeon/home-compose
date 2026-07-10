@@ -19,14 +19,9 @@ spec:
       containers:
         - name: headlamp
           image: ghcr.io/headlamp-k8s/headlamp:v0.43.0
-          args:
-            - "--config=/data/config.yaml"
           ports:
             - containerPort: 8080
               name: http
-          volumeMounts:
-            - name: config
-              mountPath: /data
           resources:
             limits:
               cpu: "500m"
@@ -34,7 +29,3 @@ spec:
             requests:
               cpu: "250m"
               memory: "256Mi"
-      volumes:
-        - name: config
-          configMap:
-            name: headlamp-config
