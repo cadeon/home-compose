@@ -272,8 +272,8 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.duckiesays.entryPoints=public-websecure"
       - "traefik.http.routers.duckiesays.tls.certResolver=letsEncrypt"
-      - "traefik.http.routers.duckiesays.rule=Host(`duckiesays.not-really.me`) || Host(`duckiesays.com`) || Host(`www.duckiesays.com`)"
-      - "traefik.http.routers.duckiesays.priority=100"
+      - "traefik.http.routers.duckiesays.rule=Host(`duckiesays.com`) || Host(`www.duckiesays.com`)"
+      - "traefik.http.routers.duckiesays.tls=true"
       - "traefik.http.routers.duckiesays.service=duckiesays-k8s-svc@file"
       - "traefik.docker.network=traefik-public"
     restart: unless-stopped
