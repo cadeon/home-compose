@@ -8,6 +8,7 @@ resources:
   - service-account.yaml
   - cluster-role-binding.yaml
   - configmap.yaml
+  - kubeconfig-configmap.yaml
   - deployment.yaml
   - service.yaml
   - ingress.yaml

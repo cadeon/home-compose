@@ -22,6 +22,13 @@ spec:
           ports:
             - containerPort: 4466
               name: http
+          env:
+            - name: KUBECONFIG
+              value: /home/headlamp/.kube/config
+          volumeMounts:
+            - name: kubeconfig
+              mountPath: /home/headlamp/.kube
+              readOnly: true
           resources:
             limits:
               cpu: "500m"
@@ -29,3 +36,7 @@ spec:
             requests:
               cpu: "250m"
               memory: "256Mi"
+      volumes:
+        - name: kubeconfig
+          configMap:
+            name: headlamp-kubeconfig
