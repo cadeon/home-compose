@@ -20,7 +20,7 @@ spec:
         - name: headlamp
           image: ghcr.io/headlamp-k8s/headlamp:v0.43.0
           ports:
-            - containerPort: 8080
+            - containerPort: 4466
               name: http
           resources:
             limits:
