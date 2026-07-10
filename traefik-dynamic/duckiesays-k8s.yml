@@ -5,5 +5,5 @@ http:
     duckiesays-k8s-svc:
       loadbalancer:
         servers:
-          - url: "https://172.30.249.1:31571"
+          - url: "http://172.30.249.1:30248"
         passHostHeader: true
