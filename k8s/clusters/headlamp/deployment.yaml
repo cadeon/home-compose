@@ -16,6 +16,18 @@ spec:
         app: headlamp
     spec:
       serviceAccountName: headlamp
+      initContainers:
+        - name: download-plugins
+          image: curlimages/curl:latest
+          command:
+            - sh
+            - -c
+            - |
+              curl -sL https://github.com/headlamp-k8s/plugins/releases/download/flux-0.6.0/headlamp-k8s-flux-0.6.0.tar.gz \
+                | tar xzf - -C /plugins
+          volumeMounts:
+            - name: plugins
+              mountPath: /plugins
       containers:
         - name: headlamp
           image: ghcr.io/headlamp-k8s/headlamp:v0.43.0
@@ -29,6 +41,9 @@ spec:
             - name: kubeconfig
               mountPath: /home/headlamp/.kube
               readOnly: true
+            - name: plugins
+              mountPath: /headlamp/plugins
+              readOnly: true
           resources:
             limits:
               cpu: "500m"
@@ -40,3 +55,5 @@ spec:
         - name: kubeconfig
           configMap:
             name: headlamp-kubeconfig
+        - name: plugins
+          emptyDir: {}
