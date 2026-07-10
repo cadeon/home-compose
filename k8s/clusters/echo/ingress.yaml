@@ -13,6 +13,7 @@ spec:
   tls:
     - hosts:
         - echo.k8s.not-really.me
+        - api.echo.k8s.not-really.me
       secretName: echo-tls
   rules:
     - host: echo.k8s.not-really.me
@@ -27,10 +28,21 @@ spec:
                 port:
                   number: 8642
           # Dashboard routes (port 9119)
-          - path: /
+          - path: /\
             pathType: Prefix
             backend:
               service:
                 name: echo
                 port:
                   number: 9119
+    - host: api.echo.k8s.not-really.me
+      http:
+        paths:
+          # API server routes (gateway port 8642)
+          - path: /v1
+            pathType: Prefix
+            backend:
+              service:
+                name: echo
+                port:
+                  number: 8642
