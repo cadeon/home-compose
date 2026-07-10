@@ -9,6 +9,13 @@ http:
         passHostHeader: true
       serversTransport: duckiesays-transport
 
+    duckiesays-legacy-k8s-svc:
+      loadbalancer:
+        servers:
+          - url: "https://172.30.249.1:31571"
+        passHostHeader: true
+      serversTransport: duckiesays-transport
+
   serversTransports:
     duckiesays-transport:
       insecureSkipVerify: true

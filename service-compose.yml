@@ -290,8 +290,8 @@ services:
       - "traefik.http.routers.duckiesays-legacy.entryPoints=public-websecure"
       - "traefik.http.routers.duckiesays-legacy.tls.certResolver=letsEncrypt"
       - "traefik.http.routers.duckiesays-legacy.rule=Host(`legacy.duckiesays.com`)"
-      - "traefik.http.routers.duckiesays-legacy.priority=100"
-      - "traefik.http.services.duckiesays-legacy.loadbalancer.server.port=3000"
+      - "traefik.http.routers.duckiesays-legacy.tls=true"
+      - "traefik.http.routers.duckiesays-legacy.service=duckiesays-legacy-k8s-svc@file"
       - "traefik.docker.network=traefik-public"
     restart: unless-stopped
 
