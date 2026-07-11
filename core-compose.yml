@@ -14,8 +14,6 @@ services:
       - "--entrypoints.websecure.http.tls.domains[0].sans=*.not-really.me"
       - "--entrypoints.websecure.http.tls.domains[1].main=duckiesays.com"
       - "--entrypoints.websecure.http.tls.domains[1].sans=*.duckiesays.com"
-      - "--providers.file.directory=/etc/traefik/dynamic"
-      - "--providers.file.watch=true"
     volumes:
       - /volume2/docker-configs/traefik/:/etc/traefik/
       - /volume2/docker-configs/traefik/logs:/var/log
