@@ -40,6 +40,7 @@ metadata:
   name: duckiesays-legacy
   namespace: duckiesays-legacy
 spec:
+  type: NodePort
   selector:
     app: duckiesays-legacy
   ports:
@@ -60,7 +61,7 @@ metadata:
 spec:
   tls:
   - hosts:
-    - legacy.duckiesays.com
+      - legacy.duckiesays.com
     secretName: legacy-duckiesays-com-tls
   rules:
   - host: legacy.duckiesays.com
