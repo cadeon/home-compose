@@ -56,20 +56,6 @@ spec:
     port: 80
     targetPort: 3000
 ---
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: duckiesays-com
-  namespace: duckiesays
-spec:
-  secretName: duckiesays-com-tls
-  issuerRef:
-    name: letsencrypt-prod
-    kind: ClusterIssuer
-  dnsNames:
-  - duckiesays.com
-  - www.duckiesays.com
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -77,17 +63,14 @@ metadata:
   namespace: duckiesays
   annotations:
     kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/websocket-services: "duckiesays"
 spec:
   tls:
   - hosts:
-    - duckiesays.k8s.not-really.me
-    secretName: k8s-not-really-me-tls
-  - hosts:
-    - duckiesays.com
-    - www.duckiesays.com
+      - duckiesays.k8s.not-really.me
+      - duckiesays.com
+      - www.duckiesays.com
     secretName: duckiesays-com-tls
   rules:
   - host: duckiesays.k8s.not-really.me
