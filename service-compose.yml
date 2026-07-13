@@ -176,7 +176,7 @@ services:
       - traefik-public
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.duckiesays.entrypoints=public-websecure"
+      - "traefik.http.routers.duckiesays.entrypoints=websecure"
       - "traefik.http.routers.duckiesays.tls.certresolver=letsEncrypt"
       - "traefik.http.routers.duckiesays.rule=Host(`duckiesays.com`) || Host(`www.duckiesays.com`)"
       - "traefik.http.routers.duckiesays.priority=100"
@@ -193,7 +193,7 @@ services:
       - traefik-public
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.duckiesays-legacy.entrypoints=public-websecure"
+      - "traefik.http.routers.duckiesays-legacy.entrypoints=websecure"
       - "traefik.http.routers.duckiesays-legacy.tls.certresolver=letsEncrypt"
       - "traefik.http.routers.duckiesays-legacy.rule=Host(`legacy.duckiesays.com`)"
       - "traefik.http.routers.duckiesays-legacy.priority=100"
