@@ -1,0 +1,64 @@
+serversTransport:
+  maxIdleConnsPerHost: -1
+  forwardingTimeouts:
+    responseHeaderTimeout: 0s
+
+providers:
+  docker:
+    exposedByDefault: false
+    endpoint: "unix:///var/run/docker.sock"
+  file:
+    directory: "/etc/traefik/routes/"
+    watch: true
+
+api:
+  insecure: true
+  dashboard: true
+
+entryPoints:
+  # External HTTP → redirect to external HTTPS
+  public-web:
+    address: "172.31.250.200:80"
+    http:
+      redirections:
+        entryPoint:
+          to: public-websecure
+          scheme: https
+
+  # External HTTPS (public-facing services)
+  public-websecure:
+    address: "172.31.250.200:443"
+    forwardedHeaders:
+      trustedIPs:
+        - "172.31.0.0/16"
+
+  # Internal HTTP → redirect to internal HTTPS
+  web:
+    address: "172.30.249.1:80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+
+  # Internal HTTPS (internal-only services, still gets LE certs via DNS-01)
+  websecure:
+    address: "172.30.249.1:443"
+
+certificatesResolvers:
+  letsEncrypt:
+    acme:
+      storage: /etc/traefik/acme.json
+      email: cadeon924@gmail.com
+      dnsChallenge:
+        provider: digitalocean
+        resolvers:
+          - "1.1.1.1:53"
+          - "1.0.0.1:53"
+
+accessLog:
+  filePath: "/var/log/access.log"
+  bufferingSize: 2000
+
+log:
+  level: DEBUG

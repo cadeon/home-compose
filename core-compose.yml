@@ -7,13 +7,8 @@ services:
     image: traefik:latest
     container_name: traefik
     network_mode: host
-    labels:
-      - traefik.enable=true
-      - "--providers.docker.allowEmptyServices=true" # Enable allowEmptyServices
-      - "--entrypoints.websecure.http.tls.domains[0].main=not-really.me"
-      - "--entrypoints.websecure.http.tls.domains[0].sans=*.not-really.me"
-      - "--entrypoints.websecure.http.tls.domains[1].main=duckiesays.com"
-      - "--entrypoints.websecure.http.tls.domains[1].sans=*.duckiesays.com"
+    environment:
+      - DO_AUTH_TOKEN=${DO_AUTH_TOKEN}
     volumes:
       - /volume2/docker-configs/traefik/:/etc/traefik/
       - /volume2/docker-configs/traefik/logs:/var/log
