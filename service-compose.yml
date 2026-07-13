@@ -145,6 +145,7 @@ services:
   gitea:
     image: docker.io/gitea/gitea:latest
     container_name: gitea
+    user: "1000:100"
     environment:
       - USER_UID=1000
       - USER_GID=100
