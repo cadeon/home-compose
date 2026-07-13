@@ -216,6 +216,26 @@ services:
       - "traefik.docker.network=traefik-public"
     restart: unless-stopped
 
+  gitea:
+    image: docker.io/gitea/gitea:latest
+    container_name: gitea
+    environment:
+      - USER_UID=1000
+      - USER_GID=100
+      - GITEA__database__DB_TYPE=sqlite3
+      - GITEA__database__PATH=/data/gitea.sqlite3
+    volumes:
+      - /volume2/docker-configs/gitea:/data
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gitea.entrypoints=websecure"
+      - "traefik.http.routers.gitea.rule=Host(`git.not-really.me`)"
+      - "traefik.http.services.gitea.loadbalancer.server.port=3000"
+      - "traefik.docker.network=traefik-public"
+    restart: unless-stopped
+
   duckiesays:
     image: docker.io/cadeon924/duckiesays:v24
     container_name: duckiesays
