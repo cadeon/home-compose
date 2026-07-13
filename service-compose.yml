@@ -273,9 +273,8 @@ services:
       - "traefik.http.routers.duckiesays.entryPoints=public-websecure"
       - "traefik.http.routers.duckiesays.tls.certResolver=letsEncrypt"
       - "traefik.http.routers.duckiesays.rule=Host(`duckiesays.com`) || Host(`www.duckiesays.com`)"
-      - "traefik.http.routers.duckiesays.tls=true"
-      - "traefik.http.services.duckiesays-external.loadbalancer.serverurl=http://172.30.249.1:30248"
-      - "traefik.http.routers.duckiesays.service=duckiesays-external"
+      - "traefik.http.routers.duckiesays.priority=100"
+      - "traefik.http.services.duckiesays.loadbalancer.server.port=3000"
       - "traefik.docker.network=traefik-public"
     restart: unless-stopped
 
@@ -291,9 +290,8 @@ services:
       - "traefik.http.routers.duckiesays-legacy.entryPoints=public-websecure"
       - "traefik.http.routers.duckiesays-legacy.tls.certResolver=letsEncrypt"
       - "traefik.http.routers.duckiesays-legacy.rule=Host(`legacy.duckiesays.com`)"
-      - "traefik.http.routers.duckiesays-legacy.tls=true"
-      - "traefik.http.services.duckiesays-legacy-external.loadbalancer.serverurl=http://172.30.249.1:30248"
-      - "traefik.http.routers.duckiesays-legacy.service=duckiesays-legacy-external"
+      - "traefik.http.routers.duckiesays-legacy.priority=100"
+      - "traefik.http.services.duckiesays-legacy.loadbalancer.server.port=3000"
       - "traefik.docker.network=traefik-public"
     restart: unless-stopped
 
