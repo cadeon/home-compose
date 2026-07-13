@@ -145,12 +145,6 @@ services:
   gitea:
     image: docker.io/gitea/gitea:latest
     container_name: gitea
-    user: "1024:100"
-    environment:
-      - USER_UID=1024
-      - USER_GID=100
-      - GITEA__database__DB_TYPE=sqlite3
-      - GITEA__database__PATH=/data/gitea.sqlite3
     volumes:
       - /volume2/docker-configs/gitea:/data
     networks:
