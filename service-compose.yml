@@ -165,7 +165,7 @@ services:
     container_name: duckiesays
     environment:
       - NODE_ENV=production
-      - LLM_API_URL=http://qwen27.not-really.me/v1/chat/completions
+      - LLM_API_URL=https://qwen27.not-really.me/v1/chat/completions
       - LLM_MODEL=qwen3.6-27b
     volumes:
       - /volume2/docker-configs/duckiesays/logs:/usr/src/app/logs
