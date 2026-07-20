@@ -198,6 +198,23 @@ services:
       - "traefik.docker.network=traefik-public"
     restart: unless-stopped
 
+  saas:
+    image: docker.io/cadeon924/saas:latest
+    container_name: saas
+    environment:
+      - LLM_API_URL=https://qwen27.not-really.me/v1/chat/completions
+      - LLM_MODEL=qwen3.6-27b
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.saas.entrypoints=websecure"
+      - "traefik.http.routers.saas.tls.certresolver=letsEncrypt"
+      - "traefik.http.routers.saas.rule=Host(`saas.not-really.me`)"
+      - "traefik.http.services.saas.loadbalancer.server.port=8000"
+      - "traefik.docker.network=traefik-public"
+    restart: unless-stopped
+
 ###### ----- Docker control ----- ######
 networks:
   traefik-public:
