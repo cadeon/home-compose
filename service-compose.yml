@@ -199,11 +199,13 @@ services:
     restart: unless-stopped
 
   saas:
-    image: docker.io/cadeon924/saas:v5
+    image: docker.io/cadeon924/saas:v6
     container_name: saas
     environment:
       - LLM_API_URL=https://qwen27.not-really.me/v1/chat/completions
       - LLM_MODEL=qwen3.6-27b
+    volumes:
+      - saas-data:/opt/data/saas-exchanges
     networks:
       - traefik-public
     labels:
@@ -223,3 +225,4 @@ networks:
 
 volumes:
   postgresdata:
+  saas-data:
