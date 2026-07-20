@@ -199,7 +199,7 @@ services:
     restart: unless-stopped
 
   saas:
-    image: docker.io/cadeon924/saas:v2
+    image: docker.io/cadeon924/saas:v3
     container_name: saas
     environment:
       - LLM_API_URL=https://qwen27.not-really.me/v1/chat/completions
