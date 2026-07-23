@@ -165,7 +165,7 @@ services:
     container_name: duckiesays
     environment:
       - NODE_ENV=production
-      - LLM_API_URL=https://qwen27.not-really.me/v1/chat/completions
+      - LLM_API_URL=https://llm.not-really.me/v1/chat/completions
       - LLM_MODEL=qwen3.6-27b
     volumes:
       - /volume2/docker-configs/duckiesays/logs:/usr/src/app/logs
@@ -202,7 +202,7 @@ services:
     image: docker.io/cadeon924/saas:v10
     container_name: saas
     environment:
-      - LLM_API_URL=https://qwen27.not-really.me/v1/chat/completions
+      - LLM_API_URL=https://llm.not-really.me/v1/chat/completions
       - LLM_MODEL=qwen3.6-27b
     volumes:
       - saas-data:/opt/data/saas-exchanges
