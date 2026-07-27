@@ -193,6 +193,8 @@ services:
       - traefik-public
     labels:
       - "traefik.enable=true"
+      - "traefik.http.routers.registry-http.entrypoints=web"
+      - "traefik.http.routers.registry-http.rule=Host(`registry.not-really.me`)"
       - "traefik.http.routers.registry.entrypoints=websecure"
       - "traefik.http.routers.registry.tls.certresolver=letsEncrypt"
       - "traefik.http.routers.registry.rule=Host(`registry.not-really.me`)"
