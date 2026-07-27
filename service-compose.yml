@@ -1,290 +1,250 @@
-# All the other services
-version: "3.7"
-
+version: '3.7'
 services:
   ultrafeeder:
     image: ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder
     container_name: ultrafeeder
     devices:
-      - /dev/bus/usb:/dev/bus/usb
+    - /dev/bus/usb:/dev/bus/usb
     ports:
-      - "1090:80"   # tar1090
-      - "30005:30005" # Beast output
+    - 1090:80
+    - 30005:30005
     environment:
-      - TZ=America/New_York
-      - READSB_DEVICE_TYPE=rtlsdr
-      - READSB_RTLSDR_DEVICE=0
-      - READSB_LAT=29.020396
-      - READSB_LON=-81.281632
-      - READSB_ALT=33m
-      - READSB_GAIN=auto
-      - READSB_STATS_RANGE=true
-
-      - ULTRAFEEDER_CONFIG=
-        adsb,feed.airplanes.live,30004,beast_reduce_plus_out,uuid=6EA5C30F-6087-4D92-B79F-4C9CE075E4FF;
-        mlat,feed.airplanes.live,31090,uuid=6EA5C30F-6087-4D92-B79F-4C9CE075E4FF
-      
-      - UPDATE_TAR1090=true
-      - TAR1090_MESSAGERATEINTITLE=true
-      - TAR1090_PAGETITLE=not-really-planes
-      - TAR1090_PLANECOUNTINTITLE=true
-      - TAR1090_ENABLE_AC_DB=true
-      - TAR1090_FLIGHTAWARELINKS=true
-      - TAR1090_SITESHOW=true
-      - TAR1090_RANGE_OUTLINE_COLORED_BY_ALTITUDE=true
-      - TAR1090_RANGE_OUTLINE_WIDTH=2.0
-      - TAR1090_RANGERINGSDISTANCES=50,100,150,200
-      - TAR1090_RANGERINGSCOLORS='#1A237E','#0D47A1','#42A5F5','#64B5F6'
-      - TAR1090_USEROUTEAPI=true
-      - GRAPHS1090_DARKMODE=true
-
+    - TZ=America/New_York
+    - READSB_DEVICE_TYPE=rtlsdr
+    - READSB_RTLSDR_DEVICE=0
+    - READSB_LAT=29.020396
+    - READSB_LON=-81.281632
+    - READSB_ALT=33m
+    - READSB_GAIN=auto
+    - READSB_STATS_RANGE=true
+    - ULTRAFEEDER_CONFIG= adsb,feed.airplanes.live,30004,beast_reduce_plus_out,uuid=6EA5C30F-6087-4D92-B79F-4C9CE075E4FF;
+      mlat,feed.airplanes.live,31090,uuid=6EA5C30F-6087-4D92-B79F-4C9CE075E4FF
+    - UPDATE_TAR1090=true
+    - TAR1090_MESSAGERATEINTITLE=true
+    - TAR1090_PAGETITLE=not-really-planes
+    - TAR1090_PLANECOUNTINTITLE=true
+    - TAR1090_ENABLE_AC_DB=true
+    - TAR1090_FLIGHTAWARELINKS=true
+    - TAR1090_SITESHOW=true
+    - TAR1090_RANGE_OUTLINE_COLORED_BY_ALTITUDE=true
+    - TAR1090_RANGE_OUTLINE_WIDTH=2.0
+    - TAR1090_RANGERINGSDISTANCES=50,100,150,200
+    - TAR1090_RANGERINGSCOLORS='#1A237E','#0D47A1','#42A5F5','#64B5F6'
+    - TAR1090_USEROUTEAPI=true
+    - GRAPHS1090_DARKMODE=true
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.planes.entrypoints=websecure"
-      - "traefik.http.routers.planes.tls.certresolver=letsEncrypt"
-      - "traefik.http.routers.planes.rule=Host(`planes.not-really.me`)"
-      - "traefik.http.services.planes.loadbalancer.server.port=80"
-      - "traefik.docker.network=traefik-public"
+    - traefik.enable=true
+    - traefik.http.routers.planes.entrypoints=websecure
+    - traefik.http.routers.planes.tls.certresolver=letsEncrypt
+    - traefik.http.routers.planes.rule=Host(`planes.not-really.me`)
+    - traefik.http.services.planes.loadbalancer.server.port=80
+    - traefik.docker.network=traefik-public
     restart: unless-stopped
-
   rickroll:
     image: modem7/docker-rickroll
     container_name: Rickroll
     ports:
-      - 1987:8080
+    - 1987:8080
     environment:
-      - TITLE="not-really-roll" 
+    - TITLE="not-really-roll"
     networks:
-      - traefik-public
+    - traefik-public
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.rr.entrypoints=websecure"
-      - "traefik.http.routers.rr.tls.certresolver=letsEncrypt"
-      - "traefik.http.routers.rr.rule=Host(`rr.not-really.me`)" 
-      - "traefik.http.services.rr.loadbalancer.server.port=8080"
-      - "traefik.docker.network=traefik-public"
+    - traefik.enable=true
+    - traefik.http.routers.rr.entrypoints=websecure
+    - traefik.http.routers.rr.tls.certresolver=letsEncrypt
+    - traefik.http.routers.rr.rule=Host(`rr.not-really.me`)
+    - traefik.http.services.rr.loadbalancer.server.port=8080
+    - traefik.docker.network=traefik-public
     restart: unless-stopped
-
   searxng:
     image: docker.io/searxng/searxng:latest
     container_name: searxng
     ports:
-      - 1234:8080
+    - 1234:8080
     volumes:
-      - /volume2/docker-configs/searxng:/etc/searxng:rw
+    - /volume2/docker-configs/searxng:/etc/searxng:rw
     environment:
-      - PUID=1000
-      - PGID=100
-      - TZ=America/New_York
-      - SEARXNG_BASE_URL=https://search.not-really.me/
+    - PUID=1000
+    - PGID=100
+    - TZ=America/New_York
+    - SEARXNG_BASE_URL=https://search.not-really.me/
     logging:
-      driver: "json-file"
+      driver: json-file
       options:
-        max-size: "1m"
-        max-file: "1"
+        max-size: 1m
+        max-file: '1'
     healthcheck:
-      test: ["NONE"]
+      test:
+      - NONE
     networks:
-      - traefik-public
+    - traefik-public
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.search.entrypoints=websecure"
-      - "traefik.http.routers.search.tls.certresolver=letsEncrypt"
-      - "traefik.http.routers.search.rule=Host(`search.not-really.me`)" 
-      - "traefik.http.services.search.loadbalancer.server.port=8080"
-      - "traefik.docker.network=traefik-public"
+    - traefik.enable=true
+    - traefik.http.routers.search.entrypoints=websecure
+    - traefik.http.routers.search.tls.certresolver=letsEncrypt
+    - traefik.http.routers.search.rule=Host(`search.not-really.me`)
+    - traefik.http.services.search.loadbalancer.server.port=8080
+    - traefik.docker.network=traefik-public
     restart: unless-stopped
-
   calibre-web:
     image: lscr.io/linuxserver/calibre-web:latest
     container_name: calibre-web
     environment:
-      - PUID=1000
-      - PGID=100
-      - TZ=America/New_York
-      - DOCKER_MODS=linuxserver/mods:universal-calibre #optional
-      - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
+    - PUID=1000
+    - PGID=100
+    - TZ=America/New_York
+    - DOCKER_MODS=linuxserver/mods:universal-calibre
+    - OAUTHLIB_RELAX_TOKEN_SCOPE=1
     volumes:
-      - /volume2/docker-configs/calibre-web/config:/config
-      - /volume1/files/books/:/books
+    - /volume2/docker-configs/calibre-web/config:/config
+    - /volume1/files/books/:/books
     networks:
-      - traefik-public
+    - traefik-public
     ports:
-      - 8083:8083
+    - 8083:8083
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.books.entrypoints=websecure"
-      - "traefik.http.routers.books.tls.certresolver=letsEncrypt"
-      - "traefik.http.routers.books.rule=Host(`books.not-really.me`)" 
-      - "traefik.http.services.books.loadbalancer.server.port=8083"
-      - "traefik.docker.network=traefik-public"
-      - "traefik.port=8083"
+    - traefik.enable=true
+    - traefik.http.routers.books.entrypoints=websecure
+    - traefik.http.routers.books.tls.certresolver=letsEncrypt
+    - traefik.http.routers.books.rule=Host(`books.not-really.me`)
+    - traefik.http.services.books.loadbalancer.server.port=8083
+    - traefik.docker.network=traefik-public
+    - traefik.port=8083
     restart: unless-stopped
-
   openspeedtest:
     image: openspeedtest/latest:latest
     container_name: openspeedtest
     environment:
-      - MODE=standalone
-      - PUID=1000
-      - PGID=1000
-      - PORT=3000
+    - MODE=standalone
+    - PUID=1000
+    - PGID=1000
+    - PORT=3000
     volumes:
-      - /volume2/docker-configs/openspeedtest:/app/data
+    - /volume2/docker-configs/openspeedtest:/app/data
     networks:
-      - traefik-public
+    - traefik-public
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.speed.entrypoints=websecure"
-      - "traefik.http.routers.speed.tls.certresolver=letsEncrypt"
-      - "traefik.http.routers.speed.rule=Host(`speed.not-really.me`)"
-      - "traefik.http.services.speed.loadbalancer.server.port=3000"
-      - "traefik.docker.network=traefik-public"
+    - traefik.enable=true
+    - traefik.http.routers.speed.entrypoints=websecure
+    - traefik.http.routers.speed.tls.certresolver=letsEncrypt
+    - traefik.http.routers.speed.rule=Host(`speed.not-really.me`)
+    - traefik.http.services.speed.loadbalancer.server.port=3000
+    - traefik.docker.network=traefik-public
     restart: unless-stopped
-
   gitea:
     image: docker.io/gitea/gitea:latest
     container_name: gitea
     volumes:
-      - /volume2/docker-configs/gitea:/data
+    - /volume2/docker-configs/gitea:/data
     ports:
-      - "2222:22"
+    - '2222:22'
     networks:
-      - traefik-public
+    - traefik-public
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.gitea.entrypoints=websecure"
-      - "traefik.http.routers.gitea.tls.certresolver=letsEncrypt"
-      - "traefik.http.routers.gitea.rule=Host(`git.not-really.me`)"
-      - "traefik.http.services.gitea.loadbalancer.server.port=3000"
-      - "traefik.docker.network=traefik-public"
+    - traefik.enable=true
+    - traefik.http.routers.gitea.entrypoints=websecure
+    - traefik.http.routers.gitea.tls.certresolver=letsEncrypt
+    - traefik.http.routers.gitea.rule=Host(`git.not-really.me`)
+    - traefik.http.services.gitea.loadbalancer.server.port=3000
+    - traefik.docker.network=traefik-public
     restart: unless-stopped
-
   duckiesays:
     image: docker.io/cadeon924/duckiesays:v24
     container_name: duckiesays
     environment:
-      - NODE_ENV=production
-      - LLM_API_URL=https://llm.not-really.me/v1/chat/completions
-      - LLM_MODEL=qwen3.6-27b
+    - NODE_ENV=production
+    - LLM_API_URL=https://llm.not-really.me/v1/chat/completions
+    - LLM_MODEL=qwen3.6-27b
     volumes:
-      - /volume2/docker-configs/duckiesays/logs:/usr/src/app/logs
+    - /volume2/docker-configs/duckiesays/logs:/usr/src/app/logs
     networks:
-      - traefik-public
+    - traefik-public
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.duckiesays.entrypoints=websecure"
-      - "traefik.http.routers.duckiesays.tls.certresolver=letsEncrypt"
-      - "traefik.http.routers.duckiesays.rule=Host(`duckiesays.com`) || Host(`www.duckiesays.com`)"
-      - "traefik.http.routers.duckiesays.priority=100"
-      - "traefik.http.services.duckiesays.loadbalancer.server.port=3000"
-      - "traefik.docker.network=traefik-public"
-    restart: unless-stopped
-
-  harbor:
-    image: docker.io/goharbor/harbor-core:dev
-    container_name: harbor-core
-    depends_on:
-      - harbor-db
-      - harbor-redis
-      - harbor-jobservice
-    volumes:
-      - /volume2/docker-configs/harbor/data:/harbor/data
-    environment:
-      - HARBOR_ADMIN_PASSWORD=changeme
-    networks:
-      - traefik-public
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.harbor.entrypoints=websecure"
-      - "traefik.http.routers.harbor.tls.certresolver=letsEncrypt"
-      - "traefik.http.routers.harbor.rule=Host(`registry.not-really.me`)"
-      - "traefik.http.services.harbor.loadbalancer.server.port=8080"
-      - "traefik.docker.network=traefik-public"
-    restart: unless-stopped
-
-  harbor-db:
-    image: docker.io/goharbor/harbor-db:dev
-    container_name: harbor-db
-    volumes:
-      - /volume2/docker-configs/harbor/database:/var/lib/postgresql/data
-    restart: unless-stopped
-
-  harbor-redis:
-    image: docker.io/goharbor/redis:dev
-    container_name: harbor-redis
-    volumes:
-      - /volume2/docker-configs/harbor/redis:/data
-    restart: unless-stopped
-
-  harbor-jobservice:
-    image: docker.io/goharbor/harbor-jobservice:dev
-    container_name: harbor-jobservice
-    depends_on:
-      - harbor-core
-    volumes:
-      - /volume2/docker-configs/harbor/job_logs:/var/log/jobs
-    restart: unless-stopped
-
-  harbor-registry:
-    image: docker.io/goharbor/registry-photon:dev
-    container_name: harbor-registry
-    depends_on:
-      - harbor-core
-    volumes:
-      - /volume2/docker-configs/harbor/registry:/storage
-    restart: unless-stopped
-
-  harbor-proxy:
-    image: docker.io/goharbor/nginx-photon:dev
-    container_name: harbor-proxy
-    depends_on:
-      - harbor-core
-      - harbor-registry
-    ports:
-      - "443:8443"
+    - traefik.enable=true
+    - traefik.http.routers.duckiesays.entrypoints=websecure
+    - traefik.http.routers.duckiesays.tls.certresolver=letsEncrypt
+    - traefik.http.routers.duckiesays.rule=Host(`duckiesays.com`) || Host(`www.duckiesays.com`)
+    - traefik.http.routers.duckiesays.priority=100
+    - traefik.http.services.duckiesays.loadbalancer.server.port=3000
+    - traefik.docker.network=traefik-public
     restart: unless-stopped
   duckiesays-legacy:
     image: docker.io/cadeon924/duckiesays-legacy:latest
     container_name: duckiesays-legacy
     environment:
-      - NODE_ENV=production
+    - NODE_ENV=production
     networks:
-      - traefik-public
+    - traefik-public
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.duckiesays-legacy.entrypoints=websecure"
-      - "traefik.http.routers.duckiesays-legacy.tls.certresolver=letsEncrypt"
-      - "traefik.http.routers.duckiesays-legacy.rule=Host(`legacy.duckiesays.com`)"
-      - "traefik.http.routers.duckiesays-legacy.priority=100"
-      - "traefik.http.services.duckiesays-legacy.loadbalancer.server.port=3000"
-      - "traefik.docker.network=traefik-public"
+    - traefik.enable=true
+    - traefik.http.routers.duckiesays-legacy.entrypoints=websecure
+    - traefik.http.routers.duckiesays-legacy.tls.certresolver=letsEncrypt
+    - traefik.http.routers.duckiesays-legacy.rule=Host(`legacy.duckiesays.com`)
+    - traefik.http.routers.duckiesays-legacy.priority=100
+    - traefik.http.services.duckiesays-legacy.loadbalancer.server.port=3000
+    - traefik.docker.network=traefik-public
     restart: unless-stopped
-
   saas:
     image: docker.io/cadeon924/saas:v10
     container_name: saas
     environment:
-      - LLM_API_URL=https://llm.not-really.me/v1/chat/completions
-      - LLM_MODEL=qwen3.6-27b
+    - LLM_API_URL=https://llm.not-really.me/v1/chat/completions
+    - LLM_MODEL=qwen3.6-27b
     volumes:
-      - saas-data:/opt/data/saas-exchanges
+    - saas-data:/opt/data/saas-exchanges
+    networks:
+    - traefik-public
+    labels:
+    - traefik.enable=true
+    - traefik.http.routers.saas.entrypoints=websecure
+    - traefik.http.routers.saas.tls.certresolver=letsEncrypt
+    - traefik.http.routers.saas.rule=Host(`saas.not-really.me`)
+    - traefik.http.services.saas.loadbalancer.server.port=8000
+    - traefik.docker.network=traefik-public
+    restart: unless-stopped
+  registry:
+    image: docker.io/library/registry:2
+    container_name: registry
+    volumes:
+      - /volume2/docker-configs/registry/data:/var/lib/registry
+    environment:
+      - REGISTRY_STORAGE_DELETE_ENABLED=true
+      - REGISTRY_HTTP_ADDR=0.0.0.0:5000
     networks:
       - traefik-public
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.saas.entrypoints=websecure"
-      - "traefik.http.routers.saas.tls.certresolver=letsEncrypt"
-      - "traefik.http.routers.saas.rule=Host(`saas.not-really.me`)"
-      - "traefik.http.services.saas.loadbalancer.server.port=8000"
+      - "traefik.http.routers.registry-http.entrypoints=web"
+      - "traefik.http.routers.registry-http.rule=Host(`registry.not-really.me`)"
+      - "traefik.http.routers.registry.entrypoints=websecure"
+      - "traefik.http.routers.registry.tls.certresolver=letsEncrypt"
+      - "traefik.http.routers.registry.rule=Host(`registry.not-really.me`)"
+      - "traefik.http.services.registry.loadbalancer.server.port=5000"
       - "traefik.docker.network=traefik-public"
     restart: unless-stopped
 
-###### ----- Docker control ----- ######
-networks:
-  traefik-public:
-    driver: bridge
-
-volumes:
-  postgresdata:
-  saas-data:
+  registry-ui:
+    image: docker.io/joxit/docker-registry-ui:latest
+    container_name: registry-ui
+    restart: unless-stopped
+    environment:
+      - SINGLE_REGISTRY=true
+      - REGISTRY_TITLE=Local Registry
+      - DELETE_IMAGES=true
+      - SHOW_CONTENT_DIGEST=true
+      - NGINX_PROXY_PASS_URL=http://registry:5000
+      - REGISTRY_SECURED=false
+    depends_on:
+      - registry
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.registry-ui.entrypoints=websecure"
+      - "traefik.http.routers.registry-ui.tls.certresolver=letsEncrypt"
+      - "traefik.http.routers.registry-ui.rule=Host(`registry-ui.not-really.me`)"
+      - "traefik.http.routers.registry-ui-http.entrypoints=web"
+      - "traefik.http.routers.registry-ui-http.rule=Host(`registry-ui.not-really.me`)"
+      - "traefik.http.services.registry-ui.loadbalancer.server.port=80"
+      - "traefik.docker.network=traefik-public"
