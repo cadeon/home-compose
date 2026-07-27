@@ -248,7 +248,6 @@ services:
     - traefik.http.services.registry-ui.loadbalancer.server.port=80
     - traefik.docker.network=traefik-public
 networks:
-  traefik-public:
-    external: true
+  traefik-public: {}
 volumes:
   saas-data: {}
