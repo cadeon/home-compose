@@ -137,5 +137,4 @@ services:
 ###### ----- Docker control ----- ######
 networks:
   traefik-public:
-    external: true
     driver: bridge
