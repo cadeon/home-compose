@@ -207,44 +207,47 @@ services:
     image: docker.io/library/registry:2
     container_name: registry
     volumes:
-      - /volume2/docker-configs/registry/data:/var/lib/registry
+    - /volume2/docker-configs/registry/data:/var/lib/registry
     environment:
-      - REGISTRY_STORAGE_DELETE_ENABLED=true
-      - REGISTRY_HTTP_ADDR=0.0.0.0:5000
+    - REGISTRY_STORAGE_DELETE_ENABLED=true
+    - REGISTRY_HTTP_ADDR=0.0.0.0:5000
     networks:
-      - traefik-public
+    - traefik-public
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.registry-http.entrypoints=web"
-      - "traefik.http.routers.registry-http.rule=Host(`registry.not-really.me`)"
-      - "traefik.http.routers.registry.entrypoints=websecure"
-      - "traefik.http.routers.registry.tls.certresolver=letsEncrypt"
-      - "traefik.http.routers.registry.rule=Host(`registry.not-really.me`)"
-      - "traefik.http.services.registry.loadbalancer.server.port=5000"
-      - "traefik.docker.network=traefik-public"
+    - traefik.enable=true
+    - traefik.http.routers.registry-http.entrypoints=web
+    - traefik.http.routers.registry-http.rule=Host(`registry.not-really.me`)
+    - traefik.http.routers.registry.entrypoints=websecure
+    - traefik.http.routers.registry.tls.certresolver=letsEncrypt
+    - traefik.http.routers.registry.rule=Host(`registry.not-really.me`)
+    - traefik.http.services.registry.loadbalancer.server.port=5000
+    - traefik.docker.network=traefik-public
     restart: unless-stopped
-
   registry-ui:
     image: docker.io/joxit/docker-registry-ui:latest
     container_name: registry-ui
     restart: unless-stopped
     environment:
-      - SINGLE_REGISTRY=true
-      - REGISTRY_TITLE=Local Registry
-      - DELETE_IMAGES=true
-      - SHOW_CONTENT_DIGEST=true
-      - NGINX_PROXY_PASS_URL=http://registry:5000
-      - REGISTRY_SECURED=false
+    - SINGLE_REGISTRY=true
+    - REGISTRY_TITLE=Local Registry
+    - DELETE_IMAGES=true
+    - SHOW_CONTENT_DIGEST=true
+    - NGINX_PROXY_PASS_URL=http://registry:5000
+    - REGISTRY_SECURED=false
     depends_on:
-      - registry
+    - registry
     networks:
-      - traefik-public
+    - traefik-public
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.registry-ui.entrypoints=websecure"
-      - "traefik.http.routers.registry-ui.tls.certresolver=letsEncrypt"
-      - "traefik.http.routers.registry-ui.rule=Host(`registry-ui.not-really.me`)"
-      - "traefik.http.routers.registry-ui-http.entrypoints=web"
-      - "traefik.http.routers.registry-ui-http.rule=Host(`registry-ui.not-really.me`)"
-      - "traefik.http.services.registry-ui.loadbalancer.server.port=80"
-      - "traefik.docker.network=traefik-public"
+    - traefik.enable=true
+    - traefik.http.routers.registry-ui.entrypoints=websecure
+    - traefik.http.routers.registry-ui.tls.certresolver=letsEncrypt
+    - traefik.http.routers.registry-ui.rule=Host(`registry-ui.not-really.me`)
+    - traefik.http.routers.registry-ui-http.entrypoints=web
+    - traefik.http.routers.registry-ui-http.rule=Host(`registry-ui.not-really.me`)
+    - traefik.http.services.registry-ui.loadbalancer.server.port=80
+    - traefik.docker.network=traefik-public
+networks:
+  traefik-public:
+    external: true
+volumes: {}
