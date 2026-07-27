@@ -181,27 +181,69 @@ services:
       - "traefik.docker.network=traefik-public"
     restart: unless-stopped
 
-  registry:
-    image: docker.io/library/registry:2
-    container_name: registry
+  harbor:
+    image: docker.io/goharbor/harbor-core:dev
+    container_name: harbor-core
+    depends_on:
+      - harbor-db
+      - harbor-redis
+      - harbor-jobservice
     volumes:
-      - /volume2/docker-configs/registry/data:/var/lib/registry
+      - /volume2/docker-configs/harbor/data:/harbor/data
     environment:
-      - REGISTRY_STORAGE_DELETE_ENABLED=true
-      - REGISTRY_HTTP_ADDR=0.0.0.0:5000
+      - HARBOR_ADMIN_PASSWORD=changeme
     networks:
       - traefik-public
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.registry-http.entrypoints=web"
-      - "traefik.http.routers.registry-http.rule=Host(`registry.not-really.me`)"
-      - "traefik.http.routers.registry.entrypoints=websecure"
-      - "traefik.http.routers.registry.tls.certresolver=letsEncrypt"
-      - "traefik.http.routers.registry.rule=Host(`registry.not-really.me`)"
-      - "traefik.http.services.registry.loadbalancer.server.port=5000"
+      - "traefik.http.routers.harbor.entrypoints=websecure"
+      - "traefik.http.routers.harbor.tls.certresolver=letsEncrypt"
+      - "traefik.http.routers.harbor.rule=Host(`registry.not-really.me`)"
+      - "traefik.http.services.harbor.loadbalancer.server.port=8080"
       - "traefik.docker.network=traefik-public"
     restart: unless-stopped
 
+  harbor-db:
+    image: docker.io/goharbor/harbor-db:dev
+    container_name: harbor-db
+    volumes:
+      - /volume2/docker-configs/harbor/database:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  harbor-redis:
+    image: docker.io/goharbor/redis:dev
+    container_name: harbor-redis
+    volumes:
+      - /volume2/docker-configs/harbor/redis:/data
+    restart: unless-stopped
+
+  harbor-jobservice:
+    image: docker.io/goharbor/harbor-jobservice:dev
+    container_name: harbor-jobservice
+    depends_on:
+      - harbor-core
+    volumes:
+      - /volume2/docker-configs/harbor/job_logs:/var/log/jobs
+    restart: unless-stopped
+
+  harbor-registry:
+    image: docker.io/goharbor/registry-photon:dev
+    container_name: harbor-registry
+    depends_on:
+      - harbor-core
+    volumes:
+      - /volume2/docker-configs/harbor/registry:/storage
+    restart: unless-stopped
+
+  harbor-proxy:
+    image: docker.io/goharbor/nginx-photon:dev
+    container_name: harbor-proxy
+    depends_on:
+      - harbor-core
+      - harbor-registry
+    ports:
+      - "443:8443"
+    restart: unless-stopped
   duckiesays-legacy:
     image: docker.io/cadeon924/duckiesays-legacy:latest
     container_name: duckiesays-legacy
