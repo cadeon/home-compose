@@ -194,7 +194,7 @@ services:
     restart: unless-stopped
 
   registry-ui:
-    image: docker.io/conSol/registry-ui:latest
+    image: docker.io/consol/registry-ui:latest
     container_name: registry-ui
     environment:
       - REGISTRY_NAME=registry
