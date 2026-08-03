@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ripper — Homelab Infrastructure</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0e17;--surface:#111827;--border:#1e293b;--text:#cbd5e1;--heading:#f1f5f9;--accent:#38bdf8;--green:#4ade80;--yellow:#facc15;--red:#f87171;--mono:'SF Mono',Consolas,'Liberation Mono',Menlo,monospace}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;max-width:960px;margin:0 auto;padding:2rem 1.5rem}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+h1,h2,h3{color:var(--heading);margin:2rem 0 1rem}h1{font-size:2rem;border-bottom:1px solid var(--border);padding-bottom:.5rem}h2{font-size:1.4rem;border-bottom:1px solid var(--border);padding-bottom:.3rem}h3{font-size:1.1rem;color:var(--accent)}
+p{margin:.75rem 0}
+code,.mono{font-family:var(--mono);font-size:.88em;background:var(--surface);padding:.15em .4em;border-radius:4px}
+pre{background:var(--surface);padding:1rem;border-radius:6px;overflow-x:auto;font-size:.85em;line-height:1.5;margin:1rem 0;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.9em}
+th,td{padding:.5rem .75rem;text-align:left;border-bottom:1px solid var(--border)}
+th{color:var(--heading);font-weight:600;background:var(--surface)}
+td:first-child{font-family:var(--mono);font-size:.85em}
+.badge{display:inline-block;padding:.15em .5em;border-radius:4px;font-size:.75em;font-weight:600;font-family:var(--mono)}
+.badge-green{background:#064e3b;color:var(--green)}.badge-yellow{background:#42200b;color:var(--yellow)}.badge-red{background:#450a0a;color:var(--red)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin:1rem 0}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.25rem}
+.card h3{margin-top:0;font-size:1rem}
+.card .stat{font-size:1.8rem;font-weight:700;color:var(--heading);font-family:var(--mono)}
+.card .label{font-size:.8em;color:var(--text);opacity:.7}
+.diagram{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.5rem;margin:1rem 0;font-family:var(--mono);font-size:.82em;line-height:1.7;white-space:pre;overflow-x:auto;color:var(--accent)}
+footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.8em;opacity:.5;text-align:center}
+</style>
+</head>
+<body>
+
+<h1>ripper</h1>
+<p>Single-node <a href="https://k3s.io/">k3s</a> homelab cluster running on Ubuntu 24.04 with 32 vCPU and 64 GB RAM. GitOps-driven infrastructure managed by <a href="https://fluxcd.io/">Flux CD</a>, with <a href="https://traefik.io/">Traefik</a> as ingress controller and <a href="https://goauthentik.io/">Authentik</a> for centralized identity.</p>
+
+<div class="grid">
+  <div class="card"><div class="stat">1</div><div class="label">node (single-node k3s)</div></div>
+  <div class="card"><div class="stat">48</div><div class="label">pods running</div></div>
+  <div class="card"><div class="stat">13</div><div class="label">namespaces</div></div>
+  <div class="card"><div class="stat">13</div><div class="label">ingress routes</div></div>
+  <div class="card"><div class="stat">18</div><div class="label">persistent volumes</div></div>
+  <div class="card"><div class="stat">6</div><div class="label">Flux kustomizations</div></div>
+</div>
+
+<h2>Architecture</h2>
+
+<div class="diagram">Internet
+  │
+  ├─ Cloudflare DNS (automatic DDNS + TLS certs)
+  │
+  ├─ Traefik (ingress controller, TLS termination via Let's Encrypt)
+  │   │
+  │   ├─ *.not-really.me ──→ k3s cluster services
+  │   │
+  │   └─ *.not-really.me ──→ NAS (Docker Compose / Portainer)
+  │
+  ├─ ripper (k3s single node, Ubuntu 24.04)
+  │   │
+  │   ├─ containerd 2.3.2 (container runtime)
+  │   ├─ k3s v1.36.2 (Kubernetes distribution)
+  │   │
+  │   ├─ Flux CD (GitOps operator)
+  │   │   └─ watches: git.not-really.me/caduffy/ripper-flux
+  │   │
+  │   ├─ Traefik (in-cluster ingress)
+  │   ├─ cert-manager (Let's Encrypt certificates)
+  │   ├─ external-dns (DigitalOcean DNS automation)
+  │   ├─ Authentik (identity provider / SSO)
+  │   ├─ NVIDIA GPU Operator (DCGM exporter)
+  │   ├─ Prometheus + Grafana (monitoring stack)
+  │   ├─ NFS Subdir External Provisioner (dynamic PVs)
+  │   ├─ Reflector (secret sync across namespaces)
+  │   └─ Headlamp (Kubernetes dashboard)
+  │
+  └─ NAS (Synology, Docker Compose via Portainer)
+      │
+      ├─ Traefik (edge proxy, shares Let's Encrypt resolver)
+      ├─ Gitea (git.not-really.me — source of truth)
+      ├─ SearXNG (search.not-really.me — privacy-respecting search)
+      ├─ Calibre-Web (books.not-really.me — library)
+      ├─ OpenSpeedTest (speed.not-really.me)
+      ├─ Docker Registry (registry.not-really.me)
+      └─ various other services</div>
+
+<h2>GitOps Pipeline</h2>
+
+<p>All cluster state lives in a single Git repository: <code>git.not-really.me/caduffy/ripper-flux</code>. Flux CD watches this repo and reconciles the cluster to match what's committed.</p>
+
+<pre>
+ripper-flux/
+├── apps/                    # Application deployments
+│   ├── base/                # Base manifests (no overrides)
+│   │   ├── authentik/       # Identity provider
+│   │   ├── aperture/        # Proxy outpost for Mac Mini
+│   │   ├── open-webui/      # AI chat interface
+│   │   └── ...
+│   └── &lt;env&gt;/               # Environment overlays (kustomize)
+│       └── ripper/          # Production cluster
+├── infrastructure/          # Cluster-level controllers
+│   ├── base/
+│   │   ├── cert-manager/
+│   │   ├── external-dns/
+│   │   ├── gpu-operator/
+│   │   ├── headlamp/
+│   │   ├── monitoring/      # Prometheus + Grafana
+│   │   ├── nfs-provisioner/
+│   │   └── reflector/
+│   └── configs/
+│       └── sealed-secrets/  # Bitnami sealed-secrets
+└── kustomization.yaml       # Root kustomize composition
+</pre>
+
+<p>Six Flux <code>Kustomization</code> resources drive reconciliation:</p>
+
+<table>
+<tr><th>Kustomization</th><th>Source Path</th><th>Purpose</th></tr>
+<tr><td><code>flux-system</code></td><td>bootstrapped</td><td>Self-managed Flux components</td></tr>
+<tr><td><code>infrastructure-controllers</code></td><td>infrastructure/base</td><td>cert-manager, external-dns, GPU operator, NFS provisioner, reflector, Headlamp</td></tr>
+<tr><td><code>infrastructure-configs</code></td><td>infrastructure/configs</td><td>Sealed Secrets controller + encrypted secrets</td></tr>
+<tr><td><code>apps</code></td><td>apps/ripper</td><td>All application workloads (composited via kustomize)</td></tr>
+<tr><td><code>authentik</code></td><td>apps/authentik</td><td>Authentik server, PostgreSQL, Redis, ingress</td></tr>
+<tr><td><code>aperture</code></td><td>apps/aperture</td><td>Proxy outpost for off-cluster Aperture instance</td></tr>
+</table>
+
+<h2>Identity &amp; Access</h2>
+
+<p><a href="https://goauthentik.io/">Authentik</a> serves as the centralized identity provider for the entire homelab. It handles authentication for all externally-facing services through two patterns:</p>
+
+<h3>Proxy Outpost (Gateway Pattern)</h3>
+<p>A dedicated Authentik proxy outpost pod sits in front of backend services. It intercepts requests, authenticates the user via Authentik's flow engine, and forwards authorized requests to the upstream service with identity headers. This is how Aperture is protected — the outpost terminates TLS, handles the auth challenge, and reverse-proxies to the Mac Mini.</p>
+
+<h3>Native OIDC (IdP Pattern)</h3>
+<p>Services with built-in OAuth/OIDC support (like Open WebUI) register as OAuth2 clients in Authentik. The service initiates the authorization code flow, Authentik handles consent and authentication, and the user's identity is asserted back to the service via ID token or userinfo endpoint.</p>
+
+<h3>Flows &amp; Property Mappings</h3>
+<p>Authentik uses a flow-based authentication engine. The default provider authorization flow (<code>default-provider-authorization-implicit-consent</code>) handles the OAuth consent screen. Custom property mappings control what claims appear in ID tokens and what attributes are exposed via the userinfo endpoint.</p>
+
+<h2>Networking</h2>
+
+<h3>DNS</h3>
+<p>DigitalOcean manages DNS for <code>not-really.me</code>. Two automation layers keep records current:</p>
+<ul>
+<li><strong>external-dns</strong> (in-cluster): Watches Kubernetes Ingress resources and creates/updates A and CNAME records in DigitalOcean automatically. When you deploy a new service with an ingress, DNS follows.</li>
+<li><strong>Cloudflare DDNS</strong> (NAS-side): A dynamic DNS updater keeps the root domain pointing at the current public IP, handling ISP NAT changes.</li>
+</ul>
+
+<h3>TLS</h3>
+<p><a href="https://cert-manager.io/">cert-manager</a> provisions and renews Let's Encrypt certificates automatically. Two issuers are configured:</p>
+<ul>
+<li><strong>Let's Encrypt Production</strong> (YR2): Used for all external services. Certificates are stored as Kubernetes Secrets and mounted by Traefik.</li>
+<li><strong>Let's Encrypt Staging</strong>: Available for testing without hitting rate limits.</li>
+</ul>
+<p>The NAS Traefik instance shares the same Let's Encrypt resolver pattern, so both the cluster and NAS services get valid certs from the same ACME account.</p>
+
+<h3>Ingress</h3>
+<p>Traefik serves as the ingress controller for the k3s cluster. Routes are declared as standard Kubernetes <code>Ingress</code> resources with host-based routing. Traefik's Kubernetes CRD provider watches these resources and updates its routing table in real time.</p>
+
+<h2>Storage</h2>
+
+<p>Two storage classes are available:</p>
+
+<table>
+<tr><th>Storage Class</th><th>Provisioner</th><th>Use Case</th></tr>
+<tr><td><code>local-path</code></td><td>Rancher Local Path Provisioner (built into k3s)</td><td>Ephemeral workloads, stateless apps</td></tr>
+<tr><td><code>nfs</code></td><td>NFS Subdir External Provisioner</td><td>Persistent state (databases, caches, user data)</td></tr>
+</table>
+
+<p>The NFS provisioner dynamically creates subdirectories on a Synology NAS share and provisions PV/PVC pairs on demand. When a PVC is created with the <code>nfs</code> storage class, the provisioner creates a corresponding directory, binds a PV, and the workload gets persistent storage — all without manual intervention.</p>
+
+<h2>Observability</h2>
+
+<p>A full Prometheus + Grafana stack runs in the <code>monitoring</code> namespace:</p>
+
+<ul>
+<li><strong>Prometheus</strong>: Scrapes metrics from the Kubernetes API server, kubelet, containerd, node exporter, DCGM exporter (GPU metrics), and individual service endpoints.</li>
+<li><strong>Grafana</strong>: Dashboards for cluster health, node resources, pod status, GPU utilization, and application-level metrics. Provisioned declaratively through Flux.</li>
+<li><strong>DCGM Exporter</strong>: NVIDIA Data Center GPU Manager exporter, deployed via the GPU Operator, exposing GPU temperature, memory usage, power draw, and utilization.</li>
+</ul>
+
+<h2>Secret Management</h2>
+
+<p><a href="https://www.bitnami.com/stack/sealed-secrets">Bitnami Sealed Secrets</a> encrypts Kubernetes Secrets using asymmetric encryption before they enter Git. The sealed-secrets controller running in the cluster is the only component that holds the private key and can decrypt them. This means the entire <code>ripper-flux</code> repo can be public — secrets are cryptographically bound to the cluster and useless outside it.</p>
+
+<p>The <a href="https://emberlight.github.io/reflector/">Reflector</a> operator syncs secrets across namespaces, enabling services in different namespaces to access shared credentials without duplicating sealed secrets.</p>
+
+<h2>Hardware</h2>
+
+<table>
+<tr><th>Component</th><th>Detail</th></tr>
+<tr><td>Platform</td><td>Single-node k3s on Ubuntu 24.04.4 LTS</td></tr>
+<tr><td>CPU</td><td>32 vCPU</td></tr>
+<tr><td>RAM</td><td>64 GB</td></tr>
+<tr><td>Kernel</td><td>6.8.0-136-generic</td></tr>
+<tr><td>Container Runtime</td><td>containerd 2.3.2-k3s2</td></tr>
+<tr><td>GPU</td><td>NVIDIA (DCGM exporter active)</td></tr>
+<tr><td>k3s Version</td><td>v1.36.2+k3s1 (Kubernetes 1.36)</td></tr>
+<tr><td>Go Runtime</td><td>go1.26.4</td></tr>
+</table>
+
+<h2>NAS Services</h2>
+
+<p>The Synology NAS runs Docker Compose stacks managed through Portainer, with configs version-controlled in a separate <code>home-compose</code> Git repo. Traefik on the NAS shares the same Let's Encrypt ACME account as the cluster, so both sides get valid TLS. Services include Gitea, SearXNG, Calibre-Web, OpenSpeedTest, a private Docker registry, and several personal projects.</p>
+
+<footer>
+<p>ripper &middot; infrastructure overview &middot; built with flux cd &amp; k3s</p>
+</footer>
+
+</body>
+</html>
