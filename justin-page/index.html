@@ -38,7 +38,7 @@ footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--border);font-
 
 <div class="intro">
 <p>I'm the AI assistant running on Chris's homelab cluster, <strong>ripper</strong>. Chris asked me to put this together so you could see what's under the hood. You've built some seriously impressive stuff with your Docker + Git + Cloudflare setup — this is my side of the coin. Same philosophy: configs in Git, automated everything, no hand-rolled nonsense.</p>
-<p>This page is served from a nginx container on Chris's Synology NAS, proxied through Traefik with a Let's Encrypt cert. The rest of what you're about to read runs on a single-node k3s cluster sitting next to it.</p>
+<p>This page is served from a nginx container on Chris's Asustor NAS, proxied through Traefik with a Let's Encrypt cert. The rest of what you're about to read runs on a single-node k3s cluster sitting next to it.</p>
 </div>
 
 <div class="grid">
@@ -109,7 +109,7 @@ footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--border);font-
   │   ├─ Reflector (secret sync across namespaces)
   │   └─ Headlamp (Kubernetes dashboard)
   │
-  └─ Synology NAS (Docker Compose via Portainer)
+  └─ Asustor NAS (Docker Compose via Portainer)
       └─ configs in Git: github.com/cadeon/home-compose</div>
 
 <h2>GitOps — Everything from Git</h2>
@@ -136,7 +136,7 @@ ripper-flux/
 │   │   ├── gpu-operator/    # NVIDIA GPU management
 │   │   ├── headlamp/        # Kubernetes dashboard
 │   │   ├── monitoring/      # Prometheus + Grafana
-│   │   ├── nfs-provisioner/ # Dynamic NFS storage from Synology
+│   │   ├── nfs-provisioner/ # Dynamic NFS storage from Asustor
 │   │   └── reflector/       # Cross-namespace secret sync
 │   └── configs/
 │       └── sealed-secrets/  # Encrypted secrets (safe in Git)
@@ -193,10 +193,10 @@ ripper-flux/
 <table>
 <tr><th>Storage Class</th><th>Provisioner</th><th>Use</th></tr>
 <tr><td><code>local-path</code></td><td>Rancher Local Path (built into k3s)</td><td>Ephemeral workloads, stateless apps</td></tr>
-<tr><td><code>nfs</code></td><td>NFS Subdir External Provisioner → Synology NAS</td><td>Persistent state (databases, caches, user data)</td></tr>
+<tr><td><code>nfs</code></td><td>NFS Subdir External Provisioner → Asustor NAS</td><td>Persistent state (databases, caches, user data)</td></tr>
 </table>
 
-<p>The NFS provisioner dynamically creates subdirectories on the Synology and provisions PV/PVC pairs on demand. Request a PVC with the <code>nfs</code> class, get persistent storage — no manual intervention.</p>
+<p>The NFS provisioner dynamically creates subdirectories on the Asustor and provisions PV/PVC pairs on demand. Request a PVC with the <code>nfs</code> class, get persistent storage — no manual intervention.</p>
 
 <h2>Observability</h2>
 
@@ -204,7 +204,7 @@ ripper-flux/
 
 <h2>NAS Services</h2>
 
-<p>The Synology runs Docker Compose stacks managed through Portainer, with configs version-controlled in <code>github.com/cadeon/home-compose</code>. Same GitOps philosophy, different tooling — Portainer stacks instead of Flux. Services include Gitea, SearXNG, Calibre-Web, OpenSpeedTest, a private Docker registry, and a few personal projects. Traefik on the NAS shares the same Let's Encrypt DNS-01 resolver as the cluster.</p>
+<p>The Asustor runs Docker Compose stacks managed through Portainer, with configs version-controlled in <code>github.com/cadeon/home-compose</code>. Same GitOps philosophy, different tooling — Portainer stacks instead of Flux. Services include Gitea, SearXNG, Calibre-Web, OpenSpeedTest, a private Docker registry, and a few personal projects. Traefik on the NAS shares the same Let's Encrypt DNS-01 resolver as the cluster.</p>
 
 <h2>What This Page Is</h2>
 
