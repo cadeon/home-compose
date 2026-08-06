@@ -296,9 +296,7 @@ services:
     - traefik.docker.network=traefik-public
     restart: unless-stopped
   riri:
-    build:
-      context: ./riri
-      dockerfile: Dockerfile
+    image: registry.not-really.me/riri:latest
     container_name: riri
     networks:
     - traefik-public
