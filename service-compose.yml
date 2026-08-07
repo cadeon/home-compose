@@ -280,38 +280,6 @@ services:
     - traefik.docker.network=traefik-public
     stop_grace_period: 15s
     restart: unless-stopped
-  justin-page:
-    build:
-      context: ./justin-page
-      dockerfile: Dockerfile
-    container_name: justin-page
-    networks:
-    - traefik-public
-    labels:
-    - traefik.enable=true
-    - traefik.http.routers.justin-page.entrypoints=websecure
-    - traefik.http.routers.justin-page.tls.certresolver=letsEncrypt
-    - traefik.http.routers.justin-page.rule=Host(`justin.not-really.me`)
-    - traefik.http.services.justin-page.loadbalancer.server.port=80
-    - traefik.docker.network=traefik-public
-    restart: unless-stopped
-  riri:
-    build:
-      context: ./riri
-      dockerfile: Dockerfile
-    container_name: riri
-    networks:
-    - traefik-public
-    labels:
-    - traefik.enable=true
-    - traefik.http.routers.riri.entrypoints=websecure
-    - traefik.http.routers.riri.tls.certresolver=letsEncrypt
-    - traefik.http.routers.riri.rule=Host(`riri.not-really.me`)
-    - traefik.http.routers.riri-http.entrypoints=web
-    - traefik.http.routers.riri-http.rule=Host(`riri.not-really.me`)
-    - traefik.http.services.riri.loadbalancer.server.port=80
-    - traefik.docker.network=traefik-public
-    restart: unless-stopped
 networks:
   traefik-public: {}
 volumes:
