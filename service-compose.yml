@@ -307,6 +307,8 @@ services:
     - traefik.http.routers.riri.entrypoints=websecure
     - traefik.http.routers.riri.tls.certresolver=letsEncrypt
     - traefik.http.routers.riri.rule=Host(`riri.not-really.me`)
+    - traefik.http.routers.riri-http.entrypoints=web
+    - traefik.http.routers.riri-http.rule=Host(`riri.not-really.me`)
     - traefik.http.services.riri.loadbalancer.server.port=80
     - traefik.docker.network=traefik-public
     restart: unless-stopped
