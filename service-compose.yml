@@ -150,12 +150,10 @@ services:
     - traefik.docker.network=traefik-public
     restart: unless-stopped
   duckiesays:
-    image: docker.io/cadeon924/duckiesays:v25
+    image: registry.not-really.me/caduffy/duckiesays:v25
     container_name: duckiesays
     environment:
     - NODE_ENV=production
-    - LLM_API_URL=https://llm.not-really.me/v1/chat/completions
-    - LLM_MODEL=ripper
     volumes:
     - /volume2/docker-configs/duckiesays/logs:/usr/src/app/logs
     networks:
