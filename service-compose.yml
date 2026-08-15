@@ -150,7 +150,7 @@ services:
     - traefik.docker.network=traefik-public
     restart: unless-stopped
   duckiesays:
-    image: registry.not-really.me/caduffy/duckiesays:v25
+    image: registry.not-really.me/caduffy/duckiesays:v25-dt
     container_name: duckiesays
     environment:
     - NODE_ENV=production
