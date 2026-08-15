@@ -150,12 +150,12 @@ services:
     - traefik.docker.network=traefik-public
     restart: unless-stopped
   duckiesays:
-    image: docker.io/cadeon924/duckiesays:v24
+    image: docker.io/cadeon924/duckiesays:v25
     container_name: duckiesays
     environment:
     - NODE_ENV=production
     - LLM_API_URL=https://llm.not-really.me/v1/chat/completions
-    - LLM_MODEL=qwen3.6-27b
+    - LLM_MODEL=ripper
     volumes:
     - /volume2/docker-configs/duckiesays/logs:/usr/src/app/logs
     networks:
@@ -186,11 +186,11 @@ services:
     - traefik.docker.network=traefik-public
     restart: unless-stopped
   saas:
-    image: docker.io/cadeon924/saas:v11
+    image: docker.io/cadeon924/saas:v12
     container_name: saas
     environment:
     - LLM_API_URL=https://llm.not-really.me/v1/chat/completions
-    - LLM_MODEL=qwen3.6-27b
+    - LLM_MODEL=ripper
     volumes:
     - saas-data:/opt/data/saas-exchanges
     networks:
