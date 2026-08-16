@@ -148,10 +148,10 @@ services:
     - traefik.http.routers.gitea.rule=Host(`git.not-really.me`)
     - traefik.http.services.gitea.loadbalancer.server.port=3000
     - traefik.docker.network=traefik-public
-    # Gitea Docker Package Registry
+    # Gitea Docker Package Registry (reuses existing Lets Encrypt cert)
     - traefik.http.routers.gitea-registry.entrypoints=websecure
     - traefik.http.routers.gitea-registry.tls.certresolver=letsEncrypt
-    - traefik.http.routers.gitea-registry.rule=Host(`gitea-registry.not-really.me`)
+    - traefik.http.routers.gitea-registry.rule=Host(`registry.not-really.me`)
     - traefik.http.routers.gitea-registry.service=gitea-registry-svc
     - traefik.http.services.gitea-registry-svc.loadbalancer.server.port=3000
     restart: unless-stopped
