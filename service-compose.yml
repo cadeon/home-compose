@@ -38,7 +38,7 @@ services:
     - traefik.http.routers.planes.tls.certresolver=letsEncrypt
     - traefik.http.routers.planes.rule=Host(`planes.not-really.me`)
     - traefik.http.services.planes.loadbalancer.server.port=80
-    - traefik.docker.network=traefik-public
+    - traefik.docker.network=service-compose_traefik-public
     restart: unless-stopped
   rickroll:
     image: modem7/docker-rickroll
@@ -55,7 +55,7 @@ services:
     - traefik.http.routers.rr.tls.certresolver=letsEncrypt
     - traefik.http.routers.rr.rule=Host(`rr.not-really.me`)
     - traefik.http.services.rr.loadbalancer.server.port=8080
-    - traefik.docker.network=traefik-public
+    - traefik.docker.network=service-compose_traefik-public
     restart: unless-stopped
   searxng:
     image: docker.io/searxng/searxng:latest
@@ -85,7 +85,7 @@ services:
     - traefik.http.routers.search.tls.certresolver=letsEncrypt
     - traefik.http.routers.search.rule=Host(`search.not-really.me`)
     - traefik.http.services.search.loadbalancer.server.port=8080
-    - traefik.docker.network=traefik-public
+    - traefik.docker.network=service-compose_traefik-public
     restart: unless-stopped
   # Commented out for TrueNAS migration
   # calibre-web:
@@ -110,7 +110,7 @@ services:
   #   - traefik.http.routers.books.tls.certresolver=letsEncrypt
   #   - traefik.http.routers.books.rule=Host(`books.not-really.me`)
   #   - traefik.http.services.books.loadbalancer.server.port=8083
-  #   - traefik.docker.network=traefik-public
+  #   - traefik.docker.network=service-compose_traefik-public
   #   - traefik.port=8083
   #   restart: unless-stopped
   # Commented out for TrueNAS migration
@@ -132,7 +132,7 @@ services:
   #   - traefik.http.routers.speed.tls.certresolver=letsEncrypt
   #   - traefik.http.routers.speed.rule=Host(`speed.not-really.me`)
   #   - traefik.http.services.speed.loadbalancer.server.port=3000
-  #   - traefik.docker.network=traefik-public
+  #   - traefik.docker.network=service-compose_traefik-public
   #   restart: unless-stopped
   gitea:
     image: docker.io/gitea/gitea:latest
@@ -150,7 +150,7 @@ services:
     - traefik.http.routers.gitea.tls.certresolver=letsEncrypt
     - traefik.http.routers.gitea.rule=Host(`git.not-really.me`)
     - traefik.http.services.gitea.loadbalancer.server.port=3000
-    - traefik.docker.network=traefik-public
+    - traefik.docker.network=service-compose_traefik-public
     # Gitea Docker Package Registry (reuses existing Lets Encrypt cert + gitea service)
     - traefik.http.routers.gitea-registry.entrypoints=websecure
     - traefik.http.routers.gitea-registry.tls.certresolver=letsEncrypt
