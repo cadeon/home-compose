@@ -166,7 +166,6 @@ services:
     environment:
     - TZ=America/New_York
     - PYTHONUNBUFFERED=1
-    - COPP_RPROXY=1
     volumes:
     - /volume2/docker-configs/copyparty:/cfg
     - /volume1/files/public:/files/public
@@ -189,10 +188,7 @@ services:
     - traefik.http.routers.filez.entrypoints=websecure
     - traefik.http.routers.filez.tls.certresolver=letsEncrypt
     - traefik.http.routers.filez.rule=Host(`filez.not-really.me`)
-    - traefik.http.routers.filez.middlewares=filez-ws
-    - traefik.http.middlewares.filez-ws.headers.customrequestheaders.X-Forwarded-Proto=https
     - traefik.http.services.filez.loadbalancer.server.port=3923
-    - traefik.http.services.filez.loadbalancer.passhostheader=true
     - traefik.docker.network=service-compose_traefik-public
     stop_grace_period: 15s
     restart: unless-stopped
