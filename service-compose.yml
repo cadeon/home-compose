@@ -186,7 +186,10 @@ services:
     - traefik.http.routers.filez.entrypoints=websecure
     - traefik.http.routers.filez.tls.certresolver=letsEncrypt
     - traefik.http.routers.filez.rule=Host(`filez.not-really.me`)
+    - traefik.http.routers.filez.middlewares=filez-ws
+    - traefik.http.middlewares.filez-ws.headers.customrequestheaders.X-Forwarded-Proto=HTTPS
     - traefik.http.services.filez.loadbalancer.server.port=3923
+    - traefik.http.services.filez.loadbalancer.passhostheader=true
     - traefik.docker.network=traefik-public
     stop_grace_period: 15s
     restart: unless-stopped
