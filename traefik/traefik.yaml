@@ -1,6 +1,5 @@
 serversTransport:
   maxIdleConnsPerHost: -1
-  disableHTTP2: true
   forwardingTimeouts:
     responseHeaderTimeout: 0s
 
