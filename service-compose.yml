@@ -180,8 +180,8 @@ services:
       timeout: 2s
       retries: 5
       start_period: 15s
-    networks:
-    - traefik-public
+    ports:
+    - "3923:3923"
     labels:
     - traefik.enable=true
     - traefik.http.routers.filez.entrypoints=websecure
@@ -189,10 +189,10 @@ services:
     - traefik.http.routers.filez.rule=Host(`filez.not-really.me`)
     - traefik.http.routers.filez.middlewares=filez-ws
     - traefik.http.middlewares.filez-ws.headers.customrequestheaders.X-Forwarded-Proto=https
+    - traefik.http.services.filez.loadbalancer.server.host=127.0.0.1
     - traefik.http.services.filez.loadbalancer.server.port=3923
     - traefik.http.services.filez.loadbalancer.passhostheader=true
     - traefik.http.services.filez.loadbalancer.serversTransport=no-http2
-    - traefik.docker.network=traefik-public
     stop_grace_period: 15s
     restart: unless-stopped
 networks:
