@@ -29,5 +29,4 @@ services:
 ###### ----- Docker control ----- ######
 networks:
   traefik-public:
-    name: traefik-public
     driver: bridge

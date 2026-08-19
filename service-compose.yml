@@ -39,7 +39,7 @@ services:
     - traefik.http.routers.planes.tls.certresolver=letsEncrypt
     - traefik.http.routers.planes.rule=Host(`planes.not-really.me`)
     - traefik.http.services.planes.loadbalancer.server.port=80
-    - traefik.docker.network=traefik-public
+    - traefik.docker.network=service-compose_traefik-public
     restart: unless-stopped
   rickroll:
     image: modem7/docker-rickroll
@@ -56,7 +56,7 @@ services:
     - traefik.http.routers.rr.tls.certresolver=letsEncrypt
     - traefik.http.routers.rr.rule=Host(`rr.not-really.me`)
     - traefik.http.services.rr.loadbalancer.server.port=8080
-    - traefik.docker.network=traefik-public
+    - traefik.docker.network=service-compose_traefik-public
     restart: unless-stopped
   searxng:
     image: docker.io/searxng/searxng:latest
@@ -86,7 +86,7 @@ services:
     - traefik.http.routers.search.tls.certresolver=letsEncrypt
     - traefik.http.routers.search.rule=Host(`search.not-really.me`)
     - traefik.http.services.search.loadbalancer.server.port=8080
-    - traefik.docker.network=traefik-public
+    - traefik.docker.network=service-compose_traefik-public
     restart: unless-stopped
   # Commented out for TrueNAS migration
   # calibre-web:
@@ -151,7 +151,7 @@ services:
     - traefik.http.routers.gitea.tls.certresolver=letsEncrypt
     - traefik.http.routers.gitea.rule=Host(`git.not-really.me`)
     - traefik.http.services.gitea.loadbalancer.server.port=3000
-    - traefik.docker.network=traefik-public
+    - traefik.docker.network=service-compose_traefik-public
     # Gitea Docker Package Registry (reuses existing Lets Encrypt cert + gitea service)
     - traefik.http.routers.gitea-registry.entrypoints=websecure
     - traefik.http.routers.gitea-registry.tls.certresolver=letsEncrypt
@@ -199,9 +199,8 @@ services:
     - traefik.http.routers.filez.rule=Host(`filez.not-really.me`)
     - traefik.http.services.filez.loadbalancer.server.port=3923
     - traefik.http.services.filez.loadbalancer.responseForwarding.flushInterval=1ms
-    - traefik.docker.network=traefik-public
+    - traefik.docker.network=service-compose_traefik-public
     stop_grace_period: 15s
     restart: unless-stopped
 networks:
-  traefik-public:
-    name: traefik-public
+  traefik-public: {}
