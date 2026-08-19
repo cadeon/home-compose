@@ -1,15 +1,7 @@
-serversTransport:
-  maxIdleConnsPerHost: -1
-  forwardingTimeouts:
-    responseHeaderTimeout: 0s
-
 providers:
   docker:
     exposedByDefault: false
     endpoint: "unix:///var/run/docker.sock"
-  file:
-    directory: "/etc/traefik/routes/"
-    watch: true
 
 api:
   insecure: true
