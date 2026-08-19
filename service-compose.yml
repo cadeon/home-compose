@@ -1,4 +1,3 @@
-version: '3.7'
 services:
   ultrafeeder:
     image: ghcr.io/sdr-enthusiasts/docker-adsb-ultrafeeder
@@ -6,7 +5,7 @@ services:
     devices:
     - /dev/bus/usb:/dev/bus/usb
     ports:
-    - 1090:80
+    - 127.0.0.1:1090:80
     - 30005:30005
     environment:
     - TZ=America/New_York
@@ -32,19 +31,21 @@ services:
     - TAR1090_RANGERINGSCOLORS='#1A237E','#0D47A1','#42A5F5','#64B5F6'
     - TAR1090_USEROUTEAPI=true
     - GRAPHS1090_DARKMODE=true
+    networks:
+    - traefik-public
     labels:
     - traefik.enable=true
     - traefik.http.routers.planes.entrypoints=websecure
     - traefik.http.routers.planes.tls.certresolver=letsEncrypt
     - traefik.http.routers.planes.rule=Host(`planes.not-really.me`)
     - traefik.http.services.planes.loadbalancer.server.port=80
-    - traefik.docker.network=service-compose_traefik-public
+    - traefik.docker.network=traefik-public
     restart: unless-stopped
   rickroll:
     image: modem7/docker-rickroll
     container_name: Rickroll
     ports:
-    - 1987:8080
+    - 127.0.0.1:1987:8080
     environment:
     - TITLE="not-really-roll"
     networks:
@@ -55,13 +56,13 @@ services:
     - traefik.http.routers.rr.tls.certresolver=letsEncrypt
     - traefik.http.routers.rr.rule=Host(`rr.not-really.me`)
     - traefik.http.services.rr.loadbalancer.server.port=8080
-    - traefik.docker.network=service-compose_traefik-public
+    - traefik.docker.network=traefik-public
     restart: unless-stopped
   searxng:
     image: docker.io/searxng/searxng:latest
     container_name: searxng
     ports:
-    - 1234:8080
+    - 127.0.0.1:1234:8080
     volumes:
     - /volume2/docker-configs/searxng:/etc/searxng:rw
     environment:
@@ -85,7 +86,7 @@ services:
     - traefik.http.routers.search.tls.certresolver=letsEncrypt
     - traefik.http.routers.search.rule=Host(`search.not-really.me`)
     - traefik.http.services.search.loadbalancer.server.port=8080
-    - traefik.docker.network=service-compose_traefik-public
+    - traefik.docker.network=traefik-public
     restart: unless-stopped
   # Commented out for TrueNAS migration
   # calibre-web:
@@ -110,7 +111,7 @@ services:
   #   - traefik.http.routers.books.tls.certresolver=letsEncrypt
   #   - traefik.http.routers.books.rule=Host(`books.not-really.me`)
   #   - traefik.http.services.books.loadbalancer.server.port=8083
-  #   - traefik.docker.network=service-compose_traefik-public
+  #   - traefik.docker.network=traefik-public
   #   - traefik.port=8083
   #   restart: unless-stopped
   # Commented out for TrueNAS migration
@@ -132,7 +133,7 @@ services:
   #   - traefik.http.routers.speed.tls.certresolver=letsEncrypt
   #   - traefik.http.routers.speed.rule=Host(`speed.not-really.me`)
   #   - traefik.http.services.speed.loadbalancer.server.port=3000
-  #   - traefik.docker.network=service-compose_traefik-public
+  #   - traefik.docker.network=traefik-public
   #   restart: unless-stopped
   gitea:
     image: docker.io/gitea/gitea:latest
@@ -141,7 +142,7 @@ services:
     - /volume2/docker-configs/gitea:/data
     ports:
     - '2222:22'
-    - '3000:3000'
+    - '127.0.0.1:3000:3000'
     networks:
     - traefik-public
     labels:
@@ -150,7 +151,7 @@ services:
     - traefik.http.routers.gitea.tls.certresolver=letsEncrypt
     - traefik.http.routers.gitea.rule=Host(`git.not-really.me`)
     - traefik.http.services.gitea.loadbalancer.server.port=3000
-    - traefik.docker.network=service-compose_traefik-public
+    - traefik.docker.network=traefik-public
     # Gitea Docker Package Registry (reuses existing Lets Encrypt cert + gitea service)
     - traefik.http.routers.gitea-registry.entrypoints=websecure
     - traefik.http.routers.gitea-registry.tls.certresolver=letsEncrypt
@@ -159,6 +160,7 @@ services:
     restart: unless-stopped
   # Config: /volume2/docker-configs/copyparty/copyparty.conf (accounts/volumes).
   # No CLI -v/-a — those conflict with the conf (two paths at webroot /).
+  # --rproxy/--xff-* are safe extras: Traefik terminates TLS and sets X-Forwarded-For.
   copyparty:
     image: copyparty/ac:latest
     container_name: copyparty
@@ -166,6 +168,12 @@ services:
     environment:
     - TZ=America/New_York
     - PYTHONUNBUFFERED=1
+    command:
+    - --http-only
+    - --no-crt
+    - --rproxy=1
+    - --xff-hdr=x-forwarded-for
+    - --xff-src=lan
     volumes:
     - /volume2/docker-configs/copyparty:/cfg
     - /volume1/files/public:/files/public
@@ -180,18 +188,20 @@ services:
       retries: 5
       start_period: 15s
     ports:
-    - "3923:3923"
+    - "127.0.0.1:3923:3923"
     networks:
     - traefik-public
     labels:
     - traefik.enable=true
     - traefik.http.routers.filez.entrypoints=websecure
     - traefik.http.routers.filez.tls.certresolver=letsEncrypt
+    - traefik.http.routers.filez.tls.options=http1only@file
     - traefik.http.routers.filez.rule=Host(`filez.not-really.me`)
     - traefik.http.services.filez.loadbalancer.server.port=3923
-    - traefik.docker.network=service-compose_traefik-public
+    - traefik.http.services.filez.loadbalancer.responseForwarding.flushInterval=1ms
+    - traefik.docker.network=traefik-public
     stop_grace_period: 15s
     restart: unless-stopped
 networks:
-  traefik-public: {}
-volumes: {}
+  traefik-public:
+    name: traefik-public

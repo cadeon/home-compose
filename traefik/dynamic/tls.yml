@@ -1,0 +1,8 @@
+# Copyparty video Range-streaming is much happier on HTTP/1.1 than HTTP/2
+# (flow-control + multiplexed ranges). Applied per-SNI via the filez router.
+tls:
+  options:
+    http1only:
+      minVersion: VersionTLS12
+      alpnProtocols:
+        - http/1.1

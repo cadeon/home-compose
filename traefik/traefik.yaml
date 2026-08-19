@@ -1,19 +1,30 @@
 serversTransport:
   maxIdleConnsPerHost: -1
   forwardingTimeouts:
+    dialTimeout: 30s
     responseHeaderTimeout: 0s
+    idleConnTimeout: 180s
 
 providers:
   docker:
     exposedByDefault: false
     endpoint: "unix:///var/run/docker.sock"
-    useBindPortIP: true
+    network: traefik-public
+    # Route to container IPs on traefik-public (host-network Traefik can
+    # still reach them). useBindPortIP would bounce through docker-proxy.
+  file:
+    directory: /etc/traefik/dynamic
+    watch: true
 
 api:
   insecure: true
   dashboard: true
 
 entryPoints:
+  # Insecure dashboard — localhost only (was :8080 on every interface)
+  traefik:
+    address: "127.0.0.1:8080"
+
   # HTTP → redirect to HTTPS
   web:
     address: ":80"
@@ -22,11 +33,21 @@ entryPoints:
         entryPoint:
           to: websecure
           scheme: https
+    transport:
+      respondingTimeouts:
+        readTimeout: 0s
+        writeTimeout: 0s
+        idleTimeout: 180s
 
   # HTTPS — all services
   # Exposure controlled by DNS, not by entrypoint
   websecure:
     address: ":443"
+    transport:
+      respondingTimeouts:
+        readTimeout: 0s
+        writeTimeout: 0s
+        idleTimeout: 180s
 
 certificatesResolvers:
   letsEncrypt:
@@ -44,4 +65,4 @@ accessLog:
   bufferingSize: 2000
 
 log:
-  level: DEBUG
+  level: INFO

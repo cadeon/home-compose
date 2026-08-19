@@ -1,10 +1,9 @@
 # Core services like proxy, watchtower, status.
-version: "3.7"
 
 services:
 
   traefik:
-    image: traefik:latest
+    image: traefik:v3.7
     container_name: traefik
     network_mode: host
     environment:
@@ -13,6 +12,8 @@ services:
       - /volume2/docker-configs/traefik/:/etc/traefik/
       - /volume2/docker-configs/traefik/logs:/var/log
       - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - com.centurylinklabs.watchtower.enable=false
     restart: always
 
   watchtower:
@@ -28,4 +29,5 @@ services:
 ###### ----- Docker control ----- ######
 networks:
   traefik-public:
+    name: traefik-public
     driver: bridge
