@@ -191,7 +191,6 @@ services:
     - traefik.http.routers.filez.rule=Host(`filez.not-really.me`)
     - traefik.http.routers.filez.middlewares=filez-ws
     - traefik.http.middlewares.filez-ws.headers.customrequestheaders.X-Forwarded-Proto=https
-    - traefik.http.services.filez.loadbalancer.server.host=127.0.0.1
     - traefik.http.services.filez.loadbalancer.server.port=3923
     - traefik.http.services.filez.loadbalancer.passhostheader=true
     - traefik.http.services.filez.loadbalancer.serversTransport=no-http2
