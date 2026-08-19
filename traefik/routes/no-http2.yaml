@@ -1,4 +1,0 @@
-http:
-  serversTransports:
-    no-http2:
-      disableHTTP2: true
