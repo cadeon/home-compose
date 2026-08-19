@@ -182,6 +182,8 @@ services:
       start_period: 15s
     ports:
     - "3923:3923"
+    networks:
+    - traefik-public
     labels:
     - traefik.enable=true
     - traefik.http.routers.filez.entrypoints=websecure
@@ -193,6 +195,7 @@ services:
     - traefik.http.services.filez.loadbalancer.server.port=3923
     - traefik.http.services.filez.loadbalancer.passhostheader=true
     - traefik.http.services.filez.loadbalancer.serversTransport=no-http2
+    - traefik.docker.network=service-compose_traefik-public
     stop_grace_period: 15s
     restart: unless-stopped
 networks:
