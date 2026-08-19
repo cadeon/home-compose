@@ -1,3 +1,8 @@
+serversTransport:
+  maxIdleConnsPerHost: -1
+  forwardingTimeouts:
+    responseHeaderTimeout: 0s
+
 providers:
   docker:
     exposedByDefault: false
